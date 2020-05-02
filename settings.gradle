@@ -1,0 +1,2 @@
+rootProject.name='Gif Wallpaper'
+include ':app'

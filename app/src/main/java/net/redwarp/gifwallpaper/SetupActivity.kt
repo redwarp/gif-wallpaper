@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_setup.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 const val PICK_GIF_FILE = 2
 const val TAG = "GifWallpaper"
@@ -15,6 +18,7 @@ const val TAG = "GifWallpaper"
  * status bar and navigation/system bar) with user interaction.
  */
 class SetupActivity : AppCompatActivity() {
+    private var gifDrawer: GifDrawer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +28,11 @@ class SetupActivity : AppCompatActivity() {
         dummy_button.setOnClickListener {
             pickDocument()
         }
+
+        gifDrawer = GifDrawer(surface_view.holder)
     }
 
-    fun pickDocument() {
+    private fun pickDocument() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "image/gif"
@@ -42,6 +48,10 @@ class SetupActivity : AppCompatActivity() {
             data?.data?.also { uri ->
                 val outputUri = FileUtils.copyFileLocally(this, uri)
                 Log.d(TAG, outputUri.toString())
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    gifDrawer?.gif = Gif.loadGif(this@SetupActivity, uri)
+                }
             }
         }
     }

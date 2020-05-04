@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Gif Wallpaper</string>
 
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="open_gif">Open Gif</string>
 </resources>

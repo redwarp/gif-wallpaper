@@ -1,7 +1,10 @@
 package net.redwarp.gifwallpaper
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.ImageDecoder
+import android.graphics.Paint
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
@@ -19,8 +22,30 @@ class Gif private constructor(gif: Any) {
 
     val animatable: Animatable = gif as Animatable
     val drawable: Drawable = gif as Drawable
+    val backgroundPaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+    }
 
-    fun cleanup() {}
+    init {
+        drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+        backgroundPaint.color = calculateBackgroundColor()
+    }
+
+    fun cleanup() {
+        drawable.callback = null
+        animatable.stop()
+    }
+
+    private fun calculateBackgroundColor(): Int {
+        drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+        val sample = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(sample)
+        canvas.clipRect(0, 0, 1, 1)
+        drawable.draw(canvas)
+        val color = sample.getPixel(0, 0)
+        sample.recycle()
+        return color
+    }
 
     companion object {
         suspend fun loadGif(context: Context, uri: Uri): Gif? {
@@ -32,13 +57,15 @@ class Gif private constructor(gif: Any) {
         }
 
         @RequiresApi(Build.VERSION_CODES.P)
-        private fun getAnimatedImageDrawable(context: Context, uri: Uri): AnimatedImageDrawable? {
-            return ImageDecoder.decodeDrawable(
-                ImageDecoder.createSource(
-                    context.contentResolver,
-                    uri
-                )
-            ) as? AnimatedImageDrawable
+        private suspend fun getAnimatedImageDrawable(
+            context: Context,
+            uri: Uri
+        ): AnimatedImageDrawable? {
+            return withContext(Dispatchers.IO) {
+                ImageDecoder.decodeDrawable(
+                    ImageDecoder.createSource(context.contentResolver, uri)
+                ) as? AnimatedImageDrawable
+            }
         }
 
         private suspend fun getGifDrawable(context: Context, uri: Uri): GifDrawable? {

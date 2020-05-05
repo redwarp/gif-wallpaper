@@ -2,4 +2,5 @@
     <string name="app_name">Gif Wallpaper</string>
 
     <string name="open_gif">Open Gif</string>
+    <string name="change_scale">Change scale</string>
 </resources>

@@ -19,14 +19,18 @@ const val TAG = "GifWallpaper"
  */
 class SetupActivity : AppCompatActivity() {
     private var gifDrawer: GifDrawer? = null
+    private var currentScale = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_setup)
 
-        dummy_button.setOnClickListener {
+        open_gif_button.setOnClickListener {
             pickDocument()
+        }
+        change_scale_button.setOnClickListener {
+            changeScale()
         }
 
         gifDrawer = GifDrawer(surface_view.holder)
@@ -39,6 +43,18 @@ class SetupActivity : AppCompatActivity() {
         }
 
         startActivityForResult(intent, PICK_GIF_FILE)
+    }
+
+    private fun changeScale() {
+        currentScale = (currentScale + 1) % 4
+        val scaleType = when (currentScale) {
+            0 -> GifDrawer.ScaleType.FIT_CENTER
+            1 -> GifDrawer.ScaleType.FIT_END
+            2 -> GifDrawer.ScaleType.FIT_START
+            else -> GifDrawer.ScaleType.FIT_XY
+        }
+
+        gifDrawer?.scaleType = scaleType
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -10,18 +10,28 @@
         android:id="@+id/surface_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/dummy_button"
+        app:layout_constraintBottom_toTopOf="@+id/open_gif_button"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/dummy_button"
+        android:id="@+id/open_gif_button"
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:text="@string/open_gif"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/change_scale_button"
         app:layout_constraintStart_toStartOf="parent" />
+
+
+    <Button
+        android:id="@+id/change_scale_button"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:text="@string/change_scale"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/open_gif_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

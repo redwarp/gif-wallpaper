@@ -1,5 +1,6 @@
 package net.redwarp.gifwallpaper
 
+import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
@@ -11,14 +12,18 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.SurfaceHolder
-import android.widget.ImageView
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.graphics.withMatrix
 import kotlin.properties.Delegates
 
 private const val MESSAGE_DRAW = 1
 
 class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
-    var scaleType: ImageView.ScaleType = ImageView.ScaleType.FIT_CENTER
+    var scaleType: ScaleType = ScaleType.FIT_CENTER
+        set(value) {
+            field = value
+            transformMatrix(value)
+        }
 
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
     private val gifRect = RectF(0f, 0f, 0f, 0f)
@@ -28,6 +33,7 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
     }
     private var isCreated = false
     private val handler: Handler = DrawHandler(this)
+    private var matrixAnimator: ValueAnimator? = null
 
     var gif: Gif? by Delegates.observable(null as Gif?) { _, oldValue, newValue ->
         oldValue?.cleanup()
@@ -70,41 +76,25 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
 
     private fun computeMatrix(
         matrix: Matrix,
-        scaleType: ImageView.ScaleType,
+        scaleType: ScaleType,
         canvasRect: RectF,
         gifRect: RectF
     ) {
         when (scaleType) {
-            ImageView.ScaleType.FIT_CENTER ->
+            ScaleType.FIT_CENTER ->
                 matrix.setRectToRect(gifRect, canvasRect, Matrix.ScaleToFit.CENTER)
-        }
-    }
-
-    private fun computeMatrix(matrix: Matrix, canvasRect: RectF, gifRect: RectF) {
-        val canvasRatio = canvasRect.width() / canvasRect.height()
-        val gifRatio = gifRect.width() / gifRect.height()
-
-
-        with(matrix) {
-            reset()
-            if (gifRatio > canvasRatio) {
-                val scale = canvasRect.width() / gifRect.width()
-                val offset = (canvasRect.height() - gifRect.height() * scale) * 0.5f
-
-                postScale(scale, scale)
-                postTranslate(0f, offset)
-            } else {
-
-                val scale = canvasRect.height() / gifRect.height()
-                val offset = (canvasRect.width() - gifRect.width() * scale) * 0.5f
-
-                postScale(scale, scale)
-                postTranslate(offset, 0f)
-            }
+            ScaleType.FIT_END ->
+                matrix.setRectToRect(gifRect, canvasRect, Matrix.ScaleToFit.END)
+            ScaleType.FIT_START ->
+                matrix.setRectToRect(gifRect, canvasRect, Matrix.ScaleToFit.START)
+            ScaleType.FIT_XY ->
+                matrix.setRectToRect(gifRect, canvasRect, Matrix.ScaleToFit.FILL)
+            else -> Unit
         }
     }
 
     private fun invalidate() {
+        matrixAnimator?.cancel()
         handler.removeMessages(MESSAGE_DRAW)
         computeMatrix(matrix, scaleType, canvasRect, gifRect)
         handler.sendMessage(getDrawMessage(gif))
@@ -140,18 +130,6 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
         canvas.withMatrix(matrix) {
             gif.drawable.draw(this)
         }
-        // canvas.withSave {
-        //     // Adjust size and position so that
-        //     // the image looks good on your screen
-        //     val scale =
-        //         width.toFloat() / gif.drawable.intrinsicWidth.toFloat()
-        //     val offset =
-        //         (height / scale - gif.drawable.intrinsicHeight) * 0.5f
-        //
-        //     scale(scale, scale)
-        //     translate(0f, offset)
-        //     gif.drawable.draw(this)
-        // }
     }
 
     private fun drawEmptySurface(canvas: Canvas) {
@@ -160,6 +138,27 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
 
     private fun getDrawMessage(gif: Gif?): Message {
         return Message.obtain(handler, MESSAGE_DRAW, gif)
+    }
+
+    private fun transformMatrix(scaleType: ScaleType) {
+        val targetMatrix = Matrix().also {
+            computeMatrix(it, scaleType, canvasRect, gifRect)
+        }
+        val sourceMatrix = Matrix(matrix)
+
+        matrixAnimator?.cancel()
+        matrixAnimator = ValueAnimator.ofObject(
+            MatrixEvaluator(matrix),
+            sourceMatrix,
+            targetMatrix
+        ).apply {
+            addUpdateListener { _ ->
+                draw(gif)
+            }
+            interpolator = AccelerateDecelerateInterpolator()
+            duration = 500
+            start()
+        }
     }
 
     private val drawableCallback = object : Drawable.Callback {
@@ -184,5 +183,9 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
                 gifDrawer.draw(gif)
             }
         }
+    }
+
+    enum class ScaleType {
+        FIT_CENTER, FIT_END, FIT_START, FIT_XY;
     }
 }

@@ -1,14 +1,10 @@
 package net.redwarp.gifwallpaper
 
-import android.animation.TypeEvaluator
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.ImageDecoder
-import android.graphics.Matrix
 import android.graphics.Paint
-import android.graphics.PointF
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
@@ -21,8 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class Gif private constructor(gif: Any) {
-    constructor(animatedImageDrawable: AnimatedImageDrawable) : this(animatedImageDrawable as Any)
-    constructor(gifDrawable: GifDrawable) : this(gifDrawable as Any)
+    private constructor(animatedImageDrawable: AnimatedImageDrawable) : this(animatedImageDrawable as Any)
+    private constructor(gifDrawable: GifDrawable) : this(gifDrawable as Any)
 
     val animatable: Animatable = gif as Animatable
     val drawable: Drawable = gif as Drawable

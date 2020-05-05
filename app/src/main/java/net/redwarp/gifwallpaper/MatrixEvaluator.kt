@@ -22,4 +22,3 @@ class MatrixEvaluator(reuseMatrix: Matrix?) : TypeEvaluator<Matrix> {
         return matrix
     }
 }
-

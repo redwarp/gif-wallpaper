@@ -34,10 +34,7 @@ class SetupActivity : AppCompatActivity() {
         }
 
         gifDrawer = GifDrawer(surface_view.holder)
-    }
 
-    override fun onStart() {
-        super.onStart()
         CoroutineScope(Dispatchers.Main).launch {
             val wallpaper = Wallpaper.getWallpaper(this@SetupActivity)
             if (wallpaper != null) {

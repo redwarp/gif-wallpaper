@@ -1,5 +1,6 @@
 package net.redwarp.gifwallpaper
 
+import android.animation.Animator
 import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Color
@@ -11,8 +12,11 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.util.Log
 import android.view.SurfaceHolder
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import androidx.core.graphics.withMatrix
 import kotlin.properties.Delegates
 
@@ -71,7 +75,7 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         isCreated = true
-        handler.removeMessages(MESSAGE_DRAW)
+        invalidate()
     }
 
     private fun computeMatrix(
@@ -157,6 +161,14 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
             }
             interpolator = AccelerateDecelerateInterpolator()
             duration = 500
+            doOnStart {
+                gif?.drawable?.callback = null
+
+            }
+            doOnEnd {
+                gif?.drawable?.callback = drawableCallback
+                invalidate()
+            }
             start()
         }
     }

@@ -36,6 +36,16 @@ class SetupActivity : AppCompatActivity() {
         gifDrawer = GifDrawer(surface_view.holder)
     }
 
+    override fun onStart() {
+        super.onStart()
+        CoroutineScope(Dispatchers.Main).launch {
+            val wallpaper = Wallpaper.getWallpaper(this@SetupActivity)
+            if (wallpaper != null) {
+                gifDrawer?.gif = Gif.loadGif(this@SetupActivity, wallpaper.uri)
+            }
+        }
+    }
+
     private fun pickDocument() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
@@ -67,6 +77,7 @@ class SetupActivity : AppCompatActivity() {
 
                 CoroutineScope(Dispatchers.Main).launch {
                     gifDrawer?.gif = Gif.loadGif(this@SetupActivity, uri)
+                    Wallpaper.setWallpaper(this@SetupActivity, Wallpaper(uri))
                 }
             }
         }

@@ -25,9 +25,10 @@ class GifWallpaperService : WallpaperService() {
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
             if (visible) {
+                gifDrawer?.onResume()
                 updateWallpaper()
             } else {
-                gifDrawer?.gif = null
+                gifDrawer?.onPause()
             }
         }
 

@@ -1,6 +1,5 @@
 package net.redwarp.gifwallpaper
 
-import android.animation.Animator
 import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Color
@@ -12,7 +11,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.util.Log
 import android.view.SurfaceHolder
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
@@ -71,11 +69,25 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         isCreated = false
+        onPause()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         isCreated = true
+        onResume()
+    }
+
+    fun onResume(){
+        gif?.drawable?.callback = drawableCallback
+        gif?.animatable?.start()
         invalidate()
+    }
+
+    fun onPause(){
+        matrixAnimator?.cancel()
+        gif?.drawable?.callback = null
+        gif?.animatable?.stop()
+        handler.removeMessages(MESSAGE_DRAW)
     }
 
     private fun computeMatrix(

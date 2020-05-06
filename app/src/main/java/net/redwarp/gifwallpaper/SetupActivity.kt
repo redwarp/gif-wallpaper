@@ -69,12 +69,12 @@ class SetupActivity : AppCompatActivity() {
 
         if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                val outputUri = FileUtils.copyFileLocally(this, uri)
+                val outputUri = FileUtils.copyFileLocally(this, uri)?:return@also
                 Log.d(TAG, outputUri.toString())
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    gifDrawer?.gif = Gif.loadGif(this@SetupActivity, uri)
-                    Wallpaper.setWallpaper(this@SetupActivity, Wallpaper(uri))
+                    gifDrawer?.gif = Gif.loadGif(this@SetupActivity, outputUri)
+                    Wallpaper.setWallpaper(this@SetupActivity, Wallpaper(outputUri))
                 }
             }
         }

@@ -23,6 +23,7 @@ class SetupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_setup)
+        supportActionBar?.hide()
 
         open_gif_button.setOnClickListener {
             pickDocument()
@@ -49,15 +50,8 @@ class SetupActivity : AppCompatActivity() {
     }
 
     private fun changeScale() {
-        currentScale = (currentScale + 1) % 4
-        val scaleType = when (currentScale) {
-            0 -> GifDrawer.ScaleType.FIT_CENTER
-            1 -> GifDrawer.ScaleType.FIT_END
-            2 -> GifDrawer.ScaleType.FIT_START
-            else -> GifDrawer.ScaleType.FIT_XY
-        }
-
-        gifDrawer?.scaleType = scaleType
+        currentScale = (currentScale + 1) % GifDrawer.ScaleType.values().size
+        gifDrawer?.scaleType = GifDrawer.ScaleType.values()[currentScale]
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

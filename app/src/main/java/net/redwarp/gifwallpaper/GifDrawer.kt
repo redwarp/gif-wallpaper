@@ -123,6 +123,8 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
                 matrix.setRectToRect(gifRect, canvasRect, Matrix.ScaleToFit.START)
             ScaleType.FIT_XY ->
                 matrix.setRectToRect(gifRect, canvasRect, Matrix.ScaleToFit.FILL)
+            ScaleType.CENTER ->
+                matrix.setCenterRectInRect(gifRect, canvasRect)
             else -> Unit
         }
     }
@@ -228,6 +230,6 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
     }
 
     enum class ScaleType {
-        FIT_CENTER, FIT_END, FIT_START, FIT_XY;
+        FIT_CENTER, FIT_END, FIT_START, FIT_XY, CENTER;
     }
 }

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
     android:label="@string/app_name"
+    android:settingsActivity="net.redwarp.gifwallpaper.SetupActivity"
     android:thumbnail="@drawable/ic_launcher_background" />

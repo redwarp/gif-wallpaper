@@ -1,6 +1,7 @@
 package net.redwarp.gifwallpaper
 
 import android.animation.ValueAnimator
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
@@ -19,10 +20,14 @@ import androidx.core.graphics.withMatrix
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val MESSAGE_DRAW = 1
 
-class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2, LifecycleObserver {
+class GifDrawer(private val context: Context, private val holder: SurfaceHolder) :
+    SurfaceHolder.Callback2, LifecycleObserver {
     var scaleType: ScaleType = ScaleType.FIT_CENTER
         set(value) {
             field = value
@@ -82,8 +87,10 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2, Li
             WallpaperStatus.NotSet -> {
                 gif = null
             }
-            is WallpaperStatus.Wallpaper -> {
-                gif = wallpaperStatus.gif
+            is WallpaperStatus.Wallpaper2 -> {
+                CoroutineScope(Dispatchers.Main).launch {
+                    gif = Gif.loadGif(context, wallpaperStatus.uri)
+                }
             }
         }
     }

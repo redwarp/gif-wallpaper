@@ -33,7 +33,8 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
 
-            gifDrawer = GifDrawer(surfaceHolder).also(lifecycle::addObserver)
+            gifDrawer =
+                GifDrawer(this@GifWallpaperService, surfaceHolder).also(lifecycle::addObserver)
 
             WallpaperLiveData.get(this@GifWallpaperService)
                 .observe(this@GifWallpaperService, Observer { status ->

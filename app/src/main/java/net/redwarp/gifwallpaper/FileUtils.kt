@@ -3,11 +3,11 @@ package net.redwarp.gifwallpaper
 import android.content.Context
 import android.net.Uri
 import android.webkit.MimeTypeMap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object FileUtils {
     suspend fun copyFileLocally(context: Context, uri: Uri): Uri? {

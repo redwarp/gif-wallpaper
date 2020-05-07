@@ -12,7 +12,7 @@ private const val KEY_WALLPAPER_URI = "wallpaper_uri"
 
 class WallpaperLiveData private constructor(private val context: Context) :
     LiveData<WallpaperStatus>() {
-    private var currentWallpaper: WallpaperStatus.Wallpaper? = null
+    private var currentWallpaper: WallpaperStatus.Wallpaper2? = null
 
     init {
         postValue(WallpaperStatus.Loading)
@@ -21,9 +21,9 @@ class WallpaperLiveData private constructor(private val context: Context) :
 
     override fun setValue(value: WallpaperStatus?) {
         super.setValue(value)
-        if (currentWallpaper != value && value is WallpaperStatus.Wallpaper) {
+        if (currentWallpaper != value && value is WallpaperStatus.Wallpaper2) {
             currentWallpaper = value
-            storeCurrentWallpaperuri(context, value.uri)
+            storeCurrentWallpaperUri(context, value.uri)
         }
     }
 
@@ -36,19 +36,7 @@ class WallpaperLiveData private constructor(private val context: Context) :
                 return@launch
             }
 
-            val gif = Gif.loadGif(context, copiedUri)
-            if (gif == null) {
-                postValue(WallpaperStatus.NotSet)
-                return@launch
-            }
-
-            postValue(
-                WallpaperStatus.Wallpaper(
-                    gif,
-                    GifDrawer.ScaleType.FIT_CENTER,
-                    copiedUri
-                )
-            )
+            postValue(WallpaperStatus.Wallpaper2(copiedUri, GifDrawer.ScaleType.FIT_CENTER))
         }
     }
 
@@ -57,31 +45,18 @@ class WallpaperLiveData private constructor(private val context: Context) :
         if (uri == null) {
             postValue(WallpaperStatus.NotSet)
         } else {
-            CoroutineScope(Dispatchers.Main).launch {
-                val gif = Gif.loadGif(context, uri)
-                if (gif == null) postValue(WallpaperStatus.NotSet)
-                else {
-                    val initialWallpaper =
-                        WallpaperStatus.Wallpaper(
-                            gif,
-                            GifDrawer.ScaleType.FIT_CENTER,
-                            uri
-                        )
-                    currentWallpaper = initialWallpaper
-                    postValue(initialWallpaper)
-                }
-            }
+            postValue(WallpaperStatus.Wallpaper2(uri, GifDrawer.ScaleType.FIT_CENTER))
         }
     }
 
-    fun loadCurrentWallpaperUri(context: Context): Uri? {
+    private fun loadCurrentWallpaperUri(context: Context): Uri? {
         val sharedPreferences =
             context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         val urlString = sharedPreferences.getString(KEY_WALLPAPER_URI, null)
         return urlString?.let { Uri.parse(it) }
     }
 
-    fun storeCurrentWallpaperuri(context: Context, uri: Uri) {
+    private fun storeCurrentWallpaperUri(context: Context, uri: Uri) {
         val sharedPreferences =
             context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         sharedPreferences.edit().putString(KEY_WALLPAPER_URI, uri.toString()).apply()
@@ -104,6 +79,5 @@ class WallpaperLiveData private constructor(private val context: Context) :
 sealed class WallpaperStatus {
     object NotSet : WallpaperStatus()
     object Loading : WallpaperStatus()
-    data class Wallpaper(val gif: Gif, val scaleType: GifDrawer.ScaleType, val uri: Uri) :
-        WallpaperStatus()
+    data class Wallpaper2(val uri: Uri, val scaleType: GifDrawer.ScaleType) : WallpaperStatus()
 }

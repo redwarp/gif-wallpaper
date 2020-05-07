@@ -31,7 +31,7 @@ class SetupActivity : AppCompatActivity() {
             changeScale()
         }
 
-        gifDrawer = GifDrawer(surface_view.holder).also(lifecycle::addObserver)
+        gifDrawer = GifDrawer(this, surface_view.holder).also(lifecycle::addObserver)
 
         wallpaperLiveData = WallpaperLiveData.get(this)
         wallpaperLiveData.observe(this, Observer { status ->

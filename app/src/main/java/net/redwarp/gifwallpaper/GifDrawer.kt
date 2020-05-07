@@ -125,6 +125,8 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
                 matrix.setRectToRect(gifRect, canvasRect, Matrix.ScaleToFit.FILL)
             ScaleType.CENTER ->
                 matrix.setCenterRectInRect(gifRect, canvasRect)
+            ScaleType.CENTER_CROP ->
+                matrix.setCenterCropRectInRect(gifRect, canvasRect)
             else -> Unit
         }
     }
@@ -163,6 +165,7 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
     }
 
     private fun drawGif(canvas: Canvas, gif: Gif) {
+        canvas.clipRect(canvasRect)
         canvas.drawRect(canvasRect, gif.backgroundPaint)
 
         canvas.withMatrix(matrix) {
@@ -230,6 +233,6 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
     }
 
     enum class ScaleType {
-        FIT_CENTER, FIT_END, FIT_START, FIT_XY, CENTER;
+        FIT_CENTER, FIT_END, FIT_START, FIT_XY, CENTER, CENTER_CROP;
     }
 }

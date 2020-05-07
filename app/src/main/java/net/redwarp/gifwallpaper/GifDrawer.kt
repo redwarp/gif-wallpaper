@@ -16,11 +16,13 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.graphics.withMatrix
-import kotlin.properties.Delegates
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 
 private const val MESSAGE_DRAW = 1
 
-class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
+class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2, LifecycleObserver {
     var scaleType: ScaleType = ScaleType.FIT_CENTER
         set(value) {
             field = value
@@ -37,19 +39,19 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
     private val handler: Handler = DrawHandler(this)
     private var matrixAnimator: ValueAnimator? = null
 
-    var gif: Gif? by Delegates.observable(null as Gif?) { _, oldValue, newValue ->
-        oldValue?.cleanup()
+    var gif: Gif? = null
+        set(value) {
+            field?.cleanup()
 
-        newValue?.drawable?.callback = drawableCallback
-        newValue?.animatable?.start()
-        if (newValue == null) {
-            gifRect.set(0f, 0f, 0f, 0f)
-        } else {
-            gifRect.right = newValue.drawable.intrinsicWidth.toFloat()
-            gifRect.bottom = newValue.drawable.intrinsicHeight.toFloat()
+            if (value == null) {
+                gifRect.set(0f, 0f, 0f, 0f)
+            } else {
+                gifRect.right = value.drawable.intrinsicWidth.toFloat()
+                gifRect.bottom = value.drawable.intrinsicHeight.toFloat()
+            }
+            field = value
+            invalidate()
         }
-        invalidate()
-    }
     private val matrix = Matrix()
 
     init {
@@ -69,21 +71,30 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         isCreated = false
-        onPause()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         isCreated = true
-        onResume()
     }
 
-    fun onResume(){
-        gif?.drawable?.callback = drawableCallback
-        gif?.animatable?.start()
+    fun setWallpaperStatus(wallpaperStatus: WallpaperStatus) {
+        when (wallpaperStatus) {
+            WallpaperStatus.NotSet -> {
+                gif = null
+            }
+            is WallpaperStatus.Wallpaper -> {
+                gif = wallpaperStatus.gif
+            }
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume() {
         invalidate()
     }
 
-    fun onPause(){
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun onPause() {
         matrixAnimator?.cancel()
         gif?.drawable?.callback = null
         gif?.animatable?.stop()
@@ -113,6 +124,8 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
         matrixAnimator?.cancel()
         handler.removeMessages(MESSAGE_DRAW)
         computeMatrix(matrix, scaleType, canvasRect, gifRect)
+        gif?.drawable?.callback = drawableCallback
+        gif?.animatable?.start()
         handler.sendMessage(getDrawMessage(gif))
     }
 
@@ -175,10 +188,8 @@ class GifDrawer(private val holder: SurfaceHolder) : SurfaceHolder.Callback2 {
             duration = 500
             doOnStart {
                 gif?.drawable?.callback = null
-
             }
             doOnEnd {
-                gif?.drawable?.callback = drawableCallback
                 invalidate()
             }
             start()

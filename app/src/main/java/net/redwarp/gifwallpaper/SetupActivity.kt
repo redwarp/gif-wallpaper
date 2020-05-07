@@ -3,12 +3,9 @@ package net.redwarp.gifwallpaper
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_setup.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 const val PICK_GIF_FILE = 2
 const val TAG = "GifWallpaper"
@@ -20,6 +17,7 @@ const val TAG = "GifWallpaper"
 class SetupActivity : AppCompatActivity() {
     private var gifDrawer: GifDrawer? = null
     private var currentScale = 0
+    private lateinit var wallpaperLiveData: WallpaperLiveData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,14 +31,12 @@ class SetupActivity : AppCompatActivity() {
             changeScale()
         }
 
-        gifDrawer = GifDrawer(surface_view.holder)
+        gifDrawer = GifDrawer(surface_view.holder).also(lifecycle::addObserver)
 
-        CoroutineScope(Dispatchers.Main).launch {
-            val wallpaper = Wallpaper.getWallpaper(this@SetupActivity)
-            if (wallpaper != null) {
-                gifDrawer?.gif = Gif.loadGif(this@SetupActivity, wallpaper.uri)
-            }
-        }
+        wallpaperLiveData = WallpaperLiveData.get(this)
+        wallpaperLiveData.observe(this, Observer { status ->
+            gifDrawer?.setWallpaperStatus(status)
+        })
     }
 
     private fun pickDocument() {
@@ -69,13 +65,7 @@ class SetupActivity : AppCompatActivity() {
 
         if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                val outputUri = FileUtils.copyFileLocally(this, uri)?:return@also
-                Log.d(TAG, outputUri.toString())
-
-                CoroutineScope(Dispatchers.Main).launch {
-                    gifDrawer?.gif = Gif.loadGif(this@SetupActivity, outputUri)
-                    Wallpaper.setWallpaper(this@SetupActivity, Wallpaper(outputUri))
-                }
+                wallpaperLiveData.loadNewGif(uri)
             }
         }
     }

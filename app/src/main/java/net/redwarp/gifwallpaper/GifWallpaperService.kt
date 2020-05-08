@@ -6,6 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
+import net.redwarp.gifwallpaper.data.Model
 
 class GifWallpaperService : WallpaperService(), LifecycleOwner {
     private lateinit var lifecycleRegistry: LifecycleRegistry
@@ -36,10 +37,14 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
             gifDrawer =
                 GifDrawer(this@GifWallpaperService, surfaceHolder).also(lifecycle::addObserver)
 
-            WallpaperLiveData.get(this@GifWallpaperService)
-                .observe(this@GifWallpaperService, Observer { status ->
+            Model.get(this@GifWallpaperService).apply {
+                wallpaperStatus.observe(this@GifWallpaperService, Observer { status ->
                     gifDrawer?.setWallpaperStatus(status)
                 })
+                scaleTypeData.observe(this@GifWallpaperService, Observer { scaleType ->
+                    gifDrawer?.setScaleType(scaleType, animated = false)
+                })
+            }
         }
 
         override fun onVisibilityChanged(visible: Boolean) {

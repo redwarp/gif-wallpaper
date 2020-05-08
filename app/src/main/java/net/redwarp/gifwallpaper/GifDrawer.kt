@@ -23,16 +23,13 @@ import androidx.lifecycle.OnLifecycleEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.redwarp.gifwallpaper.data.WallpaperStatus
 
 private const val MESSAGE_DRAW = 1
 
 class GifDrawer(private val context: Context, private val holder: SurfaceHolder) :
     SurfaceHolder.Callback2, LifecycleObserver {
-    var scaleType: ScaleType = ScaleType.FIT_CENTER
-        set(value) {
-            field = value
-            transformMatrix(value)
-        }
+    private var scaleType: ScaleType = ScaleType.FIT_CENTER
 
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
     private val gifRect = RectF(0f, 0f, 0f, 0f)
@@ -82,12 +79,21 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
         isCreated = true
     }
 
+    fun setScaleType(scaleType: ScaleType, animated: Boolean) {
+        this.scaleType = scaleType
+        if (animated) {
+            transformMatrix(scaleType)
+        } else {
+            invalidate()
+        }
+    }
+
     fun setWallpaperStatus(wallpaperStatus: WallpaperStatus) {
         when (wallpaperStatus) {
             WallpaperStatus.NotSet -> {
                 gif = null
             }
-            is WallpaperStatus.Wallpaper2 -> {
+            is WallpaperStatus.Wallpaper -> {
                 CoroutineScope(Dispatchers.Main).launch {
                     gif = Gif.loadGif(context, wallpaperStatus.uri)
                 }

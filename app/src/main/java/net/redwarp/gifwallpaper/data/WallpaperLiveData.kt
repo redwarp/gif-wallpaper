@@ -1,42 +1,42 @@
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.data
 
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
+import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.redwarp.gifwallpaper.FileUtils
 
-private const val SHARED_PREF_NAME = "wallpaper_pref"
-private const val KEY_WALLPAPER_URI = "wallpaper_uri"
-
-class WallpaperLiveData private constructor(private val context: Context) :
+internal class WallpaperLiveData(private val context: Context) :
     LiveData<WallpaperStatus>() {
-    private var currentWallpaper: WallpaperStatus.Wallpaper2? = null
+    private var currentUri: Uri? = null
 
     init {
         postValue(WallpaperStatus.Loading)
         loadInitialValue()
     }
 
-    override fun setValue(value: WallpaperStatus?) {
-        super.setValue(value)
-        if (currentWallpaper != value && value is WallpaperStatus.Wallpaper2) {
-            currentWallpaper = value
-            storeCurrentWallpaperUri(context, value.uri)
-        }
-    }
-
     fun loadNewGif(uri: Uri) {
+        if (uri == currentUri) return
+
         CoroutineScope(Dispatchers.Main).launch {
             postValue(WallpaperStatus.Loading)
-            val copiedUri = FileUtils.copyFileLocally(context, uri)
+            val copiedUri =
+                FileUtils.copyFileLocally(context, uri)
             if (copiedUri == null) {
                 postValue(WallpaperStatus.NotSet)
-                return@launch
+            } else {
+                postValue(
+                    WallpaperStatus.Wallpaper(
+                        copiedUri
+                    )
+                )
             }
-
-            postValue(WallpaperStatus.Wallpaper2(copiedUri, GifDrawer.ScaleType.FIT_CENTER))
+            cleanupOldUri(currentUri)
+            currentUri = copiedUri
+            storeCurrentWallpaperUri(context, copiedUri)
         }
     }
 
@@ -45,7 +45,11 @@ class WallpaperLiveData private constructor(private val context: Context) :
         if (uri == null) {
             postValue(WallpaperStatus.NotSet)
         } else {
-            postValue(WallpaperStatus.Wallpaper2(uri, GifDrawer.ScaleType.FIT_CENTER))
+            postValue(
+                WallpaperStatus.Wallpaper(
+                    uri
+                )
+            )
         }
     }
 
@@ -56,17 +60,27 @@ class WallpaperLiveData private constructor(private val context: Context) :
         return urlString?.let { Uri.parse(it) }
     }
 
-    private fun storeCurrentWallpaperUri(context: Context, uri: Uri) {
+    private fun storeCurrentWallpaperUri(context: Context, uri: Uri?) {
         val sharedPreferences =
             context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
-        sharedPreferences.edit().putString(KEY_WALLPAPER_URI, uri.toString()).apply()
+        if (uri != null) {
+            sharedPreferences.edit().putString(KEY_WALLPAPER_URI, uri.toString()).apply()
+        } else {
+            sharedPreferences.edit().remove(KEY_WALLPAPER_URI).apply()
+        }
+    }
+
+    private fun cleanupOldUri(uri: Uri?) {
+        val path = uri?.path ?: return
+
+        File(path).delete()
     }
 
     companion object {
         private lateinit var instance: WallpaperLiveData
 
         fun get(context: Context): WallpaperLiveData {
-            instance = if (::instance.isInitialized) {
+            instance = if (Companion::instance.isInitialized) {
                 instance
             } else {
                 WallpaperLiveData(context.applicationContext)
@@ -79,5 +93,5 @@ class WallpaperLiveData private constructor(private val context: Context) :
 sealed class WallpaperStatus {
     object NotSet : WallpaperStatus()
     object Loading : WallpaperStatus()
-    data class Wallpaper2(val uri: Uri, val scaleType: GifDrawer.ScaleType) : WallpaperStatus()
+    data class Wallpaper(val uri: Uri) : WallpaperStatus()
 }

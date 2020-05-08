@@ -9,6 +9,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_setup.*
+import net.redwarp.gifwallpaper.data.Model
 
 const val PICK_GIF_FILE = 2
 const val TAG = "GifWallpaper"
@@ -20,7 +21,7 @@ const val TAG = "GifWallpaper"
 class SetupActivity : AppCompatActivity() {
     private var gifDrawer: GifDrawer? = null
     private var currentScale = 0
-    private lateinit var wallpaperLiveData: WallpaperLiveData
+    private lateinit var model: Model
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +38,12 @@ class SetupActivity : AppCompatActivity() {
 
         gifDrawer = GifDrawer(this, surface_view.holder).also(lifecycle::addObserver)
 
-        wallpaperLiveData = WallpaperLiveData.get(this)
-        wallpaperLiveData.observe(this, Observer { status ->
+        model = Model.get(this)
+        model.wallpaperStatus.observe(this, Observer { status ->
             gifDrawer?.setWallpaperStatus(status)
+        })
+        model.scaleTypeData.observe(this, Observer { scaleType ->
+            gifDrawer?.setScaleType(scaleType, animated = true)
         })
     }
 
@@ -54,7 +58,7 @@ class SetupActivity : AppCompatActivity() {
 
     private fun changeScale() {
         currentScale = (currentScale + 1) % GifDrawer.ScaleType.values().size
-        gifDrawer?.scaleType = GifDrawer.ScaleType.values()[currentScale]
+        model.setScaleType(GifDrawer.ScaleType.values()[currentScale])
     }
 
     private fun hideActionBars() {
@@ -74,7 +78,7 @@ class SetupActivity : AppCompatActivity() {
 
         if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                wallpaperLiveData.loadNewGif(uri)
+                model.loadNewGif(uri)
             }
         }
     }

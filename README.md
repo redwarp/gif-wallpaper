@@ -1,2 +1,2 @@
 # gif-wallpaper
-Playing with Gifs, animatable and drawable
+Playing with GIFs, animatable and drawable

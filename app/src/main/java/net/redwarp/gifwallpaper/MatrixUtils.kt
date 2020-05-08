@@ -23,3 +23,20 @@ fun Matrix.setCenterCropRectInRect(source: RectF, destination: RectF) {
     }
     postScale(scale, scale, destination.width() * .5f, destination.height() * 0.5f)
 }
+
+fun Matrix.setCenterInsideRectInRect(source: RectF, destination: RectF) {
+    setCenterRectInRect(source, destination)
+    if (source.width() <= destination.width() && source.height() <= destination.height()) {
+        return
+    }
+
+    val sourceRatio = source.width() / source.height()
+    val destinationRatio = destination.width() / destination.height()
+
+    val scale = if (sourceRatio > destinationRatio) {
+        destination.width() / source.width()
+    } else {
+        destination.height() / source.height()
+    }
+    postScale(scale, scale, destination.width() * .5f, destination.height() * 0.5f)
+}

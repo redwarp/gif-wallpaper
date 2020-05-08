@@ -1,26 +1,35 @@
 package net.redwarp.gifwallpaper
 
+import android.app.WallpaperManager
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_setup.*
+import kotlinx.android.synthetic.main.activity_launcher.*
 
-const val PICK_GIF_FILE = 2
-const val TAG = "GifWallpaper"
-
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
-class SetupActivity : AppCompatActivity() {
+class LauncherActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (isWallpaperSet(this)) {
+            startActivity(Intent(this, SetupActivity::class.java))
+            finish()
+            return
+        }
 
-        setContentView(R.layout.activity_setup)
+        setContentView(R.layout.activity_launcher)
         setupActionBar()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isWallpaperSet(this)) {
+            startActivity(Intent(this, SetupActivity::class.java))
+            finish()
+        }
     }
 
     private fun setupActionBar() {
@@ -38,5 +47,12 @@ class SetupActivity : AppCompatActivity() {
 
             statusBarColor = Color.TRANSPARENT
         }
+    }
+
+    private fun isWallpaperSet(context: Context): Boolean {
+        val wallpaperManager = WallpaperManager.getInstance(context)
+        return wallpaperManager.wallpaperInfo?.let {
+            it.packageName == context.packageName
+        } ?: false
     }
 }

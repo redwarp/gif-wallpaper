@@ -75,19 +75,6 @@ internal class WallpaperLiveData(private val context: Context) :
 
         File(path).delete()
     }
-
-    companion object {
-        private lateinit var instance: WallpaperLiveData
-
-        fun get(context: Context): WallpaperLiveData {
-            instance = if (Companion::instance.isInitialized) {
-                instance
-            } else {
-                WallpaperLiveData(context.applicationContext)
-            }
-            return instance
-        }
-    }
 }
 
 sealed class WallpaperStatus {

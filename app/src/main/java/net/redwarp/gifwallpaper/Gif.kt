@@ -31,10 +31,14 @@ class Gif private constructor(gif: Any) {
 
     companion object {
         suspend fun loadGif(context: Context, uri: Uri): Gif? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                Gif(getAnimatedImageDrawable(context, uri) ?: return null)
-            } else {
-                Gif(getGifDrawable(context, uri) ?: return null)
+            try {
+                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    Gif(getAnimatedImageDrawable(context, uri) ?: return null)
+                } else {
+                    Gif(getGifDrawable(context, uri) ?: return null)
+                }
+            } catch (exception: java.lang.Exception) {
+                return null
             }
         }
 

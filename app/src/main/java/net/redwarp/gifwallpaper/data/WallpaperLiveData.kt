@@ -45,7 +45,8 @@ internal class WallpaperLiveData(private val context: Context) :
     fun clearGif() {
         postValue(WallpaperStatus.NotSet)
         cleanupOldUri(localUri)
-        currentUri == null
+        storeCurrentWallpaperUri(context, null)
+        currentUri = null
         localUri = null
     }
 

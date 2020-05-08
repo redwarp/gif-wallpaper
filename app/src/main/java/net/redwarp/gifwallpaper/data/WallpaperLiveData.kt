@@ -3,11 +3,11 @@ package net.redwarp.gifwallpaper.data
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
+import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.utils.FileUtils
-import java.io.File
 
 internal class WallpaperLiveData(private val context: Context) :
     LiveData<WallpaperStatus>() {

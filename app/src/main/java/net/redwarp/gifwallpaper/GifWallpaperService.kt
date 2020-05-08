@@ -44,6 +44,9 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
                 scaleTypeData.observe(this@GifWallpaperService, Observer { scaleType ->
                     gifDrawer?.setScaleType(scaleType, animated = false)
                 })
+                backgroundColorData.observe(this@GifWallpaperService, Observer { color ->
+                    gifDrawer?.setBackgroundColor(color)
+                })
             }
         }
 

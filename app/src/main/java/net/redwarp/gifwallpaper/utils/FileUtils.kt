@@ -1,4 +1,4 @@
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.utils
 
 import android.content.Context
 import android.net.Uri

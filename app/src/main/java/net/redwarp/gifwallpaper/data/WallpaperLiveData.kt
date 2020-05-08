@@ -3,15 +3,16 @@ package net.redwarp.gifwallpaper.data
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
-import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.redwarp.gifwallpaper.FileUtils
+import net.redwarp.gifwallpaper.utils.FileUtils
+import java.io.File
 
 internal class WallpaperLiveData(private val context: Context) :
     LiveData<WallpaperStatus>() {
     private var currentUri: Uri? = null
+    private var localUri: Uri? = null
 
     init {
         postValue(WallpaperStatus.Loading)
@@ -34,10 +35,18 @@ internal class WallpaperLiveData(private val context: Context) :
                     )
                 )
             }
-            cleanupOldUri(currentUri)
-            currentUri = copiedUri
+            cleanupOldUri(localUri)
+            currentUri = uri
+            localUri = copiedUri
             storeCurrentWallpaperUri(context, copiedUri)
         }
+    }
+
+    fun clearGif() {
+        postValue(WallpaperStatus.NotSet)
+        cleanupOldUri(localUri)
+        currentUri == null
+        localUri = null
     }
 
     private fun loadInitialValue() {

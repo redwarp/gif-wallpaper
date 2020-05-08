@@ -24,6 +24,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.data.WallpaperStatus
+import net.redwarp.gifwallpaper.utils.setCenterCropRectInRect
+import net.redwarp.gifwallpaper.utils.setCenterRectInRect
 
 private const val MESSAGE_DRAW = 1
 
@@ -54,6 +56,11 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
             field = value
             invalidate()
         }
+
+    private val backgroundPaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+    }
+
     private val matrix = Matrix()
 
     init {
@@ -86,6 +93,11 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
         } else {
             invalidate()
         }
+    }
+
+    fun setBackgroundColor(backgroundColor: Int) {
+        backgroundPaint.color = backgroundColor
+        invalidate()
     }
 
     fun setWallpaperStatus(wallpaperStatus: WallpaperStatus) {
@@ -172,7 +184,7 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
 
     private fun drawGif(canvas: Canvas, gif: Gif) {
         canvas.clipRect(canvasRect)
-        canvas.drawRect(canvasRect, gif.backgroundPaint)
+        canvas.drawRect(canvasRect, backgroundPaint)
 
         canvas.withMatrix(matrix) {
             gif.drawable.draw(this)

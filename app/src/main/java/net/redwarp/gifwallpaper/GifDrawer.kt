@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.data.WallpaperStatus
+import net.redwarp.gifwallpaper.utils.MatrixEvaluator
 import net.redwarp.gifwallpaper.utils.setCenterCropRectInRect
 import net.redwarp.gifwallpaper.utils.setCenterRectInRect
 
@@ -121,8 +122,10 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onPause() {
         matrixAnimator?.cancel()
-        gif?.drawable?.callback = null
-        gif?.animatable?.stop()
+        gif?.let { gif ->
+            gif.drawable.callback = null
+            gif.animatable.stop()
+        }
         handler.removeMessages(MESSAGE_DRAW)
     }
 
@@ -153,8 +156,10 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
         matrixAnimator?.cancel()
         handler.removeMessages(MESSAGE_DRAW)
         computeMatrix(matrix, scaleType, canvasRect, gifRect)
+
         gif?.drawable?.callback = drawableCallback
         gif?.animatable?.start()
+
         handler.sendMessage(getDrawMessage(gif))
     }
 
@@ -229,6 +234,7 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
     private val drawableCallback = object : Drawable.Callback {
         override fun unscheduleDrawable(who: Drawable, what: Runnable) {
             // Nothing to do.
+            handler.removeMessages(MESSAGE_DRAW)
         }
 
         override fun invalidateDrawable(who: Drawable) {

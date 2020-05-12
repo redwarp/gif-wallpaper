@@ -48,10 +48,12 @@ internal class WallpaperLiveData(private val context: Context) :
         storeCurrentWallpaperUri(context, null)
         currentUri = null
         localUri = null
+        System.gc()
     }
 
     private fun loadInitialValue() {
         val uri: Uri? = loadCurrentWallpaperUri(context)
+        localUri = uri
         if (uri == null) {
             postValue(WallpaperStatus.NotSet)
         } else {
@@ -82,8 +84,10 @@ internal class WallpaperLiveData(private val context: Context) :
 
     private fun cleanupOldUri(uri: Uri?) {
         val path = uri?.path ?: return
-
-        File(path).delete()
+        val file = File(path)
+        if (file.exists()) {
+            file.delete()
+        }
     }
 }
 

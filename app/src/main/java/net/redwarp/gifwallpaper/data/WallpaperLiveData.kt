@@ -3,12 +3,14 @@ package net.redwarp.gifwallpaper.data
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.redwarp.gifwallpaper.utils.FileUtils
+import net.redwarp.gifwallpaper.TAG
+import net.redwarp.gifwallpaper.util.FileUtils
 
 internal class WallpaperLiveData(private val context: Context) :
     LiveData<WallpaperStatus>() {
@@ -87,7 +89,7 @@ internal class WallpaperLiveData(private val context: Context) :
         val path = uri?.path ?: return
         val file = File(path)
         if (file.exists()) {
-            file.delete()
+            file.delete().also { Log.d(TAG, "File deleted: $it") }
         }
     }
 }

@@ -15,4 +15,6 @@
     <string name="about">About</string>
     <string name="change_color">Change color</string>
     <string name="clear_gif">Clear gif</string>
+    <string name="click_the_open_gif_button">Click the Open GIF button</string>
+    <string name="loading">Loading…</string>
 </resources>

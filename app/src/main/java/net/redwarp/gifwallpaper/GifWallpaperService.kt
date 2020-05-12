@@ -8,6 +8,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
 import net.redwarp.gifwallpaper.data.Model
+import net.redwarp.gifwallpaper.renderer.RenderCallback
+import net.redwarp.gifwallpaper.renderer.Renderer
+import net.redwarp.gifwallpaper.renderer.RendererMapper
 
 class GifWallpaperService : WallpaperService(), LifecycleOwner {
     private lateinit var lifecycleRegistry: LifecycleRegistry
@@ -30,25 +33,21 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
     }
 
     inner class GifEngine : Engine() {
-        var gifDrawer: GifDrawer? = null
+        private var renderCallback: RenderCallback? = null
 
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
 
-            gifDrawer =
-                GifDrawer(this@GifWallpaperService, surfaceHolder).also(lifecycle::addObserver)
-
-            Model.get(this@GifWallpaperService).apply {
-                wallpaperStatus.observe(this@GifWallpaperService, Observer { status ->
-                    gifDrawer?.setWallpaperStatus(status)
+            renderCallback = RenderCallback(surfaceHolder).also(lifecycle::addObserver)
+            RendererMapper(
+                model = Model.get(this@GifWallpaperService),
+                surfaceHolder = surfaceHolder,
+                animated = false
+            ).observe(
+                this@GifWallpaperService,
+                Observer { renderer: Renderer ->
+                    renderCallback?.renderer = renderer
                 })
-                scaleTypeData.observe(this@GifWallpaperService, Observer { scaleType ->
-                    gifDrawer?.setScaleType(scaleType, animated = false)
-                })
-                backgroundColorData.observe(this@GifWallpaperService, Observer { color ->
-                    gifDrawer?.setBackgroundColor(color)
-                })
-            }
         }
 
         override fun onVisibilityChanged(visible: Boolean) {

@@ -1,5 +1,5 @@
 /* Licensed under Apache-2.0 */
-package net.redwarp.gifwallpaper.utils
+package net.redwarp.gifwallpaper.util
 
 import android.animation.FloatArrayEvaluator
 import android.animation.TypeEvaluator

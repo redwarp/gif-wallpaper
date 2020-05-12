@@ -19,14 +19,18 @@ import kotlinx.android.synthetic.main.activity_setup.*
 import kotlinx.android.synthetic.main.fragment_setup.*
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.Model
-import net.redwarp.gifwallpaper.utils.isDark
-import net.redwarp.gifwallpaper.utils.themeColor
+import net.redwarp.gifwallpaper.renderer.RenderCallback
+import net.redwarp.gifwallpaper.renderer.Renderer
+import net.redwarp.gifwallpaper.renderer.RendererMapper
+import net.redwarp.gifwallpaper.renderer.WallpaperRenderer
+import net.redwarp.gifwallpaper.util.isDark
+import net.redwarp.gifwallpaper.util.themeColor
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 class SetupFragment : Fragment() {
-    private var gifDrawer: GifDrawer? = null
+    private var renderCallback: RenderCallback? = null
     private var currentScale = 0
     private lateinit var model: Model
     private var colorInfo: ColorScheme? = null
@@ -62,23 +66,29 @@ class SetupFragment : Fragment() {
             changeColor()
         }
 
-        gifDrawer = GifDrawer(requireContext(), surface_view.holder).also(lifecycle::addObserver)
+        renderCallback = RenderCallback(surface_view.holder).also(lifecycle::addObserver)
 
         model = Model.get(requireContext())
-        model.wallpaperStatus.observe(viewLifecycleOwner, Observer { status ->
-            gifDrawer?.setWallpaperStatus(status)
-        })
-        model.scaleTypeData.observe(viewLifecycleOwner, Observer { scaleType ->
-            gifDrawer?.setScaleType(scaleType, animated = true)
-        })
+        RendererMapper(
+            model = model,
+            surfaceHolder = surface_view.holder,
+            animated = true
+        ).observe(
+            viewLifecycleOwner,
+            Observer { renderer: Renderer ->
+                renderCallback?.renderer = renderer
+            })
+
         model.colorInfoData.observe(viewLifecycleOwner, Observer { colorStatus ->
             colorInfo = colorStatus as? ColorScheme
             change_color_button.isEnabled = colorStatus is ColorScheme
         })
         model.backgroundColorData.observe(viewLifecycleOwner, Observer {
             currentColor = it
-            gifDrawer?.setBackgroundColor(it)
             adjustTheme(it)
+        })
+        model.scaleTypeData.observe(viewLifecycleOwner, Observer {
+            currentScale = it.ordinal
         })
     }
 
@@ -118,8 +128,8 @@ class SetupFragment : Fragment() {
     }
 
     private fun changeScale() {
-        currentScale = (currentScale + 1) % GifDrawer.ScaleType.values().size
-        model.setScaleType(GifDrawer.ScaleType.values()[currentScale])
+        currentScale = (currentScale + 1) % WallpaperRenderer.ScaleType.values().size
+        model.setScaleType(WallpaperRenderer.ScaleType.values()[currentScale])
     }
 
     private fun changeColor() {

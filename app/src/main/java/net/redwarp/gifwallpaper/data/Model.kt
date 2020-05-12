@@ -7,14 +7,14 @@ import android.net.Uri
 import androidx.annotation.ColorInt
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import net.redwarp.gifwallpaper.GifDrawer
+import net.redwarp.gifwallpaper.renderer.WallpaperRenderer
 
 internal const val SHARED_PREF_NAME = "wallpaper_pref"
 internal const val KEY_WALLPAPER_URI = "wallpaper_uri"
 internal const val KEY_WALLPAPER_SCALE_TYPE = "wallpaper_scale_type"
 internal const val KEY_WALLPAPER_BACKGROUND_COLOR = "wallpaper_background_color"
 
-class Model private constructor(context: Context) {
+class Model private constructor(val context: Context) {
     private val _wallpaperStatus =
         WallpaperLiveData(context)
     private val _scaleTypeData =
@@ -22,7 +22,7 @@ class Model private constructor(context: Context) {
     private val _backgroundColorData = MediatorLiveData<Int>()
 
     val wallpaperStatus: LiveData<WallpaperStatus> get() = _wallpaperStatus
-    val scaleTypeData: LiveData<GifDrawer.ScaleType> get() = _scaleTypeData
+    val scaleTypeData: LiveData<WallpaperRenderer.ScaleType> get() = _scaleTypeData
     val colorInfoData: LiveData<ColorInfo> = ColorLiveData(context, wallpaperStatus)
     val backgroundColorData: LiveData<Int> get() = _backgroundColorData
 
@@ -70,7 +70,7 @@ class Model private constructor(context: Context) {
         _wallpaperStatus.clearGif()
     }
 
-    fun setScaleType(scaleType: GifDrawer.ScaleType) {
+    fun setScaleType(scaleType: WallpaperRenderer.ScaleType) {
         _scaleTypeData.setScaleType(scaleType)
     }
 
@@ -78,7 +78,7 @@ class Model private constructor(context: Context) {
         _backgroundColorData.postValue(color)
     }
 
-    private class ScaleTypeData(private val context: Context) : LiveData<GifDrawer.ScaleType>() {
+    private class ScaleTypeData(private val context: Context) : LiveData<WallpaperRenderer.ScaleType>() {
         init {
             loadInitialValue()
         }
@@ -87,20 +87,20 @@ class Model private constructor(context: Context) {
             postValue(loadCurrentScaleType(context))
         }
 
-        private fun loadCurrentScaleType(context: Context): GifDrawer.ScaleType {
+        private fun loadCurrentScaleType(context: Context): WallpaperRenderer.ScaleType {
             val sharedPreferences =
                 context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
             val scaleTypeOrdinal = sharedPreferences.getInt(KEY_WALLPAPER_SCALE_TYPE, 0)
-            return GifDrawer.ScaleType.values()[scaleTypeOrdinal]
+            return WallpaperRenderer.ScaleType.values()[scaleTypeOrdinal]
         }
 
-        private fun storeCurrentScaleType(context: Context, scaleType: GifDrawer.ScaleType) {
+        private fun storeCurrentScaleType(context: Context, scaleType: WallpaperRenderer.ScaleType) {
             val sharedPreferences =
                 context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
             sharedPreferences.edit().putInt(KEY_WALLPAPER_SCALE_TYPE, scaleType.ordinal).apply()
         }
 
-        fun setScaleType(scaleType: GifDrawer.ScaleType) {
+        fun setScaleType(scaleType: WallpaperRenderer.ScaleType) {
             storeCurrentScaleType(context, scaleType)
             postValue(scaleType)
         }

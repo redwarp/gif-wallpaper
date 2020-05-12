@@ -1,8 +1,7 @@
 /* Licensed under Apache-2.0 */
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.renderer
 
 import android.animation.ValueAnimator
-import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
@@ -18,74 +17,41 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.graphics.withMatrix
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import net.redwarp.gifwallpaper.data.WallpaperStatus
-import net.redwarp.gifwallpaper.utils.MatrixEvaluator
-import net.redwarp.gifwallpaper.utils.setCenterCropRectInRect
-import net.redwarp.gifwallpaper.utils.setCenterRectInRect
+import net.redwarp.gifwallpaper.Gif
+import net.redwarp.gifwallpaper.util.MatrixEvaluator
+import net.redwarp.gifwallpaper.util.setCenterCropRectInRect
+import net.redwarp.gifwallpaper.util.setCenterRectInRect
 
 private const val MESSAGE_DRAW = 1
 
-class GifDrawer(private val context: Context, private val holder: SurfaceHolder) :
-    SurfaceHolder.Callback2, LifecycleObserver {
-    private var scaleType: ScaleType = ScaleType.FIT_CENTER
+class WallpaperRenderer(
+    private var holder: SurfaceHolder?,
+    private val gif: Gif,
+    private var scaleType: ScaleType = ScaleType.FIT_CENTER,
+    backgroundColor: Int = Color.BLACK
+) : Renderer {
 
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
     private val gifRect = RectF(0f, 0f, 0f, 0f)
-    private val emptyPaint = Paint().apply {
-        color = Color.GREEN
-        style = Paint.Style.FILL
-    }
-    private var isCreated = false
-    private val handler: Handler = DrawHandler(this)
+    private val handler: Handler =
+        DrawHandler(this)
     private var matrixAnimator: ValueAnimator? = null
 
-    var gif: Gif? = null
-        set(value) {
-            field?.cleanup()
-
-            if (value == null) {
-                gifRect.set(0f, 0f, 0f, 0f)
-            } else {
-                gifRect.right = value.drawable.intrinsicWidth.toFloat()
-                gifRect.bottom = value.drawable.intrinsicHeight.toFloat()
-            }
-            field = value
-            invalidate()
-        }
+    init {
+        gifRect.right = gif.drawable.intrinsicWidth.toFloat()
+        gifRect.bottom = gif.drawable.intrinsicHeight.toFloat()
+    }
 
     private val backgroundPaint: Paint = Paint().apply {
         style = Paint.Style.FILL
+        color = backgroundColor
     }
 
     private val matrix = Matrix()
 
-    init {
-        holder.addCallback(this)
-    }
-
-    override fun surfaceRedrawNeeded(holder: SurfaceHolder) {
-        invalidate()
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        canvasRect.right = width.toFloat()
-        canvasRect.bottom = height.toFloat()
-
-        surfaceRedrawNeeded(holder)
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-        isCreated = false
-    }
-
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        isCreated = true
+    override fun setSize(width: Float, height: Float) {
+        canvasRect.right = width
+        canvasRect.bottom = height
     }
 
     fun setScaleType(scaleType: ScaleType, animated: Boolean) {
@@ -102,31 +68,16 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
         invalidate()
     }
 
-    fun setWallpaperStatus(wallpaperStatus: WallpaperStatus) {
-        when (wallpaperStatus) {
-            WallpaperStatus.NotSet -> {
-                gif = null
-            }
-            is WallpaperStatus.Wallpaper -> {
-                CoroutineScope(Dispatchers.Main).launch {
-                    gif = Gif.loadGif(context, wallpaperStatus.uri)
-                }
-            }
-        }
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onResume() {
+    override fun onResume() {
         invalidate()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onPause() {
+    override fun onPause() {
         matrixAnimator?.cancel()
-        gif?.let { gif ->
-            gif.drawable.callback = null
-            gif.animatable.stop()
-        }
+
+        gif.drawable.callback = null
+        gif.animatable.stop()
+
         handler.removeMessages(MESSAGE_DRAW)
     }
 
@@ -149,46 +100,45 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
                 matrix.setCenterRectInRect(gifRect, canvasRect)
             ScaleType.CENTER_CROP ->
                 matrix.setCenterCropRectInRect(gifRect, canvasRect)
-            else -> Unit
         }
     }
 
-    private fun invalidate() {
+    override fun invalidate() {
         matrixAnimator?.cancel()
         handler.removeMessages(MESSAGE_DRAW)
         computeMatrix(matrix, scaleType, canvasRect, gifRect)
 
-        gif?.drawable?.callback = drawableCallback
-        gif?.animatable?.start()
+        gif.drawable.callback = drawableCallback
+        gif.animatable.start()
 
-        handler.sendMessage(getDrawMessage(gif))
+        handler.sendMessage(getDrawMessage())
     }
 
-    private fun draw(gif: Gif?) {
-        if (!isCreated || gif != this.gif) {
-            return
-        }
-
-        val canvas = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            holder.lockHardwareCanvas()
-        } else {
-            holder.lockCanvas()
-        }
-
-        draw(canvas, gif)
-
-        holder.unlockCanvasAndPost(canvas)
+    override fun onCreate(surfaceHolder: SurfaceHolder) {
+        holder = surfaceHolder
+        invalidate()
     }
 
-    private fun draw(canvas: Canvas, gif: Gif?) {
-        if (gif == null) {
-            drawEmptySurface(canvas)
-        } else {
-            drawGif(canvas, gif)
+    override fun onDestroy() {
+        holder = null
+        onPause()
+    }
+
+    private fun draw() {
+        holder?.let { holder ->
+            val canvas = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                holder.lockHardwareCanvas()
+            } else {
+                holder.lockCanvas()
+            }
+
+            draw(canvas, gif)
+
+            holder.unlockCanvasAndPost(canvas)
         }
     }
 
-    private fun drawGif(canvas: Canvas, gif: Gif) {
+    private fun draw(canvas: Canvas, gif: Gif) {
         canvas.clipRect(canvasRect)
         canvas.drawRect(canvasRect, backgroundPaint)
 
@@ -197,12 +147,11 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
         }
     }
 
-    private fun drawEmptySurface(canvas: Canvas) {
-        canvas.drawRect(canvasRect, emptyPaint)
-    }
-
-    private fun getDrawMessage(gif: Gif?): Message {
-        return Message.obtain(handler, MESSAGE_DRAW, gif)
+    private fun getDrawMessage(): Message {
+        return Message.obtain(
+            handler,
+            MESSAGE_DRAW
+        )
     }
 
     private fun transformMatrix(scaleType: ScaleType) {
@@ -218,12 +167,12 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
             targetMatrix
         ).apply {
             addUpdateListener { _ ->
-                draw(gif)
+                draw()
             }
             interpolator = AccelerateDecelerateInterpolator()
             duration = 500
             doOnStart {
-                gif?.drawable?.callback = null
+                gif.drawable.callback = null
             }
             doOnEnd {
                 invalidate()
@@ -239,20 +188,20 @@ class GifDrawer(private val context: Context, private val holder: SurfaceHolder)
         }
 
         override fun invalidateDrawable(who: Drawable) {
-            handler.sendMessage(getDrawMessage(gif))
+            handler.sendMessage(getDrawMessage())
         }
 
         override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) {
-            handler.sendMessageAtTime(getDrawMessage(gif), `when`)
+            handler.removeMessages(MESSAGE_DRAW)
+            handler.sendMessageAtTime(getDrawMessage(), `when`)
         }
     }
 
-    private class DrawHandler(private val gifDrawer: GifDrawer) : Handler(Looper.getMainLooper()) {
+    private class DrawHandler(private val wallpaperRenderer: WallpaperRenderer) :
+        Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             if (msg.what == MESSAGE_DRAW) {
-                val gif = msg.obj as? Gif?
-
-                gifDrawer.draw(gif)
+                wallpaperRenderer.draw()
             }
         }
     }

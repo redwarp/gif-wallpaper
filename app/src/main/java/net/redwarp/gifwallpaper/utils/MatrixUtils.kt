@@ -1,3 +1,4 @@
+/* Licensed under Apache-2.0 */
 package net.redwarp.gifwallpaper.utils
 
 import android.graphics.Matrix

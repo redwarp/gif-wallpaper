@@ -39,7 +39,7 @@ android {
 spotless {
     kotlin {
         target project.fileTree(dir: 'src', include: '**/*.kt')
-        ktlint("0.36.0")
+        licenseHeader '/* Licensed under Apache-2.0 */'
     }
 }
 

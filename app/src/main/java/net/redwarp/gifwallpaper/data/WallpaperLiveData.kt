@@ -1,3 +1,4 @@
+/* Licensed under Apache-2.0 */
 package net.redwarp.gifwallpaper.data
 
 import android.content.Context

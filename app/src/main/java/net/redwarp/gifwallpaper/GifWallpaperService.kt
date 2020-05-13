@@ -1,6 +1,7 @@
 /* Licensed under Apache-2.0 */
 package net.redwarp.gifwallpaper
 
+import android.os.HandlerThread
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import androidx.lifecycle.Lifecycle
@@ -34,11 +35,14 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
 
     inner class GifEngine : Engine() {
         private var renderCallback: RenderCallback? = null
+        private val handlerThread = HandlerThread("WallpaperLooper")
 
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
 
-            renderCallback = RenderCallback(surfaceHolder).also(lifecycle::addObserver)
+            handlerThread.start()
+
+            renderCallback = RenderCallback(surfaceHolder, handlerThread.looper).also(lifecycle::addObserver)
             RendererMapper(
                 model = Model.get(this@GifWallpaperService),
                 surfaceHolder = surfaceHolder,
@@ -48,6 +52,11 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
                 Observer { renderer: Renderer ->
                     renderCallback?.renderer = renderer
                 })
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            handlerThread.quit()
         }
 
         override fun onVisibilityChanged(visible: Boolean) {

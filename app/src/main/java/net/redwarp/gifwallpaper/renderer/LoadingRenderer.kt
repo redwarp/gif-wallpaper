@@ -27,10 +27,15 @@ class LoadingRenderer(context: Context, private var holder: SurfaceHolder?) : Re
     }
     private val promptText = context.getText(R.string.loading).toString()
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
-    private val handler = Handler(Looper.getMainLooper())
+    private var handler: Handler? = null
+    override var looper: Looper? = null
+        set(value) {
+            field = value
+            handler = Handler(looper)
+        }
 
     override fun invalidate() {
-        handler.post {
+        handler?.post {
             draw()
         }
     }

@@ -1,18 +1,21 @@
 /* Licensed under Apache-2.0 */
 package net.redwarp.gifwallpaper.renderer
 
+import android.os.Looper
 import android.view.SurfaceHolder
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 
-class RenderCallback(surfaceHolder: SurfaceHolder) : SurfaceHolder.Callback2, LifecycleObserver {
+class RenderCallback(surfaceHolder: SurfaceHolder, val looper: Looper) : SurfaceHolder.Callback2,
+    LifecycleObserver {
     private val size: Size = Size(0f, 0f)
     var renderer: Renderer? = null
         set(value) {
             field?.onDestroy()
             field = value
             value?.let { renderer ->
+                renderer.looper = looper
                 renderer.setSize(size.width, size.height)
                 renderer.invalidate()
             }

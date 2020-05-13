@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -66,7 +67,8 @@ class SetupFragment : Fragment() {
             changeColor()
         }
 
-        renderCallback = RenderCallback(surface_view.holder).also(lifecycle::addObserver)
+        renderCallback =
+            RenderCallback(surface_view.holder, Looper.getMainLooper()).also(lifecycle::addObserver)
 
         model = Model.get(requireContext())
         RendererMapper(

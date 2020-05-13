@@ -33,9 +33,13 @@ class WallpaperRenderer(
 
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
     private val gifRect = RectF(0f, 0f, 0f, 0f)
-    private val handler: Handler =
-        DrawHandler(this)
     private var matrixAnimator: ValueAnimator? = null
+    private var handler: DrawHandler? = null
+    override var looper: Looper? = null
+        set(value) {
+            field = value
+            value?.let { handler = DrawHandler(it, this) }
+        }
 
     init {
         gifRect.right = gif.drawable.intrinsicWidth.toFloat()
@@ -78,7 +82,7 @@ class WallpaperRenderer(
         gif.drawable.callback = null
         gif.animatable.stop()
 
-        handler.removeMessages(MESSAGE_DRAW)
+        handler?.cancelDraw()
     }
 
     private fun computeMatrix(
@@ -105,13 +109,13 @@ class WallpaperRenderer(
 
     override fun invalidate() {
         matrixAnimator?.cancel()
-        handler.removeMessages(MESSAGE_DRAW)
+        handler?.cancelDraw()
         computeMatrix(matrix, scaleType, canvasRect, gifRect)
 
         gif.drawable.callback = drawableCallback
         gif.animatable.start()
 
-        handler.sendMessage(getDrawMessage())
+        handler?.requestDraw()
     }
 
     override fun onCreate(surfaceHolder: SurfaceHolder) {
@@ -120,8 +124,8 @@ class WallpaperRenderer(
     }
 
     override fun onDestroy() {
-        holder = null
         onPause()
+        holder = null
     }
 
     private fun draw() {
@@ -167,7 +171,7 @@ class WallpaperRenderer(
             targetMatrix
         ).apply {
             addUpdateListener { _ ->
-                draw()
+                handler?.requestDraw()
             }
             interpolator = AccelerateDecelerateInterpolator()
             duration = 500
@@ -183,22 +187,35 @@ class WallpaperRenderer(
 
     private val drawableCallback = object : Drawable.Callback {
         override fun unscheduleDrawable(who: Drawable, what: Runnable) {
-            // Nothing to do.
-            handler.removeMessages(MESSAGE_DRAW)
+            handler?.cancelDraw()
         }
 
         override fun invalidateDrawable(who: Drawable) {
-            handler.sendMessage(getDrawMessage())
+            handler?.requestDraw()
         }
 
         override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) {
-            handler.removeMessages(MESSAGE_DRAW)
-            handler.sendMessageAtTime(getDrawMessage(), `when`)
+            handler?.requestDrawAtTime(`when`)
         }
     }
 
-    private class DrawHandler(private val wallpaperRenderer: WallpaperRenderer) :
-        Handler(Looper.getMainLooper()) {
+    private class DrawHandler(looper: Looper, private val wallpaperRenderer: WallpaperRenderer) :
+        Handler(looper) {
+
+        fun cancelDraw() {
+            removeMessages(MESSAGE_DRAW)
+        }
+
+        fun requestDraw() {
+            if (hasMessages(MESSAGE_DRAW)) return
+            sendMessage(Message.obtain(this, MESSAGE_DRAW))
+        }
+
+        fun requestDrawAtTime(time: Long) {
+            removeMessages(MESSAGE_DRAW)
+            sendMessageAtTime(Message.obtain(this, MESSAGE_DRAW), time)
+        }
+
         override fun handleMessage(msg: Message) {
             if (msg.what == MESSAGE_DRAW) {
                 wallpaperRenderer.draw()

@@ -1,0 +1,20 @@
+name: Release to Play Store
+
+on:
+  push:
+
+jobs:
+  gradle:
+    runs-on: ubunto-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build with Gradle
+        run: ./gradlew bundleRelease
+      - name: Sign Android release
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.SIGNING_ALIAS }}
+          keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}

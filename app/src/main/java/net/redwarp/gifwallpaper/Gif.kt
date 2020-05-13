@@ -9,8 +9,11 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.bumptech.glide.Glide
+import com.bumptech.glide.load.Options
+import com.bumptech.glide.load.resource.gif.ByteBufferGifDecoder
 import com.bumptech.glide.load.resource.gif.GifDrawable
+import com.bumptech.glide.request.target.Target
+import java.nio.ByteBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -25,45 +28,42 @@ class Gif private constructor(gif: Any) {
         drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
     }
 
-    fun cleanup() {
-        drawable.callback = null
-        animatable.stop()
-    }
-
     companion object {
         suspend fun loadGif(context: Context, uri: Uri): Gif? {
-            try {
-                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    Gif(getAnimatedImageDrawable(context, uri) ?: return null)
-                } else {
-                    Gif(getGifDrawable(context, uri) ?: return null)
+            return withContext(Dispatchers.IO) {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        Gif(getAnimatedImageDrawable(context, uri) ?: return@withContext null)
+                    } else {
+                        Gif(getGifDrawable(context, uri) ?: return@withContext null)
+                    }
+                } catch (exception: java.lang.Exception) {
+                    null
                 }
-            } catch (exception: java.lang.Exception) {
-                return null
             }
         }
 
         @RequiresApi(Build.VERSION_CODES.P)
-        private suspend fun getAnimatedImageDrawable(
+        private fun getAnimatedImageDrawable(
             context: Context,
             uri: Uri
         ): AnimatedImageDrawable? {
-            return withContext(Dispatchers.IO) {
-                ImageDecoder.decodeDrawable(
-                    ImageDecoder.createSource(context.contentResolver, uri)
-                ) as? AnimatedImageDrawable
-            }
+            return ImageDecoder.decodeDrawable(
+                ImageDecoder.createSource(context.contentResolver, uri)
+            ) as? AnimatedImageDrawable
         }
 
-        private suspend fun getGifDrawable(context: Context, uri: Uri): GifDrawable? {
-            return withContext(Dispatchers.IO) {
-                try {
-                    Glide.with(context).asGif()
-                        .load(uri).submit().get()
-                } catch (exception: Exception) {
-                    null
-                }
-            }
+        private fun getGifDrawable(context: Context, uri: Uri): GifDrawable? {
+            val buffer = context.contentResolver.openInputStream(uri)?.use {
+                ByteBuffer.wrap(it.readBytes())
+            } ?: return null
+
+            return ByteBufferGifDecoder(context).decode(
+                buffer,
+                Target.SIZE_ORIGINAL,
+                Target.SIZE_ORIGINAL,
+                Options()
+            )?.get()
         }
     }
 }

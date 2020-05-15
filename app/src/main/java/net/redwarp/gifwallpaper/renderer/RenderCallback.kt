@@ -7,17 +7,19 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 
-class RenderCallback(surfaceHolder: SurfaceHolder, val looper: Looper) : SurfaceHolder.Callback2,
-    LifecycleObserver {
+class RenderCallback(private val surfaceHolder: SurfaceHolder, private val looper: Looper) :
+    SurfaceHolder.Callback2, LifecycleObserver {
     private val size: Size = Size(0f, 0f)
+    private var isCreated = false
+
     var renderer: Renderer? = null
         set(value) {
             field?.onDestroy()
             field = value
             value?.let { renderer ->
-                renderer.looper = looper
                 renderer.setSize(size.width, size.height)
                 renderer.invalidate()
+                if (isCreated) renderer.onCreate(surfaceHolder, looper)
             }
         }
 
@@ -37,11 +39,13 @@ class RenderCallback(surfaceHolder: SurfaceHolder, val looper: Looper) : Surface
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
+        isCreated = false
         renderer?.onDestroy()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
-        renderer?.onCreate(holder)
+        isCreated = true
+        renderer?.onCreate(holder, looper)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)

@@ -35,11 +35,6 @@ class WallpaperRenderer(
     private val gifRect = RectF(0f, 0f, 0f, 0f)
     private var matrixAnimator: ValueAnimator? = null
     private var handler: DrawHandler? = null
-    override var looper: Looper? = null
-        set(value) {
-            field = value
-            value?.let { handler = DrawHandler(it, this) }
-        }
 
     init {
         gifRect.right = gif.drawable.intrinsicWidth.toFloat()
@@ -118,8 +113,9 @@ class WallpaperRenderer(
         handler?.requestDraw()
     }
 
-    override fun onCreate(surfaceHolder: SurfaceHolder) {
+    override fun onCreate(surfaceHolder: SurfaceHolder, looper: Looper) {
         holder = surfaceHolder
+        handler = DrawHandler(looper, this)
         invalidate()
     }
 
@@ -149,13 +145,6 @@ class WallpaperRenderer(
         canvas.withMatrix(matrix) {
             gif.drawable.draw(this)
         }
-    }
-
-    private fun getDrawMessage(): Message {
-        return Message.obtain(
-            handler,
-            MESSAGE_DRAW
-        )
     }
 
     private fun transformMatrix(scaleType: ScaleType) {

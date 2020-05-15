@@ -28,11 +28,6 @@ class LoadingRenderer(context: Context, private var holder: SurfaceHolder?) : Re
     private val promptText = context.getText(R.string.loading).toString()
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
     private var handler: Handler? = null
-    override var looper: Looper? = null
-        set(value) {
-            field = value
-            handler = Handler(looper)
-        }
 
     override fun invalidate() {
         handler?.post {
@@ -73,10 +68,12 @@ class LoadingRenderer(context: Context, private var holder: SurfaceHolder?) : Re
 
     override fun onDestroy() {
         holder = null
+        handler = null
     }
 
-    override fun onCreate(surfaceHolder: SurfaceHolder) {
+    override fun onCreate(surfaceHolder: SurfaceHolder, looper: Looper) {
         holder = surfaceHolder
+        handler = Handler(looper)
         invalidate()
     }
 }

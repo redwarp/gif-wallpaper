@@ -28,13 +28,6 @@ class NotSetRenderer(context: Context, private var holder: SurfaceHolder?) : Ren
     private val promptText = context.getText(R.string.click_the_open_gif_button).toString()
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
     private var handler: Handler? = null
-    override var looper: Looper? = null
-        set(value) {
-            field = value
-            value?.let {
-                handler = Handler(looper)
-            }
-        }
 
     override fun invalidate() {
         handler?.post {
@@ -75,10 +68,12 @@ class NotSetRenderer(context: Context, private var holder: SurfaceHolder?) : Ren
 
     override fun onDestroy() {
         holder = null
+        handler = null
     }
 
-    override fun onCreate(surfaceHolder: SurfaceHolder) {
+    override fun onCreate(surfaceHolder: SurfaceHolder, looper: Looper) {
         holder = surfaceHolder
+        handler = Handler(looper)
         invalidate()
     }
 }

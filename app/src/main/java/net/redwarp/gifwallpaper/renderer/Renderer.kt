@@ -5,8 +5,7 @@ import android.os.Looper
 import android.view.SurfaceHolder
 
 interface Renderer {
-    var looper: Looper?
-    fun onCreate(surfaceHolder: SurfaceHolder)
+    fun onCreate(surfaceHolder: SurfaceHolder, looper: Looper)
     fun onDestroy()
     fun invalidate()
     fun setSize(width: Float, height: Float)

@@ -173,6 +173,7 @@ class SetupFragment : Fragment() {
         when (item.itemId) {
             R.id.clear_gif -> {
                 model.clearGif()
+                model.setBackgroundColor(Color.BLACK)
                 return true
             }
         }

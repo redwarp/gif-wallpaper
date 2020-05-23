@@ -33,6 +33,7 @@ import net.redwarp.gifwallpaper.util.themeColor
 class SetupFragment : Fragment() {
     private var renderCallback: RenderCallback? = null
     private var currentScale = 0
+    private var currentRotation = 0
     private lateinit var model: Model
     private var colorInfo: ColorScheme? = null
         set(value) {
@@ -66,6 +67,9 @@ class SetupFragment : Fragment() {
         change_color_button.setOnClickListener {
             changeColor()
         }
+        rotate_button.setOnClickListener {
+            rotate()
+        }
 
         renderCallback =
             RenderCallback(surface_view.holder, Looper.getMainLooper()).also(lifecycle::addObserver)
@@ -91,6 +95,9 @@ class SetupFragment : Fragment() {
         })
         model.scaleTypeData.observe(viewLifecycleOwner, Observer {
             currentScale = it.ordinal
+        })
+        model.rotationData.observe(viewLifecycleOwner, Observer {
+            currentRotation = it.ordinal
         })
     }
 
@@ -155,6 +162,11 @@ class SetupFragment : Fragment() {
         }
     }
 
+    private fun rotate() {
+        currentRotation = (currentRotation + 1) % WallpaperRenderer.Rotation.values().size
+        model.setRotation(WallpaperRenderer.Rotation.values()[currentRotation])
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -174,6 +186,7 @@ class SetupFragment : Fragment() {
             R.id.clear_gif -> {
                 model.clearGif()
                 model.setBackgroundColor(Color.BLACK)
+                model.setRotation(WallpaperRenderer.Rotation.NORTH)
                 return true
             }
         }

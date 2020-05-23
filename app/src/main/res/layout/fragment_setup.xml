@@ -25,15 +25,24 @@
         app:layout_constraintEnd_toStartOf="@+id/change_scale_button"
         app:layout_constraintStart_toStartOf="parent" />
 
-
     <Button
         android:id="@+id/change_scale_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/change_scale"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/change_color_button"
+        app:layout_constraintEnd_toStartOf="@+id/rotate_button"
         app:layout_constraintStart_toEndOf="@+id/open_gif_button" />
+
+
+    <Button
+        android:id="@+id/rotate_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/rotate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/change_color_button"
+        app:layout_constraintStart_toEndOf="@+id/change_scale_button" />
 
     <Button
         android:id="@+id/change_color_button"
@@ -43,5 +52,5 @@
         android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/change_scale_button" />
+        app:layout_constraintStart_toEndOf="@+id/rotate_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,16 +13,17 @@ internal const val SHARED_PREF_NAME = "wallpaper_pref"
 internal const val KEY_WALLPAPER_URI = "wallpaper_uri"
 internal const val KEY_WALLPAPER_SCALE_TYPE = "wallpaper_scale_type"
 internal const val KEY_WALLPAPER_BACKGROUND_COLOR = "wallpaper_background_color"
+internal const val KEY_WALLPAPER_ROTATION = "wallpaper_rotation"
 
 class Model private constructor(val context: Context) {
-    private val _wallpaperStatus =
-        WallpaperLiveData(context)
-    private val _scaleTypeData =
-        ScaleTypeData(context)
+    private val _wallpaperStatus = WallpaperLiveData(context)
+    private val _scaleTypeData = ScaleTypeData(context)
+    private val _rotationData = RotationData(context)
     private val _backgroundColorData = MediatorLiveData<Int>()
 
     val wallpaperStatus: LiveData<WallpaperStatus> get() = _wallpaperStatus
     val scaleTypeData: LiveData<WallpaperRenderer.ScaleType> get() = _scaleTypeData
+    val rotationData: LiveData<WallpaperRenderer.Rotation> get() = _rotationData
     val colorInfoData: LiveData<ColorInfo> = ColorLiveData(context, wallpaperStatus)
     val backgroundColorData: LiveData<Int> get() = _backgroundColorData
 
@@ -74,11 +75,16 @@ class Model private constructor(val context: Context) {
         _scaleTypeData.setScaleType(scaleType)
     }
 
+    fun setRotation(rotation: WallpaperRenderer.Rotation) {
+        _rotationData.setRotation(rotation)
+    }
+
     fun setBackgroundColor(@ColorInt color: Int) {
         _backgroundColorData.postValue(color)
     }
 
-    private class ScaleTypeData(private val context: Context) : LiveData<WallpaperRenderer.ScaleType>() {
+    private class ScaleTypeData(private val context: Context) :
+        LiveData<WallpaperRenderer.ScaleType>() {
         init {
             loadInitialValue()
         }
@@ -94,7 +100,10 @@ class Model private constructor(val context: Context) {
             return WallpaperRenderer.ScaleType.values()[scaleTypeOrdinal]
         }
 
-        private fun storeCurrentScaleType(context: Context, scaleType: WallpaperRenderer.ScaleType) {
+        private fun storeCurrentScaleType(
+            context: Context,
+            scaleType: WallpaperRenderer.ScaleType
+        ) {
             val sharedPreferences =
                 context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
             sharedPreferences.edit().putInt(KEY_WALLPAPER_SCALE_TYPE, scaleType.ordinal).apply()
@@ -103,6 +112,34 @@ class Model private constructor(val context: Context) {
         fun setScaleType(scaleType: WallpaperRenderer.ScaleType) {
             storeCurrentScaleType(context, scaleType)
             postValue(scaleType)
+        }
+    }
+
+    private class RotationData(private val context: Context) :
+        LiveData<WallpaperRenderer.Rotation>() {
+        init {
+            postValue(loadCurrentRotation(context))
+        }
+
+        private fun loadCurrentRotation(context: Context): WallpaperRenderer.Rotation {
+            val sharedPreferences =
+                context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+            val rotationOrdinal = sharedPreferences.getInt(KEY_WALLPAPER_ROTATION, 0)
+            return WallpaperRenderer.Rotation.values()[rotationOrdinal]
+        }
+
+        private fun storeCurrentRotation(
+            context: Context,
+            rotation: WallpaperRenderer.Rotation
+        ) {
+            val sharedPreferences =
+                context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+            sharedPreferences.edit().putInt(KEY_WALLPAPER_ROTATION, rotation.ordinal).apply()
+        }
+
+        fun setRotation(rotation: WallpaperRenderer.Rotation) {
+            storeCurrentRotation(context, rotation)
+            postValue(rotation)
         }
     }
 

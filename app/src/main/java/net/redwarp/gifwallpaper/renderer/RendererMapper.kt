@@ -28,8 +28,17 @@ class RendererMapper(
 
                         val scaleType =
                             model.scaleTypeData.value ?: WallpaperRenderer.ScaleType.FIT_CENTER
+                        val rotation = model.rotationData.value ?: WallpaperRenderer.Rotation.NORTH
                         val backgroundColor = model.backgroundColorData.value ?: Color.BLACK
-                        postValue(WallpaperRenderer(surfaceHolder, gif, scaleType, backgroundColor))
+                        postValue(
+                            WallpaperRenderer(
+                                surfaceHolder,
+                                gif,
+                                scaleType,
+                                rotation,
+                                backgroundColor
+                            )
+                        )
                     }
                 }
             }
@@ -39,6 +48,9 @@ class RendererMapper(
         }
         addSource(model.backgroundColorData) { backgroundColor ->
             (value as? WallpaperRenderer)?.setBackgroundColor(backgroundColor)
+        }
+        addSource(model.rotationData) { rotation ->
+            (value as? WallpaperRenderer)?.setRotation(rotation, animated)
         }
     }
 }

@@ -28,6 +28,7 @@ class WallpaperRenderer(
     private var holder: SurfaceHolder?,
     private val gif: Gif,
     private var scaleType: ScaleType = ScaleType.FIT_CENTER,
+    private var rotation: Rotation = Rotation.NORTH,
     backgroundColor: Int = Color.BLACK
 ) : Renderer {
 
@@ -56,7 +57,16 @@ class WallpaperRenderer(
     fun setScaleType(scaleType: ScaleType, animated: Boolean) {
         this.scaleType = scaleType
         if (animated) {
-            transformMatrix(scaleType)
+            transformMatrix(scaleType, rotation)
+        } else {
+            invalidate()
+        }
+    }
+
+    fun setRotation(rotation: Rotation, animated: Boolean) {
+        this.rotation = rotation
+        if (animated) {
+            transformMatrix(scaleType, rotation)
         } else {
             invalidate()
         }
@@ -83,6 +93,7 @@ class WallpaperRenderer(
     private fun computeMatrix(
         matrix: Matrix,
         scaleType: ScaleType,
+        rotation: Rotation,
         canvasRect: RectF,
         gifRect: RectF
     ) {
@@ -100,12 +111,20 @@ class WallpaperRenderer(
             ScaleType.CENTER_CROP ->
                 matrix.setCenterCropRectInRect(gifRect, canvasRect)
         }
+        val coordinates = floatArrayOf(gifRect.centerX(), gifRect.centerY())
+        matrix.mapPoints(coordinates)
+        matrix.postRotate(rotation.angle, coordinates[0], coordinates[1])
+
+        if (scaleType == ScaleType.FIT_CENTER && (rotation == Rotation.EAST || rotation == Rotation.WEST)) {
+            val scale = gifRect.width() / gifRect.height()
+            matrix.postScale(scale, scale, coordinates[0], coordinates[1])
+        }
     }
 
     override fun invalidate() {
         matrixAnimator?.cancel()
         handler?.cancelDraw()
-        computeMatrix(matrix, scaleType, canvasRect, gifRect)
+        computeMatrix(matrix, scaleType, rotation, canvasRect, gifRect)
 
         gif.drawable.callback = drawableCallback
         gif.animatable.start()
@@ -147,9 +166,9 @@ class WallpaperRenderer(
         }
     }
 
-    private fun transformMatrix(scaleType: ScaleType) {
+    private fun transformMatrix(scaleType: ScaleType, rotation: Rotation) {
         val targetMatrix = Matrix().also {
-            computeMatrix(it, scaleType, canvasRect, gifRect)
+            computeMatrix(it, scaleType, rotation, canvasRect, gifRect)
         }
         val sourceMatrix = Matrix(matrix)
 
@@ -214,5 +233,9 @@ class WallpaperRenderer(
 
     enum class ScaleType {
         FIT_CENTER, FIT_END, FIT_START, FIT_XY, CENTER, CENTER_CROP;
+    }
+
+    enum class Rotation(val angle: Float) {
+        NORTH(0f), EAST(90f), SOUTH(180f), WEST(270f)
     }
 }

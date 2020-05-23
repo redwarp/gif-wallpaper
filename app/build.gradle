@@ -2,7 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
-    id "com.diffplug.gradle.spotless" version "3.28.1"
+    id "com.diffplug.gradle.spotless" version "4.0.1"
+    id "com.github.ben-manes.versions" version "0.28.0"
 }
 
 android {
@@ -60,9 +61,23 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7'
     implementation 'androidx.lifecycle:lifecycle-service:2.2.0'
     implementation 'androidx.palette:palette:1.0.0'
     implementation "dev.sasikanth:colorsheet:1.0.1"
+}
+
+
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
+dependencyUpdates {
+    // Example 1: reject all non stable versions
+    rejectVersionIf {
+        isNonStable(it.candidate.version)
+    }
 }

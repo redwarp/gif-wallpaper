@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.activity_setup.*
 import kotlinx.android.synthetic.main.fragment_setup.*
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.Model
+import net.redwarp.gifwallpaper.data.WallpaperStatus
 import net.redwarp.gifwallpaper.renderer.RenderCallback
 import net.redwarp.gifwallpaper.renderer.Renderer
 import net.redwarp.gifwallpaper.renderer.RendererMapper
@@ -98,6 +99,11 @@ class SetupFragment : Fragment() {
         })
         model.rotationData.observe(viewLifecycleOwner, Observer {
             currentRotation = it.ordinal
+        })
+        model.wallpaperStatus.observe(viewLifecycleOwner, Observer {
+            val isWallpaperSet = it is WallpaperStatus.Wallpaper
+            change_scale_button.isEnabled = isWallpaperSet
+            rotate_button.isEnabled = isWallpaperSet
         })
     }
 
@@ -185,8 +191,6 @@ class SetupFragment : Fragment() {
         when (item.itemId) {
             R.id.clear_gif -> {
                 model.clearGif()
-                model.setBackgroundColor(Color.BLACK)
-                model.setRotation(WallpaperRenderer.Rotation.NORTH)
                 return true
             }
         }

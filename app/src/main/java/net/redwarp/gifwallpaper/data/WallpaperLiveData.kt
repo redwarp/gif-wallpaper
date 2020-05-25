@@ -51,7 +51,6 @@ internal class WallpaperLiveData(private val context: Context) :
         storeCurrentWallpaperUri(context, null)
         currentUri = null
         localUri = null
-        System.gc()
     }
 
     private fun loadInitialValue() {

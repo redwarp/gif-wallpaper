@@ -15,6 +15,7 @@ import net.redwarp.gifwallpaper.renderer.RendererMapper
 
 class GifWallpaperService : WallpaperService(), LifecycleOwner {
     private lateinit var lifecycleRegistry: LifecycleRegistry
+    private lateinit var rendererMapper: RendererMapper
 
     override fun onCreate() {
         super.onCreate()
@@ -42,16 +43,19 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
 
             handlerThread.start()
 
-            renderCallback = RenderCallback(surfaceHolder, handlerThread.looper).also(lifecycle::addObserver)
-            RendererMapper(
+            renderCallback =
+                RenderCallback(surfaceHolder, handlerThread.looper).also(lifecycle::addObserver)
+            rendererMapper = RendererMapper(
                 model = Model.get(this@GifWallpaperService),
                 surfaceHolder = surfaceHolder,
                 animated = false
-            ).observe(
-                this@GifWallpaperService,
-                Observer { renderer: Renderer ->
-                    renderCallback?.renderer = renderer
-                })
+            ).also {
+                it.observe(
+                    this@GifWallpaperService,
+                    Observer { renderer: Renderer ->
+                        renderCallback?.renderer = renderer
+                    })
+            }
         }
 
         override fun onDestroy() {

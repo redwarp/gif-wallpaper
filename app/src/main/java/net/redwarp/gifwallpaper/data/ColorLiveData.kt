@@ -16,15 +16,18 @@ import net.redwarp.gifwallpaper.Gif
 class ColorLiveData(val context: Context, wallpaperLiveData: LiveData<WallpaperStatus>) :
     MediatorLiveData<ColorInfo>() {
     init {
+        postValue(NotSet)
         addSource(wallpaperLiveData) { status ->
             if (status is WallpaperStatus.Wallpaper) {
                 extractColorScheme(status)
+            } else {
+                postValue(NotSet)
             }
         }
     }
 
     private fun extractColorScheme(wallpaper: WallpaperStatus.Wallpaper) {
-        postValue(Calculating)
+        postValue(NotSet)
         CoroutineScope(Dispatchers.IO).launch {
             val gif = Gif.loadGif(context, wallpaper.uri) ?: return@launch
 

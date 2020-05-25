@@ -69,6 +69,9 @@ class Model private constructor(val context: Context) {
     fun clearGif() {
         isColorSet = false
         _wallpaperStatus.clearGif()
+        setBackgroundColor(Color.BLACK)
+        setScaleType(WallpaperRenderer.ScaleType.FIT_CENTER)
+        setRotation(WallpaperRenderer.Rotation.NORTH)
     }
 
     fun setScaleType(scaleType: WallpaperRenderer.ScaleType) {

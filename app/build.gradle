@@ -35,11 +35,18 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    sourceSets {
+        main.java.srcDirs += 'external'
+    }
 }
 
 spotless {
     kotlin {
-        target project.fileTree(dir: 'src', include: '**/*.kt')
+        target project.fileTree(project.rootDir) {
+            include '**/net/redwarp/gifwallpaper/**/*.kt'
+        }
+
         licenseHeader '/* Licensed under Apache-2.0 */'
     }
 }

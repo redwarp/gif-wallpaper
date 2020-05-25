@@ -26,7 +26,6 @@ import net.redwarp.gifwallpaper.renderer.Renderer
 import net.redwarp.gifwallpaper.renderer.RendererMapper
 import net.redwarp.gifwallpaper.renderer.WallpaperRenderer
 import net.redwarp.gifwallpaper.util.isDark
-import net.redwarp.gifwallpaper.util.themeColor
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -108,27 +107,24 @@ class SetupFragment : Fragment() {
     }
 
     private fun adjustTheme(backgroundColor: Int) {
-        // This is disgusting and should go.
-        val darkColor: Int = requireContext().themeColor(android.R.attr.textColorPrimary)
-        val lightColor: Int = requireContext().themeColor(android.R.attr.textColorPrimaryInverse)
+        setStatusBarColor(backgroundColor.isDark())
+        val overflowColor = if (backgroundColor.isDark()) Color.WHITE else Color.BLACK
 
+        val icon = activity?.toolbar?.overflowIcon?.let {
+            DrawableCompat.wrap(it).also { wrapped -> wrapped.setTint(overflowColor) }
+        }
+
+        activity?.toolbar?.overflowIcon = icon
+    }
+
+    private fun setStatusBarColor(isDark: Boolean) {
         activity?.window?.apply {
-            if (backgroundColor.isDark()) {
+            if (isDark) {
                 decorView.systemUiVisibility =
                     decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-                val icon = activity?.toolbar?.overflowIcon?.let {
-                    DrawableCompat.wrap(it).also { it.setTint(lightColor) }
-                }
-
-                activity?.toolbar?.overflowIcon = icon
             } else {
                 decorView.systemUiVisibility =
                     decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                val icon = activity?.toolbar?.overflowIcon?.let {
-                    DrawableCompat.wrap(it).also { it.setTint(darkColor) }
-                }
-
-                activity?.toolbar?.overflowIcon = icon
             }
         }
     }

@@ -5,12 +5,15 @@ import android.app.WallpaperManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.Shader
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.nickbutcher.TileDrawable
+import kotlinx.android.synthetic.main.fragment_first.*
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -29,8 +32,11 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<Button>(R.id.button_first).setOnClickListener {
+        button_first.setOnClickListener {
             activateWallpaper(requireContext())
+        }
+        ContextCompat.getDrawable(view.context, R.drawable.pattern_stripes)?.let {
+            background.setImageDrawable(TileDrawable(it, Shader.TileMode.REPEAT))
         }
     }
 

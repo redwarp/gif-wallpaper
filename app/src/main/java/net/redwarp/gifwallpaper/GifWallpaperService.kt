@@ -61,7 +61,6 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
         override fun onDestroy() {
             super.onDestroy()
             handlerThread.quit()
-            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         }
 
         override fun onVisibilityChanged(visible: Boolean) {

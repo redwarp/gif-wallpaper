@@ -4,7 +4,9 @@ package net.redwarp.gifwallpaper.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import androidx.core.graphics.alpha
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.palette.graphics.Palette
@@ -62,6 +64,7 @@ class ColorLiveData(val context: Context, wallpaperLiveData: LiveData<WallpaperS
         drawable.draw(canvas)
         val color = sample.getPixel(0, 0)
         sample.recycle()
-        return color
+
+        return if (color.alpha == 0) Color.WHITE else color
     }
 }

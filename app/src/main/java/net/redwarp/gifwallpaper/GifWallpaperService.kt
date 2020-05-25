@@ -49,8 +49,8 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
                 model = Model.get(this@GifWallpaperService),
                 surfaceHolder = surfaceHolder,
                 animated = false
-            ).also {
-                it.observe(
+            ).apply {
+                observe(
                     this@GifWallpaperService,
                     Observer { renderer: Renderer ->
                         renderCallback?.renderer = renderer
@@ -61,15 +61,15 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
         override fun onDestroy() {
             super.onDestroy()
             handlerThread.quit()
-            lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
             if (visible) {
-                lifecycleRegistry.currentState = Lifecycle.State.RESUMED
+                lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
             } else {
-                lifecycleRegistry.currentState = Lifecycle.State.CREATED
+                lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
             }
         }
     }

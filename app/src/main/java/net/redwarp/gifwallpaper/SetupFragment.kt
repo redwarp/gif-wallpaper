@@ -27,6 +27,8 @@ import net.redwarp.gifwallpaper.renderer.RendererMapper
 import net.redwarp.gifwallpaper.renderer.WallpaperRenderer
 import net.redwarp.gifwallpaper.util.isDark
 
+const val PICK_GIF_FILE = 2
+
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */

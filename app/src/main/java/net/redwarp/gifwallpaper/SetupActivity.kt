@@ -8,7 +8,6 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_setup.*
 
-const val PICK_GIF_FILE = 2
 const val TAG = "GifWallpaper"
 
 /**

@@ -191,6 +191,22 @@ class SetupFragment : Fragment() {
                 model.clearGif()
                 return true
             }
+            R.id.about -> {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment, TextFragment.newInstance("about.md"))
+                    .addToBackStack(null)
+                    .commit()
+
+                return true
+            }
+            R.id.privacy -> {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment, TextFragment.newInstance("privacy.md"))
+                    .addToBackStack(null)
+                    .commit()
+
+                return true
+            }
         }
 
         return super.onOptionsItemSelected(item)

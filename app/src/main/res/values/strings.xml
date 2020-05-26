@@ -18,4 +18,5 @@
     <string name="click_the_open_gif_button">Click the Open GIF button</string>
     <string name="loading">Loading…</string>
     <string name="rotate">Rotate</string>
+    <string name="privacy">Privacy</string>
 </resources>

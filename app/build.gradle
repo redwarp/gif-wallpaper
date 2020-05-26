@@ -37,6 +37,11 @@ android {
     }
 
     sourceSets {
+        main {
+            resources {
+                srcDirs 'src/main/resources', "$rootDir/docs/"
+            }
+        }
         main.java.srcDirs += 'external'
     }
 }
@@ -73,6 +78,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-service:2.2.0'
     implementation 'androidx.palette:palette:1.0.0'
     implementation "dev.sasikanth:colorsheet:1.0.1"
+    implementation "io.noties.markwon:core:4.4.0"
 }
 
 

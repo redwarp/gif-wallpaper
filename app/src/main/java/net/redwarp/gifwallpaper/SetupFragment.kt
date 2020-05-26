@@ -108,6 +108,12 @@ class SetupFragment : Fragment() {
         })
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        renderCallback?.let(lifecycle::removeObserver)
+        renderCallback = null
+    }
+
     private fun adjustTheme(backgroundColor: Int) {
         setStatusBarColor(backgroundColor.isDark())
         val overflowColor = if (backgroundColor.isDark()) Color.WHITE else Color.BLACK
@@ -192,18 +198,12 @@ class SetupFragment : Fragment() {
                 return true
             }
             R.id.about -> {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.nav_host_fragment, TextFragment.newInstance("about.md"))
-                    .addToBackStack(null)
-                    .commit()
+                startActivity(TextActivity.getIntent(requireContext(), "about.md"))
 
                 return true
             }
             R.id.privacy -> {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.nav_host_fragment, TextFragment.newInstance("privacy.md"))
-                    .addToBackStack(null)
-                    .commit()
+                startActivity(TextActivity.getIntent(requireContext(), "privacy.md"))
 
                 return true
             }

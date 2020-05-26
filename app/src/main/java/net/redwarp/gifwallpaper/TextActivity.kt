@@ -2,55 +2,53 @@
 package net.redwarp.gifwallpaper
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import io.noties.markwon.Markwon
 import java.io.InputStream
-import kotlinx.android.synthetic.main.fragment_text.*
+import kotlinx.android.synthetic.main.activity_text.*
 
 private const val KEY_MARKDOWN_FILENAME = "markdown_filename"
 
-class TextFragment : Fragment() {
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+class TextActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        val nightModeFlags = context.resources.configuration.uiMode and
+        setContentView(R.layout.activity_text)
+        textView.setOnApplyWindowInsetsListener { v, insets ->
+            textView.y = insets.systemWindowInsetTop.toFloat()
+            insets
+        }
+        window.apply {
+            clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+
+            statusBarColor = Color.TRANSPARENT
+        }
+
+        val nightModeFlags = resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK
         when (nightModeFlags) {
             Configuration.UI_MODE_NIGHT_YES -> setStatusBarColor(true)
             else -> setStatusBarColor(false)
         }
-    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_text, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        requireArguments().getString(KEY_MARKDOWN_FILENAME)?.let {
+        intent.getStringExtra(KEY_MARKDOWN_FILENAME)?.let {
             val content = loadMarkdownFile(it) ?: return@let
 
-            Markwon.create(view.context).setMarkdown(textView, content)
-        }
-        textView.setOnApplyWindowInsetsListener { v, insets ->
-            textView.y = insets.systemWindowInsetTop.toFloat()
-            insets
+            Markwon.create(this).setMarkdown(textView, content)
         }
     }
 
     private fun loadMarkdownFile(markdownFileName: String): String? {
         val url: InputStream? =
-            TextFragment::class.java.classLoader?.getResourceAsStream(markdownFileName)
+            this::class.java.classLoader?.getResourceAsStream(markdownFileName)
         val content: String?
         if (url != null) {
             content = url.reader().readText()
@@ -62,7 +60,7 @@ class TextFragment : Fragment() {
     }
 
     private fun setStatusBarColor(isDark: Boolean) {
-        activity?.window?.apply {
+        window?.apply {
             if (isDark) {
                 decorView.systemUiVisibility =
                     decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
@@ -74,11 +72,9 @@ class TextFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(markdownFileName: String): TextFragment {
-            return TextFragment().apply {
-                arguments = Bundle().apply {
-                    putString(KEY_MARKDOWN_FILENAME, markdownFileName)
-                }
+        fun getIntent(context: Context, markdownFileName: String): Intent {
+            return Intent(context, TextActivity::class.java).apply {
+                putExtra(KEY_MARKDOWN_FILENAME, markdownFileName)
             }
         }
     }

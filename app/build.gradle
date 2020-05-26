@@ -13,8 +13,8 @@ android {
         applicationId "net.redwarp.gifwallpaper"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 9
-        versionName "0.3.2"
+        versionCode 10
+        versionName "0.4.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

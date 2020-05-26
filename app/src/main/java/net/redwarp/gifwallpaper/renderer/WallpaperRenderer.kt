@@ -36,6 +36,7 @@ class WallpaperRenderer(
     private val gifRect = RectF(0f, 0f, 0f, 0f)
     private var matrixAnimator: ValueAnimator? = null
     private var handler: DrawHandler? = null
+    private val workArray = FloatArray(2)
 
     init {
         gifRect.right = gif.drawable.intrinsicWidth.toFloat()
@@ -111,13 +112,23 @@ class WallpaperRenderer(
             ScaleType.CENTER_CROP ->
                 matrix.setCenterCropRectInRect(gifRect, canvasRect)
         }
-        val coordinates = floatArrayOf(gifRect.centerX(), gifRect.centerY())
-        matrix.mapPoints(coordinates)
-        matrix.postRotate(rotation.angle, coordinates[0], coordinates[1])
+        workArray[0] = gifRect.centerX()
+        workArray[1] = gifRect.centerY()
+        matrix.mapPoints(workArray)
+        matrix.postRotate(rotation.angle, workArray[0], workArray[1])
 
-        if (scaleType == ScaleType.FIT_CENTER && (rotation == Rotation.EAST || rotation == Rotation.WEST)) {
-            val scale = gifRect.width() / gifRect.height()
-            matrix.postScale(scale, scale, coordinates[0], coordinates[1])
+        if (rotation == Rotation.EAST || rotation == Rotation.WEST) {
+            when (scaleType) {
+                ScaleType.FIT_CENTER -> {
+                    val scale = gifRect.width() / gifRect.height()
+                    matrix.postScale(scale, scale, workArray[0], workArray[1])
+                }
+                ScaleType.FIT_XY -> {
+                    val scale = canvasRect.width() / canvasRect.height()
+                    matrix.postScale(scale, 1f / scale, workArray[0], workArray[1])
+                }
+                else -> Unit
+            }
         }
     }
 

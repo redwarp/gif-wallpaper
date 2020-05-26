@@ -13,30 +13,17 @@ import net.redwarp.gifwallpaper.renderer.RenderCallback
 import net.redwarp.gifwallpaper.renderer.Renderer
 import net.redwarp.gifwallpaper.renderer.RendererMapper
 
-class GifWallpaperService : WallpaperService(), LifecycleOwner {
-    private lateinit var lifecycleRegistry: LifecycleRegistry
+class GifWallpaperService : WallpaperService() {
     private lateinit var rendererMapper: RendererMapper
-
-    override fun onCreate() {
-        super.onCreate()
-
-        lifecycleRegistry = LifecycleRegistry(this)
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-    }
 
     override fun onCreateEngine(): Engine {
         return GifEngine()
     }
 
-    inner class GifEngine : Engine() {
+    inner class GifEngine : Engine(), LifecycleOwner {
         private var renderCallback: RenderCallback? = null
         private val handlerThread = HandlerThread("WallpaperLooper")
+        private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
 
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
@@ -51,15 +38,18 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
                 animated = false
             ).apply {
                 observe(
-                    this@GifWallpaperService,
+                    this@GifEngine,
                     Observer { renderer: Renderer ->
                         renderCallback?.renderer = renderer
                     })
             }
+
+            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         }
 
         override fun onDestroy() {
             super.onDestroy()
+            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             handlerThread.quit()
         }
 
@@ -71,9 +61,9 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
                 lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
             }
         }
-    }
 
-    override fun getLifecycle(): Lifecycle {
-        return lifecycleRegistry
+        override fun getLifecycle(): Lifecycle {
+            return lifecycleRegistry
+        }
     }
 }

@@ -13,16 +13,22 @@
           android:pathData="M0,0H129.6V108H0V0Z"
           android:fillColor="#FF7A7A"/>
       <path
-          android:pathData="M108,0L75.6,108H91.8L124.2,0H108Z"
+          android:pathData="M0,36L10.8,0H0V36Z"
           android:fillColor="#FF9264"/>
       <path
-          android:pathData="M75.6,0L43.2,108H59.4L91.8,0H75.6Z"
+          android:pathData="M0,90V108H10.8L43.2,0H27L0,90Z"
           android:fillColor="#FF9264"/>
       <path
-          android:pathData="M43.2,0L10.8,108H27.54L59.4,0H43.2Z"
+          android:pathData="M59.4,0L27,108H43.2L75.6,0H59.4Z"
           android:fillColor="#FF9264"/>
       <path
-          android:pathData="M10.8,0L-21.6,108H-4.86L27,0H10.8Z"
+          android:pathData="M91.8,0L59.4,108H75.6L108,0H91.8Z"
+          android:fillColor="#FF9264"/>
+      <path
+          android:pathData="M124.2,0L91.8,108H108L129.6,36V0H124.2Z"
+          android:fillColor="#FF9264"/>
+      <path
+          android:pathData="M129.6,90L124.2,108H129.6V90Z"
           android:fillColor="#FF9264"/>
     </group>
   </group>

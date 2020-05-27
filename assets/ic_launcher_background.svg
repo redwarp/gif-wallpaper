@@ -2,10 +2,12 @@
 <g clip-path="url(#clip0)">
 <g clip-path="url(#clip1)">
 <path d="M0 0H129.6V108H0V0Z" fill="#FF7A7A"/>
-<path d="M108 0L75.6 108H91.8L124.2 0H108Z" fill="#FF9264"/>
-<path d="M75.6 0L43.2 108H59.4L91.8 0H75.6Z" fill="#FF9264"/>
-<path d="M43.2 0L10.8 108H27.54L59.4 0H43.2Z" fill="#FF9264"/>
-<path d="M10.8 0L-21.6 108H-4.86001L27 0H10.8Z" fill="#FF9264"/>
+<path d="M0 36L10.8 0H0V36Z" fill="#FF9264"/>
+<path d="M0 90V108H10.8L43.2 0H27L0 90Z" fill="#FF9264"/>
+<path d="M59.4 0L27 108H43.2L75.6 0H59.4Z" fill="#FF9264"/>
+<path d="M91.8 0L59.4 108H75.6L108 0H91.8Z" fill="#FF9264"/>
+<path d="M124.2 0L91.8 108H108L129.6 36V0H124.2Z" fill="#FF9264"/>
+<path d="M129.6 90L124.2 108H129.6V90Z" fill="#FF9264"/>
 </g>
 </g>
 <defs>

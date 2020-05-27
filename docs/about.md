@@ -13,3 +13,7 @@ Alex Redfish. [Check their art](https://www.deviantart.com/alexredfish/gallery),
 ## Check the sources
 Sources are available on [github](https://github.com/redwarp/gif-wallpaper).
 
+## Other cool gifs
+
+- [JN3008](https://jn3008.tumblr.com/)
+- [Mad Max](https://www.behance.net/gallery/26428843/MAD-MAX-Fury-Road)

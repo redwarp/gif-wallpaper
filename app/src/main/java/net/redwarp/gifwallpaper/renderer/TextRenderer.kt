@@ -13,7 +13,11 @@ import android.text.TextPaint
 import android.view.SurfaceHolder
 import net.redwarp.gifwallpaper.R
 
-class LoadingRenderer(context: Context, private var holder: SurfaceHolder?) : Renderer {
+class TextRenderer(
+    context: Context,
+    private var holder: SurfaceHolder?,
+    val text: String
+) : Renderer {
     private val emptyPaint = Paint().apply {
         color = Color.BLACK
         style = Paint.Style.FILL
@@ -25,7 +29,6 @@ class LoadingRenderer(context: Context, private var holder: SurfaceHolder?) : Re
         typeface = Typeface.SANS_SERIF
         textSize = context.resources.getDimension(R.dimen.title)
     }
-    private val promptText = context.getText(R.string.loading).toString()
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
     private var handler: Handler? = null
 
@@ -50,7 +53,7 @@ class LoadingRenderer(context: Context, private var holder: SurfaceHolder?) : Re
 
             canvas.drawRect(canvasRect, emptyPaint)
             canvas.drawText(
-                promptText,
+                text,
                 canvasRect.centerX(),
                 canvasRect.centerY(),
                 textPaint

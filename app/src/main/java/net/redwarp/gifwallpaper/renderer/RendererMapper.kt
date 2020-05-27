@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.Gif
+import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.Model
 import net.redwarp.gifwallpaper.data.WallpaperStatus
 
@@ -20,8 +21,18 @@ class RendererMapper(
     init {
         addSource(model.wallpaperStatus) { status ->
             when (status) {
-                WallpaperStatus.NotSet -> postValue(NotSetRenderer(model.context, surfaceHolder))
-                WallpaperStatus.Loading -> postValue(LoadingRenderer(model.context, surfaceHolder))
+                WallpaperStatus.NotSet -> postValue(
+                    TextRenderer(
+                        model.context,
+                        surfaceHolder,
+                        model.context.getString(R.string.click_the_open_gif_button)
+                    )
+                )
+                WallpaperStatus.Loading -> postValue(
+                    TextRenderer(
+                        model.context, surfaceHolder, model.context.getString(R.string.loading)
+                    )
+                )
                 is WallpaperStatus.Wallpaper -> {
                     CoroutineScope(Dispatchers.IO).launch {
                         val gif = Gif.loadGif(model.context, status.uri) ?: return@launch

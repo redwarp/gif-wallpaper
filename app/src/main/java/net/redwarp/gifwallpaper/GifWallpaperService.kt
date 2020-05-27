@@ -35,7 +35,8 @@ class GifWallpaperService : WallpaperService() {
             rendererMapper = RendererMapper(
                 model = Model.get(this@GifWallpaperService),
                 surfaceHolder = surfaceHolder,
-                animated = false
+                animated = false,
+                unsetText = getString(R.string.open_app, getString(R.string.app_name))
             ).apply {
                 observe(
                     this@GifEngine,

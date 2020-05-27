@@ -80,7 +80,8 @@ class SetupFragment : Fragment() {
         RendererMapper(
             model = model,
             surfaceHolder = surface_view.holder,
-            animated = true
+            animated = true,
+            unsetText = getString(R.string.click_the_open_gif_button)
         ).observe(
             viewLifecycleOwner,
             Observer { renderer: Renderer ->

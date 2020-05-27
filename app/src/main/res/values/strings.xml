@@ -19,4 +19,5 @@
     <string name="loading">Loading…</string>
     <string name="rotate">Rotate</string>
     <string name="privacy">Privacy</string>
+    <string name="open_app">Open the %s app and setup your favorite GIF to get started</string>
 </resources>

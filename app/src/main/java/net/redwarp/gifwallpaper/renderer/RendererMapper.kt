@@ -15,7 +15,8 @@ import net.redwarp.gifwallpaper.data.WallpaperStatus
 class RendererMapper(
     model: Model,
     surfaceHolder: SurfaceHolder,
-    animated: Boolean = false
+    animated: Boolean = false,
+    unsetText: String
 ) :
     MediatorLiveData<Renderer>() {
     init {
@@ -25,7 +26,7 @@ class RendererMapper(
                     TextRenderer(
                         model.context,
                         surfaceHolder,
-                        model.context.getString(R.string.click_the_open_gif_button)
+                        unsetText
                     )
                 )
                 WallpaperStatus.Loading -> postValue(

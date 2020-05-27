@@ -9,17 +9,20 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.text.Layout
+import android.text.StaticLayout
 import android.text.TextPaint
 import android.view.SurfaceHolder
+import kotlin.math.max
 import net.redwarp.gifwallpaper.R
 
 class TextRenderer(
     context: Context,
     private var holder: SurfaceHolder?,
-    val text: String
+    private val text: String
 ) : Renderer {
     private val emptyPaint = Paint().apply {
-        color = Color.BLACK
+        color = context.getColor(R.color.colorPrimaryDark)
         style = Paint.Style.FILL
     }
     private val textPaint = TextPaint().apply {
@@ -31,6 +34,8 @@ class TextRenderer(
     }
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
     private var handler: Handler? = null
+    private var staticLayout: StaticLayout? = null
+    private val textPadding = context.resources.getDimension(R.dimen.text_renderer_padding)
 
     override fun invalidate() {
         handler?.post {
@@ -41,6 +46,15 @@ class TextRenderer(
     override fun setSize(width: Float, height: Float) {
         canvasRect.right = width
         canvasRect.bottom = height
+        staticLayout = StaticLayout.Builder.obtain(
+            text,
+            0,
+            text.length,
+            textPaint,
+            max(0, (width - 2f * textPadding).toInt())
+        ).setAlignment(
+            Layout.Alignment.ALIGN_NORMAL
+        ).build()
     }
 
     private fun draw() {
@@ -52,12 +66,11 @@ class TextRenderer(
             }
 
             canvas.drawRect(canvasRect, emptyPaint)
-            canvas.drawText(
-                text,
-                canvasRect.centerX(),
-                canvasRect.centerY(),
-                textPaint
-            )
+
+            canvas.save()
+            canvas.translate(canvasRect.centerX(), canvasRect.centerY())
+            staticLayout?.draw(canvas)
+            canvas.restore()
 
             holder.unlockCanvasAndPost(canvas)
         }

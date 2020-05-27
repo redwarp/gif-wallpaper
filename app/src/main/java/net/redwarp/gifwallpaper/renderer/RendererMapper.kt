@@ -36,7 +36,17 @@ class RendererMapper(
                 )
                 is WallpaperStatus.Wallpaper -> {
                     CoroutineScope(Dispatchers.IO).launch {
-                        val gif = Gif.loadGif(model.context, status.uri) ?: return@launch
+                        val gif = Gif.loadGif(model.context, status.uri)
+                        if (gif == null) {
+                            postValue(
+                                TextRenderer(
+                                    model.context,
+                                    surfaceHolder,
+                                    unsetText
+                                )
+                            )
+                            return@launch
+                        }
 
                         val scaleType =
                             model.scaleTypeData.value ?: WallpaperRenderer.ScaleType.FIT_CENTER

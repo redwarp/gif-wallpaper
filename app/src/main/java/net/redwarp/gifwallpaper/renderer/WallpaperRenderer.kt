@@ -2,6 +2,7 @@
 package net.redwarp.gifwallpaper.renderer
 
 import android.animation.ValueAnimator
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
@@ -17,6 +18,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.graphics.withMatrix
+import kotlin.math.max
 import net.redwarp.gifwallpaper.Gif
 import net.redwarp.gifwallpaper.util.MatrixEvaluator
 import net.redwarp.gifwallpaper.util.setCenterCropRectInRect
@@ -26,7 +28,7 @@ private const val MESSAGE_DRAW = 1
 
 class WallpaperRenderer(
     private var holder: SurfaceHolder?,
-    private val gif: Gif,
+    val gif: Gif,
     private var scaleType: ScaleType = ScaleType.FIT_CENTER,
     private var rotation: Rotation = Rotation.NORTH,
     backgroundColor: Int = Color.BLACK
@@ -154,6 +156,24 @@ class WallpaperRenderer(
         holder = null
     }
 
+    fun createMiniature(): Bitmap {
+        val miniCanvasRect =
+            RectF(0f, 0f, max(1f, canvasRect.right / 4f), max(1f, canvasRect.bottom / 4f))
+
+        val bitmap = Bitmap.createBitmap(
+            miniCanvasRect.width().toInt(),
+            miniCanvasRect.height().toInt(),
+            Bitmap.Config.ARGB_8888
+        )
+        val matrix = Matrix()
+        computeMatrix(matrix, scaleType, rotation, miniCanvasRect, gifRect)
+
+        val canvas = Canvas(bitmap)
+        draw(canvas, miniCanvasRect, matrix, gif)
+
+        return bitmap
+    }
+
     private fun draw() {
         holder?.let { holder ->
             val canvas = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -162,13 +182,13 @@ class WallpaperRenderer(
                 holder.lockCanvas()
             }
 
-            draw(canvas, gif)
+            draw(canvas, canvasRect, matrix, gif)
 
             holder.unlockCanvasAndPost(canvas)
         }
     }
 
-    private fun draw(canvas: Canvas, gif: Gif) {
+    private fun draw(canvas: Canvas, canvasRect: RectF, matrix: Matrix, gif: Gif) {
         canvas.clipRect(canvasRect)
         canvas.drawRect(canvasRect, backgroundPaint)
 

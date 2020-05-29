@@ -26,6 +26,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.Keep
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -47,6 +48,7 @@ const val PICK_GIF_FILE = 2
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
+@Keep
 class SetupFragment : Fragment() {
     private var renderCallback: RenderCallback? = null
     private var currentScale = 0

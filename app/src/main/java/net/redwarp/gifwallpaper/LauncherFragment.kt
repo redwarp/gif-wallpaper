@@ -23,12 +23,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_launcher.*
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
+@Keep
 class LauncherFragment : Fragment() {
 
     override fun onCreateView(

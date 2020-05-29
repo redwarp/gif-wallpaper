@@ -9,14 +9,16 @@
         <item name="android:buttonBarStyle">@style/ButtonBar</item>
         <item name="android:buttonBarButtonStyle">@style/ButtonBarButton</item>
         <item name="android:buttonStyle">@style/BaseButton</item>
+
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
         <item name="background">@android:color/transparent</item>

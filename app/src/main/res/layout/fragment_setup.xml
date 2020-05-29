@@ -17,13 +17,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/button_container"
         style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:elevation="4dp"
         android:gravity="top"
-        android:orientation="horizontal"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark">
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/open_gif_button"

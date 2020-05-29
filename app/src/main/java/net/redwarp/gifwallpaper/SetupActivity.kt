@@ -15,10 +15,7 @@
  */
 package net.redwarp.gifwallpaper
 
-import android.graphics.Color
 import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_setup.*
 
@@ -39,18 +36,11 @@ class SetupActivity : AppCompatActivity() {
 
     private fun setupActionBar() {
         setSupportActionBar(toolbar)
-        toolbar.setOnApplyWindowInsetsListener { v, insets ->
+        toolbar.setOnApplyWindowInsetsListener { _, insets ->
             toolbar.y = insets.systemWindowInsetTop.toFloat()
             insets
         }
-        supportActionBar?.title = null
-        window.apply {
-            clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
-            statusBarColor = Color.TRANSPARENT
-        }
+        supportActionBar?.title = null
     }
 }

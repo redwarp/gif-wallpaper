@@ -18,13 +18,4 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout="@layout/fragment_setup" />
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

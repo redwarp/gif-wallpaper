@@ -34,7 +34,7 @@ class TextActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_text)
-        textView.setOnApplyWindowInsetsListener { v, insets ->
+        textView.setOnApplyWindowInsetsListener { _, insets ->
             textView.y = insets.systemWindowInsetTop.toFloat()
             insets
         }

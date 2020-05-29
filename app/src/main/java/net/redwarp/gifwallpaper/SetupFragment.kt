@@ -27,6 +27,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import dev.sasikanth.colorsheet.ColorSheet
@@ -85,6 +86,10 @@ class SetupFragment : Fragment() {
         }
         rotate_button.setOnClickListener {
             rotate()
+        }
+        button_container.setOnApplyWindowInsetsListener { _, insets ->
+            button_container.updatePadding(bottom = insets.systemWindowInsetBottom)
+            insets
         }
 
         renderCallback =

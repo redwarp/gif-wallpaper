@@ -19,14 +19,11 @@ import android.app.WallpaperManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.Shader
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.google.nickbutcher.TileDrawable
 import kotlinx.android.synthetic.main.fragment_launcher.*
 
 /**
@@ -49,9 +46,6 @@ class LauncherFragment : Fragment() {
         button_first.setOnClickListener {
             activateWallpaper(requireContext())
         }
-        ContextCompat.getDrawable(view.context, R.drawable.pattern_stripes)?.let {
-            background.setImageDrawable(TileDrawable(it, Shader.TileMode.REPEAT))
-        }
     }
 
     private fun activateWallpaper(context: Context) {
@@ -64,7 +58,7 @@ class LauncherFragment : Fragment() {
                     GifWallpaperService::class.qualifiedName ?: return
                 )
             )
-            setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
 
         startActivity(intent)

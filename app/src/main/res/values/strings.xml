@@ -1,23 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
-    <string name="app_name">Gif Wallpaper</string>
-
-    <string name="open_gif">Open Gif</string>
-    <string name="change_scale">Change scale</string>
-    <string name="title_activity_launcher">LauncherActivity</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="activate">Activate</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="about">About</string>
+    <string name="activate">Activate</string>
+    <string name="app_name">GIF Live Wallpaper</string>
     <string name="change_color">Change color</string>
-    <string name="clear_gif">Clear gif</string>
+    <string name="change_scale">Change scale</string>
+    <string name="clear_gif">Clear GIF</string>
     <string name="click_the_open_gif_button">Click the Open GIF button</string>
     <string name="loading">Loading…</string>
-    <string name="rotate">Rotate</string>
-    <string name="privacy">Privacy</string>
     <string name="open_app">Open the %s app and setup your favorite GIF to get started</string>
+    <string name="open_gif">Open GIF</string>
+    <string name="previous">Previous</string>
+    <string name="privacy">Privacy</string>
+    <string name="rotate">Rotate</string>
+    <string name="title_activity_launcher">LauncherActivity</string>
 </resources>

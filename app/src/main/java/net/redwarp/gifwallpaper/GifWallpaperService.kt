@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
+import android.os.Message
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import androidx.annotation.RequiresApi
@@ -19,6 +20,13 @@ import net.redwarp.gifwallpaper.renderer.RenderCallback
 import net.redwarp.gifwallpaper.renderer.Renderer
 import net.redwarp.gifwallpaper.renderer.RendererMapper
 import net.redwarp.gifwallpaper.renderer.WallpaperRenderer
+
+private const val MESSAGE_REFRESH_WALLPAPER_COLORS = 1
+
+/**
+ * Arbitrary delay to avoid over-requesting colors refresh.
+ */
+private const val REFRESH_DELAY = 30L
 
 class GifWallpaperService : WallpaperService() {
     private lateinit var rendererMapper: RendererMapper
@@ -53,25 +61,17 @@ class GifWallpaperService : WallpaperService() {
                     this@GifEngine,
                     Observer { renderer: Renderer ->
                         renderCallback?.renderer = renderer
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                            requestWallpaperColorsComputation()
-                        }
+                        requestWallpaperColorsComputation()
                     })
             }
             model.backgroundColorData.observe(this, Observer {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                    requestWallpaperColorsComputation()
-                }
+                requestWallpaperColorsComputation()
             })
             model.scaleTypeData.observe(this, Observer {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                    requestWallpaperColorsComputation()
-                }
+                requestWallpaperColorsComputation()
             })
             model.rotationData.observe(this, Observer {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                    requestWallpaperColorsComputation()
-                }
+                requestWallpaperColorsComputation()
             })
 
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
@@ -97,7 +97,7 @@ class GifWallpaperService : WallpaperService() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
-        val runnable: Runnable = Runnable {
+        val refreshWallpaperColorsRunnable: Runnable = Runnable {
             wallpaperColors = (renderCallback?.renderer as? WallpaperRenderer)?.run {
                 val miniature = this.createMiniature()
                 WallpaperColors.fromBitmap(miniature).also { miniature.recycle() }
@@ -107,8 +107,13 @@ class GifWallpaperService : WallpaperService() {
 
         private fun requestWallpaperColorsComputation() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                handler?.removeCallbacks(runnable)
-                handler?.postDelayed(runnable, 30)
+                handler?.let { handler ->
+                    if (!handler.hasMessages(MESSAGE_REFRESH_WALLPAPER_COLORS)) {
+                        val message = Message.obtain(null, refreshWallpaperColorsRunnable)
+                        message.what = MESSAGE_REFRESH_WALLPAPER_COLORS
+                        handler.sendMessageDelayed(message, REFRESH_DELAY)
+                    }
+                }
             }
         }
 

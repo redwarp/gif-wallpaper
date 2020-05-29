@@ -52,7 +52,7 @@ spotless {
             include '**/net/redwarp/gifwallpaper/**/*.kt'
         }
 
-        licenseHeader '/* Licensed under Apache-2.0 */'
+        licenseHeaderFile 'license_header.kt'
     }
 }
 

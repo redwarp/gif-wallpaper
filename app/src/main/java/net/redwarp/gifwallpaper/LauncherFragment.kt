@@ -16,6 +16,7 @@
 package net.redwarp.gifwallpaper
 
 import android.app.WallpaperManager
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -23,6 +24,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_launcher.*
@@ -51,18 +53,22 @@ class LauncherFragment : Fragment() {
     }
 
     private fun activateWallpaper(context: Context) {
-        val intent = Intent().apply {
-            action = WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER
-            putExtra(
-                WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-                ComponentName(
-                    context.packageName,
-                    GifWallpaperService::class.qualifiedName ?: return
-                )
+        try {
+            startActivity(
+                Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).putExtra(
+                    WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                    ComponentName(context, GifWallpaperService::class.java)
+                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        } catch (_: ActivityNotFoundException) {
+            try {
+                startActivity(
+                    Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            } catch (_: ActivityNotFoundException) {
+                Toast.makeText(context, R.string.error_wallpaper_chooser, Toast.LENGTH_LONG).show()
+            }
         }
-
-        startActivity(intent)
     }
 }

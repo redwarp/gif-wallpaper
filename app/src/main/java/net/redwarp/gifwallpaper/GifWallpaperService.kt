@@ -69,7 +69,7 @@ class GifWallpaperService : WallpaperService() {
                 model = model,
                 surfaceHolder = surfaceHolder,
                 animated = false,
-                unsetText = getString(R.string.open_app, getString(R.string.app_name))
+                unsetText = getString(R.string.open_app)
             ).apply {
                 observe(
                     this@GifEngine,

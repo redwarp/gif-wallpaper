@@ -6,16 +6,15 @@
     <string name="change_color">Change color</string>
     <string name="change_scale">Change scale</string>
     <string name="clear_gif">Clear GIF</string>
-    <string name="click_the_open_gif_button">Click the Open GIF button</string>
+    <string name="click_the_open_gif_button">Click the \"Open GIF\" button.</string>
     <string name="error_wallpaper_chooser">
         Couldn\'t launch wallpaper chooser. You can still activate
         the GIF Live Wallpaper by choosing \'Live Wallpapers\'
         in your home screen wallpaper picker.</string>
     <string name="loading">Loading…</string>
-    <string name="open_app">Open the %s app and setup your favorite GIF to get started</string>
+    <string name="open_app">Open the GIF Live Wallpaper app and setup your favorite GIF to get started.</string>
     <string name="open_gif">Open GIF</string>
-    <string name="previous">Previous</string>
+    <string name="pick_a_color">Pick a color</string>
     <string name="privacy">Privacy</string>
     <string name="rotate">Rotate</string>
-    <string name="title_activity_launcher">LauncherActivity</string>
 </resources>

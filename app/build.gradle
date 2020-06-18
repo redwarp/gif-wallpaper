@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
-    id "com.diffplug.gradle.spotless" version "4.3.0"
+    id "com.diffplug.gradle.spotless" version "4.3.1"
     id "com.github.ben-manes.versions" version "0.28.0"
 }
 
@@ -13,8 +13,8 @@ android {
         applicationId "net.redwarp.gifwallpaper"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 16
-        versionName "1.1.0"
+        versionCode 17
+        versionName "1.1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

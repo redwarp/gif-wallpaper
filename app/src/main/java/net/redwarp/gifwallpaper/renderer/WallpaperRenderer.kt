@@ -39,10 +39,11 @@ import net.redwarp.gifwallpaper.util.setCenterCropRectInRect
 import net.redwarp.gifwallpaper.util.setCenterRectInRect
 
 private const val MESSAGE_DRAW = 1
+private const val MESSAGE_INVALIDATE = 2
 
 class WallpaperRenderer(
     private var holder: SurfaceHolder?,
-    val gif: Gif,
+    private val gif: Gif,
     private var scaleType: ScaleType = ScaleType.FIT_CENTER,
     private var rotation: Rotation = Rotation.NORTH,
     backgroundColor: Int = Color.BLACK
@@ -95,7 +96,7 @@ class WallpaperRenderer(
     }
 
     override fun onResume() {
-        invalidate()
+        handler?.postInvalidate()
     }
 
     override fun onPause() {
@@ -162,7 +163,7 @@ class WallpaperRenderer(
     override fun onCreate(surfaceHolder: SurfaceHolder, looper: Looper) {
         holder = surfaceHolder
         handler = DrawHandler(looper, this)
-        invalidate()
+        handler?.postInvalidate()
     }
 
     override fun onDestroy() {
@@ -269,9 +270,15 @@ class WallpaperRenderer(
             sendMessageAtTime(Message.obtain(this, MESSAGE_DRAW), time)
         }
 
+        fun postInvalidate() {
+            if (hasMessages(MESSAGE_INVALIDATE)) return
+            sendMessage(Message.obtain(this, MESSAGE_INVALIDATE))
+        }
+
         override fun handleMessage(msg: Message) {
-            if (msg.what == MESSAGE_DRAW) {
-                wallpaperRenderer.draw()
+            when (msg.what) {
+                MESSAGE_DRAW -> wallpaperRenderer.draw()
+                MESSAGE_INVALIDATE -> wallpaperRenderer.invalidate()
             }
         }
     }

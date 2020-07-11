@@ -42,6 +42,12 @@ class Gif private constructor(gif: Any) {
         drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
     }
 
+    fun recycle() {
+        when (drawable) {
+            is GifDrawable -> drawable.recycle()
+        }
+    }
+
     companion object {
         suspend fun loadGif(context: Context, uri: Uri): Gif? {
             return withContext(Dispatchers.IO) {

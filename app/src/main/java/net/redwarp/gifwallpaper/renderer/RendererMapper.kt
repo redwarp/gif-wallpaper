@@ -89,4 +89,11 @@ class RendererMapper(
             (value as? WallpaperRenderer)?.setRotation(rotation, animated)
         }
     }
+
+    override fun setValue(value: Renderer?) {
+        val previousRenderer = getValue()
+        super.setValue(value)
+
+        (previousRenderer as? WallpaperRenderer)?.recycle()
+    }
 }

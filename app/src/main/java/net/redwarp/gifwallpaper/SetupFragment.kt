@@ -233,4 +233,11 @@ class SetupFragment : Fragment() {
 
         return super.onOptionsItemSelected(item)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (activity?.isFinishing == true) {
+            (renderCallback?.renderer as? WallpaperRenderer)?.recycle()
+        }
+    }
 }

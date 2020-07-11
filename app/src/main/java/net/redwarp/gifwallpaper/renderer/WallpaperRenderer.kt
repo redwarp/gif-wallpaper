@@ -54,6 +54,7 @@ class WallpaperRenderer(
     private var matrixAnimator: ValueAnimator? = null
     private var handler: DrawHandler? = null
     private val workArray = FloatArray(2)
+    private var isRecycled = false
 
     init {
         gifRect.right = gif.drawable.intrinsicWidth.toFloat()
@@ -70,6 +71,7 @@ class WallpaperRenderer(
     override fun setSize(width: Float, height: Float) {
         canvasRect.right = width
         canvasRect.bottom = height
+        invalidate()
     }
 
     fun setScaleType(scaleType: ScaleType, animated: Boolean) {
@@ -150,6 +152,8 @@ class WallpaperRenderer(
     }
 
     override fun invalidate() {
+        if (isRecycled) return
+
         matrixAnimator?.cancel()
         handler?.cancelDraw()
         computeMatrix(matrix, scaleType, rotation, canvasRect, gifRect)
@@ -171,6 +175,11 @@ class WallpaperRenderer(
         holder = null
     }
 
+    fun recycle() {
+        isRecycled = true
+        gif.recycle()
+    }
+
     fun createMiniature(): Bitmap {
         val miniCanvasRect =
             RectF(0f, 0f, max(1f, canvasRect.right / 4f), max(1f, canvasRect.bottom / 4f))
@@ -190,6 +199,7 @@ class WallpaperRenderer(
     }
 
     private fun draw() {
+        if (isRecycled) return
         holder?.let { holder ->
             val canvas = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 holder.lockHardwareCanvas()
@@ -257,6 +267,7 @@ class WallpaperRenderer(
         Handler(looper) {
 
         fun cancelDraw() {
+            removeMessages(MESSAGE_INVALIDATE)
             removeMessages(MESSAGE_DRAW)
         }
 
@@ -276,6 +287,7 @@ class WallpaperRenderer(
         }
 
         override fun handleMessage(msg: Message) {
+            if (wallpaperRenderer.isRecycled) return
             when (msg.what) {
                 MESSAGE_DRAW -> wallpaperRenderer.draw()
                 MESSAGE_INVALIDATE -> wallpaperRenderer.invalidate()

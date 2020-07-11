@@ -69,6 +69,7 @@ class TextRenderer(
         ).setAlignment(
             Layout.Alignment.ALIGN_NORMAL
         ).build()
+        invalidate()
     }
 
     private fun draw() {

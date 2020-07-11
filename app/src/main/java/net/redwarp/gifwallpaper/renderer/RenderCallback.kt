@@ -32,7 +32,6 @@ class RenderCallback(private val surfaceHolder: SurfaceHolder, private val loope
             field = value
             value?.let { renderer ->
                 renderer.setSize(size.width, size.height)
-                renderer.invalidate()
                 if (isCreated) renderer.onCreate(surfaceHolder, looper)
             }
         }
@@ -49,7 +48,6 @@ class RenderCallback(private val surfaceHolder: SurfaceHolder, private val loope
         size.width = width.toFloat()
         size.height = height.toFloat()
         renderer?.setSize(width.toFloat(), height.toFloat())
-        renderer?.invalidate()
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {

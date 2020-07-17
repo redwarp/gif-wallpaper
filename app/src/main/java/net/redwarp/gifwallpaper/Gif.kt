@@ -30,10 +30,12 @@ import com.bumptech.glide.request.target.Target
 import java.nio.ByteBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.redwarp.gifwallpaper.drawable.MyGifDrawable
 
 class Gif private constructor(gif: Any) {
     private constructor(animatedImageDrawable: AnimatedImageDrawable) : this(animatedImageDrawable as Any)
     private constructor(gifDrawable: GifDrawable) : this(gifDrawable as Any)
+    private constructor(gifDrawable: MyGifDrawable) : this(gifDrawable as Any)
 
     val animatable: Animatable = gif as Animatable
     val drawable: Drawable = gif as Drawable
@@ -45,6 +47,7 @@ class Gif private constructor(gif: Any) {
     fun recycle() {
         when (drawable) {
             is GifDrawable -> drawable.recycle()
+            is MyGifDrawable -> drawable.recycle()
         }
     }
 
@@ -55,7 +58,7 @@ class Gif private constructor(gif: Any) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         Gif(getAnimatedImageDrawable(context, uri) ?: return@withContext null)
                     } else {
-                        Gif(getGifDrawable(context, uri) ?: return@withContext null)
+                        Gif(getMyGifDrawable(context, uri) ?: return@withContext null)
                     }
                 } catch (exception: java.lang.Exception) {
                     null
@@ -84,6 +87,14 @@ class Gif private constructor(gif: Any) {
                 Target.SIZE_ORIGINAL,
                 Options()
             )?.get()
+        }
+
+        private fun getMyGifDrawable(context: Context, uri: Uri): MyGifDrawable? {
+            val buffer = context.contentResolver.openInputStream(uri)?.use {
+                ByteBuffer.wrap(it.readBytes())
+            } ?: return null
+
+            return MyGifDrawable.decode(context, buffer)
         }
     }
 }

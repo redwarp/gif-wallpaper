@@ -23,19 +23,13 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.bumptech.glide.load.Options
-import com.bumptech.glide.load.resource.gif.ByteBufferGifDecoder
-import com.bumptech.glide.load.resource.gif.GifDrawable
-import com.bumptech.glide.request.target.Target
-import java.nio.ByteBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.redwarp.gifwallpaper.drawable.MyGifDrawable
+import net.redwarp.gifwallpaper.drawable.GifDrawable
 
 class Gif private constructor(gif: Any) {
     private constructor(animatedImageDrawable: AnimatedImageDrawable) : this(animatedImageDrawable as Any)
     private constructor(gifDrawable: GifDrawable) : this(gifDrawable as Any)
-    private constructor(gifDrawable: MyGifDrawable) : this(gifDrawable as Any)
 
     val animatable: Animatable = gif as Animatable
     val drawable: Drawable = gif as Drawable
@@ -47,7 +41,6 @@ class Gif private constructor(gif: Any) {
     fun recycle() {
         when (drawable) {
             is GifDrawable -> drawable.recycle()
-            is MyGifDrawable -> drawable.recycle()
         }
     }
 
@@ -58,7 +51,7 @@ class Gif private constructor(gif: Any) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         Gif(getAnimatedImageDrawable(context, uri) ?: return@withContext null)
                     } else {
-                        Gif(getMyGifDrawable(context, uri) ?: return@withContext null)
+                        Gif(getGifDrawable(context, uri) ?: return@withContext null)
                     }
                 } catch (exception: java.lang.Exception) {
                     null
@@ -77,24 +70,9 @@ class Gif private constructor(gif: Any) {
         }
 
         private fun getGifDrawable(context: Context, uri: Uri): GifDrawable? {
-            val buffer = context.contentResolver.openInputStream(uri)?.use {
-                ByteBuffer.wrap(it.readBytes())
-            } ?: return null
-
-            return ByteBufferGifDecoder(context).decode(
-                buffer,
-                Target.SIZE_ORIGINAL,
-                Target.SIZE_ORIGINAL,
-                Options()
-            )?.get()
-        }
-
-        private fun getMyGifDrawable(context: Context, uri: Uri): MyGifDrawable? {
-            val buffer = context.contentResolver.openInputStream(uri)?.use {
-                ByteBuffer.wrap(it.readBytes())
-            } ?: return null
-
-            return MyGifDrawable.decode(context, buffer)
+            return context.contentResolver.openInputStream(uri)?.use {
+                return GifDrawable.decode(context, it.readBytes())
+            }
         }
     }
 }

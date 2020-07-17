@@ -23,18 +23,16 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
-import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
 import com.bumptech.glide.load.resource.gif.GifBitmapProvider
-import java.nio.ByteBuffer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MyGifDrawable(
+class GifDrawable private constructor(
     private val gifDecoder: StandardGifDecoder,
     private val bitmapProvider: GifBitmapProvider
 ) : Drawable(), Animatable {
@@ -53,7 +51,7 @@ class MyGifDrawable(
     private val width = gifDecoder.width
     private val height = gifDecoder.height
     private val bitmapPaint = Paint().apply {
-        isAntiAlias = true
+        isAntiAlias = false
     }
 
     override fun draw(canvas: Canvas) {
@@ -90,7 +88,6 @@ class MyGifDrawable(
         loopJob = CoroutineScope(Dispatchers.IO).launch {
             while (isRunning) {
                 val frameDelay = gifDecoder.nextDelay.toLong()
-                Log.d("MyGifDrawable", "delay: $frameDelay")
                 nextFrame = gifDecoder.nextFrame
                 delay(frameDelay)
                 currentFrame?.let(bitmapProvider::release)
@@ -112,13 +109,13 @@ class MyGifDrawable(
     }
 
     companion object {
-        fun decode(context: Context, byteBuffer: ByteBuffer): MyGifDrawable {
+        fun decode(context: Context, byteArray: ByteArray): GifDrawable {
             val bitmapProvider = GifBitmapProvider(Glide.get(context).bitmapPool)
-            val gifDecoder = StandardGifDecoder(bitmapProvider)
+            val gifDecoder = StandardGifDecoder(bitmapProvider).apply {
+                read(byteArray)
+            }
 
-            gifDecoder.read(byteBuffer.array())
-
-            return MyGifDrawable(gifDecoder, bitmapProvider)
+            return GifDrawable(gifDecoder, bitmapProvider)
         }
     }
 }

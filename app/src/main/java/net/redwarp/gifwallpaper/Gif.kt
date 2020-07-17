@@ -23,13 +23,9 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.bumptech.glide.load.Options
-import com.bumptech.glide.load.resource.gif.ByteBufferGifDecoder
-import com.bumptech.glide.load.resource.gif.GifDrawable
-import com.bumptech.glide.request.target.Target
-import java.nio.ByteBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.redwarp.gifwallpaper.drawable.GifDrawable
 
 class Gif private constructor(gif: Any) {
     private constructor(animatedImageDrawable: AnimatedImageDrawable) : this(animatedImageDrawable as Any)
@@ -74,16 +70,9 @@ class Gif private constructor(gif: Any) {
         }
 
         private fun getGifDrawable(context: Context, uri: Uri): GifDrawable? {
-            val buffer = context.contentResolver.openInputStream(uri)?.use {
-                ByteBuffer.wrap(it.readBytes())
-            } ?: return null
-
-            return ByteBufferGifDecoder(context).decode(
-                buffer,
-                Target.SIZE_ORIGINAL,
-                Target.SIZE_ORIGINAL,
-                Options()
-            )?.get()
+            return context.contentResolver.openInputStream(uri)?.use {
+                return GifDrawable.decode(context, it.readBytes())
+            }
         }
     }
 }

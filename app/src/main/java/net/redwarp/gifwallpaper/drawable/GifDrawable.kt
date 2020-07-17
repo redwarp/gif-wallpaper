@@ -47,14 +47,17 @@ class GifDrawable private constructor(
 
     private var nextFrame: Bitmap? = null
     private var isRunning: Boolean = false
+    private var isRecycled: Boolean = false
     private var loopJob: Job? = null
     private val width = gifDecoder.width
     private val height = gifDecoder.height
     private val bitmapPaint = Paint().apply {
         isAntiAlias = false
+        isFilterBitmap = false
     }
 
     override fun draw(canvas: Canvas) {
+        if (isRecycled) return
         currentFrame?.let { bitmap ->
             canvas.drawBitmap(bitmap, null, bounds, bitmapPaint)
         }
@@ -80,6 +83,7 @@ class GifDrawable private constructor(
 
     override fun start() {
         if (isRunning) return // already running
+        if (isRecycled) return
 
         isRunning = true
 
@@ -106,6 +110,7 @@ class GifDrawable private constructor(
     fun recycle() {
         currentFrame?.let(bitmapProvider::release)
         nextFrame?.let(bitmapProvider::release)
+        isRecycled = true
     }
 
     companion object {

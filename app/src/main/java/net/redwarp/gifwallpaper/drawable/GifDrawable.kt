@@ -23,6 +23,7 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
+import android.os.SystemClock
 import com.bumptech.glide.Glide
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
 import com.bumptech.glide.load.resource.gif.GifBitmapProvider
@@ -92,8 +93,10 @@ class GifDrawable private constructor(
         loopJob = CoroutineScope(Dispatchers.IO).launch {
             while (isRunning) {
                 val frameDelay = gifDecoder.nextDelay.toLong()
-                nextFrame = gifDecoder.nextFrame
-                delay(frameDelay)
+                val elapsedTime = measureElapsedRealtime {
+                    nextFrame = gifDecoder.nextFrame
+                }
+                delay((frameDelay - elapsedTime).coerceIn(0L, frameDelay))
                 currentFrame?.let(bitmapProvider::release)
                 currentFrame = nextFrame
                 invalidateSelf()
@@ -111,6 +114,12 @@ class GifDrawable private constructor(
         currentFrame?.let(bitmapProvider::release)
         nextFrame?.let(bitmapProvider::release)
         isRecycled = true
+    }
+
+    private inline fun measureElapsedRealtime(block: () -> Unit): Long {
+        val startTime = SystemClock.elapsedRealtime()
+        block()
+        return SystemClock.elapsedRealtime() - startTime
     }
 
     companion object {

@@ -34,7 +34,7 @@ class GifDrawable private constructor(
     private val gifDecoder: StandardGifDecoder,
     private val bitmapProvider: SimpleBitmapProvider
 ) : Drawable(), Animatable {
-
+    @Volatile
     private var currentFrame: Bitmap?
 
     init {

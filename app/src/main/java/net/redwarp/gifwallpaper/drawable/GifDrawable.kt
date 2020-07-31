@@ -116,7 +116,7 @@ class GifDrawable private constructor(
         isRecycled = true
     }
 
-    private inline fun measureElapsedRealtime(block: () -> Unit): Long {
+    private inline fun measureElapsedRealtime(crossinline block: () -> Unit): Long {
         val startTime = SystemClock.elapsedRealtime()
         block()
         return SystemClock.elapsedRealtime() - startTime

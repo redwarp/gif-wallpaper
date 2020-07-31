@@ -27,6 +27,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.view.Choreographer
 import android.view.SurfaceHolder
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
@@ -54,9 +55,13 @@ class WallpaperRenderer(
     private val gifRect = RectF(0f, 0f, 0f, 0f)
     private var matrixAnimator: ValueAnimator? = null
     private var handler: DrawHandler? = null
+    private var choreographer: Choreographer? = null
     private val workArray = FloatArray(2)
     private var isCreated = false
     private var isRecycled = false
+
+    @Volatile
+    private var needDraw = true
 
     init {
         gifRect.right = gif.drawable.intrinsicWidth.toFloat()
@@ -170,6 +175,7 @@ class WallpaperRenderer(
     override fun onCreate(surfaceHolder: SurfaceHolder, looper: Looper) {
         isCreated = true
         holder = surfaceHolder
+        choreographer = Choreographer.getInstance()
         handler = DrawHandler(looper, this)
         handler?.postInvalidate()
     }
@@ -201,6 +207,18 @@ class WallpaperRenderer(
         draw(canvas, miniCanvasRect, matrix, gif)
 
         return bitmap
+    }
+
+    private val choreographerCallback = Choreographer.FrameCallback {
+        draw()
+        needDraw = true
+    }
+
+    private fun choreographedDraw() {
+        if (isRecycled) return
+        if (!needDraw) return
+        needDraw = false
+        choreographer?.postFrameCallback(choreographerCallback)
     }
 
     private fun draw() {
@@ -274,6 +292,8 @@ class WallpaperRenderer(
         fun cancelDraw() {
             removeMessages(MESSAGE_INVALIDATE)
             removeMessages(MESSAGE_DRAW)
+            wallpaperRenderer.choreographer?.removeFrameCallback(wallpaperRenderer.choreographerCallback)
+            wallpaperRenderer.needDraw = true
         }
 
         fun requestDraw() {
@@ -294,7 +314,7 @@ class WallpaperRenderer(
         override fun handleMessage(msg: Message) {
             if (wallpaperRenderer.isRecycled) return
             when (msg.what) {
-                MESSAGE_DRAW -> wallpaperRenderer.draw()
+                MESSAGE_DRAW -> wallpaperRenderer.choreographedDraw()
                 MESSAGE_INVALIDATE -> wallpaperRenderer.invalidate()
                 MESSAGE_SCHEDULE -> msg.callback?.run()
             }

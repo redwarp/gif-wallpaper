@@ -111,7 +111,8 @@ class SetupFragment : Fragment() {
             model = model,
             surfaceHolder = surface_view.holder,
             animated = true,
-            unsetText = getString(R.string.click_the_open_gif_button)
+            unsetText = getString(R.string.click_the_open_gif_button),
+            isService = false
         ).observe(
             viewLifecycleOwner,
             Observer { renderer: Renderer ->
@@ -267,12 +268,7 @@ class SetupFragment : Fragment() {
             distanceX: Float,
             distanceY: Float
         ): Boolean {
-            Log.d("SetupFragment", "Scroll by $distanceX - $distanceY")
-            return true
-        }
-
-        override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-            Log.d("SetupFragment", "Single tap")
+            model.postTranslate(-distanceX, -distanceY)
             return true
         }
     }

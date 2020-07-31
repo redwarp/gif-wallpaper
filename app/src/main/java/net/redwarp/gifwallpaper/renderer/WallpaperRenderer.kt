@@ -40,6 +40,7 @@ import net.redwarp.gifwallpaper.util.setCenterRectInRect
 
 private const val MESSAGE_DRAW = 1
 private const val MESSAGE_INVALIDATE = 2
+private const val MESSAGE_SCHEDULE = 3
 
 class WallpaperRenderer(
     private var holder: SurfaceHolder?,
@@ -54,6 +55,7 @@ class WallpaperRenderer(
     private var matrixAnimator: ValueAnimator? = null
     private var handler: DrawHandler? = null
     private val workArray = FloatArray(2)
+    private var isCreated = false
     private var isRecycled = false
 
     init {
@@ -152,6 +154,7 @@ class WallpaperRenderer(
     }
 
     override fun invalidate() {
+        if (!isCreated) return
         if (isRecycled) return
 
         matrixAnimator?.cancel()
@@ -165,12 +168,14 @@ class WallpaperRenderer(
     }
 
     override fun onCreate(surfaceHolder: SurfaceHolder, looper: Looper) {
+        isCreated = true
         holder = surfaceHolder
         handler = DrawHandler(looper, this)
         handler?.postInvalidate()
     }
 
     override fun onDestroy() {
+        isCreated = false
         onPause()
         holder = null
     }
@@ -259,7 +264,7 @@ class WallpaperRenderer(
         }
 
         override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) {
-            handler?.requestDrawAtTime(`when`)
+            handler?.scheduleRunnable(what, `when`)
         }
     }
 
@@ -276,9 +281,9 @@ class WallpaperRenderer(
             sendMessage(Message.obtain(this, MESSAGE_DRAW))
         }
 
-        fun requestDrawAtTime(time: Long) {
-            removeMessages(MESSAGE_DRAW)
-            sendMessageAtTime(Message.obtain(this, MESSAGE_DRAW), time)
+        fun scheduleRunnable(what: Runnable, `when`: Long) {
+            if (hasMessages(MESSAGE_SCHEDULE)) return
+            sendMessageAtTime(Message.obtain(this, what), `when`)
         }
 
         fun postInvalidate() {
@@ -291,6 +296,7 @@ class WallpaperRenderer(
             when (msg.what) {
                 MESSAGE_DRAW -> wallpaperRenderer.draw()
                 MESSAGE_INVALIDATE -> wallpaperRenderer.invalidate()
+                MESSAGE_SCHEDULE -> msg.callback?.run()
             }
         }
     }

@@ -16,19 +16,14 @@
 package net.redwarp.gifwallpaper
 
 import android.content.Context
-import android.graphics.ImageDecoder
 import android.graphics.drawable.Animatable
-import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.redwarp.gifwallpaper.drawable.GifDrawable
 
 class Gif private constructor(gif: Any) {
-    private constructor(animatedImageDrawable: AnimatedImageDrawable) : this(animatedImageDrawable as Any)
     private constructor(gifDrawable: GifDrawable) : this(gifDrawable as Any)
 
     val animatable: Animatable = gif as Animatable
@@ -48,25 +43,11 @@ class Gif private constructor(gif: Any) {
         suspend fun loadGif(context: Context, uri: Uri): Gif? {
             return withContext(Dispatchers.IO) {
                 try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        Gif(getAnimatedImageDrawable(context, uri) ?: return@withContext null)
-                    } else {
-                        Gif(getGifDrawable(context, uri) ?: return@withContext null)
-                    }
+                    Gif(getGifDrawable(context, uri) ?: return@withContext null)
                 } catch (exception: java.lang.Exception) {
                     null
                 }
             }
-        }
-
-        @RequiresApi(Build.VERSION_CODES.P)
-        private fun getAnimatedImageDrawable(
-            context: Context,
-            uri: Uri
-        ): AnimatedImageDrawable? {
-            return ImageDecoder.decodeDrawable(
-                ImageDecoder.createSource(context.contentResolver, uri)
-            ) as? AnimatedImageDrawable
         }
 
         private fun getGifDrawable(context: Context, uri: Uri): GifDrawable? {

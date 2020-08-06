@@ -27,6 +27,8 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.view.SurfaceHolder
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import kotlin.math.max
 import net.redwarp.gifwallpaper.R
 
@@ -36,7 +38,7 @@ class TextRenderer(
     private val text: String
 ) : Renderer {
     private val emptyPaint = Paint().apply {
-        color = context.getColor(R.color.colorPrimaryDark)
+        color = ContextCompat.getColor(context, R.color.colorPrimaryDark)
         style = Paint.Style.FILL
     }
     private val textPaint = TextPaint().apply {
@@ -60,17 +62,26 @@ class TextRenderer(
     override fun setSize(width: Float, height: Float) {
         canvasRect.right = width
         canvasRect.bottom = height
-        staticLayout = StaticLayout.Builder.obtain(
-            text,
-            0,
-            text.length,
-            textPaint,
-            max(0, (width - 2f * textPadding).toInt())
-        ).setAlignment(
-            Layout.Alignment.ALIGN_NORMAL
-        ).build()
+        val textWidth = max(0, (width - 2f * textPadding).toInt())
+
+        staticLayout = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            buildStaticLayout23(textWidth)
+        } else {
+            buildStaticLayout21(textWidth)
+        }
         invalidate()
     }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun buildStaticLayout23(textWidth: Int) =
+        StaticLayout.Builder
+            .obtain(text, 0, text.length, textPaint, textWidth)
+            .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+            .build()
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun buildStaticLayout21(textWidth: Int) =
+        StaticLayout(text, textPaint, textWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 0f, true)
 
     private fun draw() {
         holder?.let { holder ->
@@ -91,11 +102,9 @@ class TextRenderer(
         }
     }
 
-    override fun onResume() {
-    }
+    override fun onResume() = Unit
 
-    override fun onPause() {
-    }
+    override fun onPause() = Unit
 
     override fun onDestroy() {
         holder = null

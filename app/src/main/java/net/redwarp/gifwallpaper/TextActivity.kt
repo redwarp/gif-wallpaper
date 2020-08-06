@@ -19,6 +19,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -26,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity
 import io.noties.markwon.Markwon
 import java.io.InputStream
 import kotlinx.android.synthetic.main.activity_text.*
+import net.redwarp.gifwallpaper.util.themeColor
 
 private const val KEY_MARKDOWN_FILENAME = "markdown_filename"
 
@@ -75,12 +77,16 @@ class TextActivity : AppCompatActivity() {
 
     private fun setStatusBarColor(isDark: Boolean) {
         window?.apply {
-            if (isDark) {
-                decorView.systemUiVisibility =
-                    decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (isDark) {
+                    decorView.systemUiVisibility =
+                        decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                } else {
+                    decorView.systemUiVisibility =
+                        decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                }
             } else {
-                decorView.systemUiVisibility =
-                    decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                statusBarColor = context.themeColor(R.attr.colorPrimary)
             }
         }
     }

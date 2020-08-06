@@ -1,7 +1,7 @@
 # About
 
 This app was created because I wanted to display as a wallpaper the animated ninja turtles of
-Alex Redfish. [Check their art](https://www.deviantart.com/alexredfish/gallery), it's dope.
+Alex Redfish. [Check their art](https://www.artstation.com/artwork/5wm5W), it's dope.
 
 ## Made with
 

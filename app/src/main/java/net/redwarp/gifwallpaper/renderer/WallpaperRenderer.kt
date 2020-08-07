@@ -27,6 +27,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.view.Choreographer
 import android.view.SurfaceHolder
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
@@ -38,9 +39,7 @@ import net.redwarp.gifwallpaper.util.MatrixEvaluator
 import net.redwarp.gifwallpaper.util.setCenterCropRectInRect
 import net.redwarp.gifwallpaper.util.setCenterRectInRect
 
-private const val MESSAGE_DRAW = 1
-private const val MESSAGE_INVALIDATE = 2
-private const val MESSAGE_SCHEDULE = 3
+private const val MESSAGE_SCHEDULE = 1
 
 class WallpaperRenderer(
     private var holder: SurfaceHolder?,
@@ -54,6 +53,7 @@ class WallpaperRenderer(
     private val gifRect = RectF(0f, 0f, 0f, 0f)
     private var matrixAnimator: ValueAnimator? = null
     private var handler: DrawHandler? = null
+    private var choreographer: Choreographer? = null
     private val workArray = FloatArray(2)
     private var isCreated = false
     private var isRecycled = false
@@ -100,7 +100,7 @@ class WallpaperRenderer(
     }
 
     override fun onResume() {
-        handler?.postInvalidate()
+        invalidate()
     }
 
     override fun onPause() {
@@ -109,7 +109,7 @@ class WallpaperRenderer(
         gif.drawable.callback = null
         gif.animatable.stop()
 
-        handler?.cancelDraw()
+        cancelDraw()
     }
 
     private fun computeMatrix(
@@ -158,20 +158,21 @@ class WallpaperRenderer(
         if (isRecycled) return
 
         matrixAnimator?.cancel()
-        handler?.cancelDraw()
+        cancelDraw()
         computeMatrix(matrix, scaleType, rotation, canvasRect, gifRect)
 
         gif.drawable.callback = drawableCallback
         gif.animatable.start()
 
-        handler?.requestDraw()
+        requestDraw()
     }
 
     override fun onCreate(surfaceHolder: SurfaceHolder, looper: Looper) {
         isCreated = true
         holder = surfaceHolder
+        choreographer = Choreographer.getInstance()
         handler = DrawHandler(looper, this)
-        handler?.postInvalidate()
+        invalidate()
     }
 
     override fun onDestroy() {
@@ -201,6 +202,17 @@ class WallpaperRenderer(
         draw(canvas, miniCanvasRect, matrix, gif)
 
         return bitmap
+    }
+
+    private val choreographerCallback: (Long) -> Unit = { draw() }
+
+    private fun requestDraw() {
+        if (isRecycled) return
+        choreographer?.postFrameCallback(choreographerCallback)
+    }
+
+    private fun cancelDraw() {
+        choreographer?.removeFrameCallback(choreographerCallback)
     }
 
     private fun draw() {
@@ -240,7 +252,7 @@ class WallpaperRenderer(
             targetMatrix
         ).apply {
             addUpdateListener { _ ->
-                handler?.requestDraw()
+                requestDraw()
             }
             interpolator = AccelerateDecelerateInterpolator()
             duration = 500
@@ -256,11 +268,11 @@ class WallpaperRenderer(
 
     private val drawableCallback = object : Drawable.Callback {
         override fun unscheduleDrawable(who: Drawable, what: Runnable) {
-            handler?.cancelDraw()
+            cancelDraw()
         }
 
         override fun invalidateDrawable(who: Drawable) {
-            handler?.requestDraw()
+            requestDraw()
         }
 
         override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) {
@@ -271,31 +283,14 @@ class WallpaperRenderer(
     private class DrawHandler(looper: Looper, private val wallpaperRenderer: WallpaperRenderer) :
         Handler(looper) {
 
-        fun cancelDraw() {
-            removeMessages(MESSAGE_INVALIDATE)
-            removeMessages(MESSAGE_DRAW)
-        }
-
-        fun requestDraw() {
-            if (hasMessages(MESSAGE_DRAW)) return
-            sendMessage(Message.obtain(this, MESSAGE_DRAW))
-        }
-
         fun scheduleRunnable(what: Runnable, `when`: Long) {
             if (hasMessages(MESSAGE_SCHEDULE)) return
             sendMessageAtTime(Message.obtain(this, what), `when`)
         }
 
-        fun postInvalidate() {
-            if (hasMessages(MESSAGE_INVALIDATE)) return
-            sendMessage(Message.obtain(this, MESSAGE_INVALIDATE))
-        }
-
         override fun handleMessage(msg: Message) {
             if (wallpaperRenderer.isRecycled) return
             when (msg.what) {
-                MESSAGE_DRAW -> wallpaperRenderer.draw()
-                MESSAGE_INVALIDATE -> wallpaperRenderer.invalidate()
                 MESSAGE_SCHEDULE -> msg.callback?.run()
             }
         }
@@ -305,6 +300,7 @@ class WallpaperRenderer(
         FIT_CENTER, FIT_END, FIT_START, FIT_XY, CENTER, CENTER_CROP;
     }
 
+    @Suppress("unused")
     enum class Rotation(val angle: Float) {
         NORTH(0f), EAST(90f), SOUTH(180f), WEST(270f)
     }

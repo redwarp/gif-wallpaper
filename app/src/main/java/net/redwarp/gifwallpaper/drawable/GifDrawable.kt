@@ -91,7 +91,7 @@ class GifDrawable private constructor(
         invalidateSelf()
 
         loopJob = CoroutineScope(Dispatchers.IO).launch {
-            while (isRunning) {
+            while (isRunning && !isRecycled) {
                 val frameDelay = gifDecoder.nextDelay.toLong()
                 val elapsedTime = measureElapsedRealtime {
                     nextFrame = gifDecoder.nextFrame
@@ -111,6 +111,7 @@ class GifDrawable private constructor(
     }
 
     fun recycle() {
+        stop()
         currentFrame?.let(bitmapProvider::release)
         nextFrame?.let(bitmapProvider::release)
         isRecycled = true

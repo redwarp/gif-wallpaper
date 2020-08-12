@@ -183,6 +183,8 @@ class WallpaperRenderer(
 
     fun recycle() {
         isRecycled = true
+        gif.animatable.stop()
+        cancelDraw()
         gif.recycle()
     }
 

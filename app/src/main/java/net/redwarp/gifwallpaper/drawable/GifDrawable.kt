@@ -24,7 +24,7 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
-import com.bumptech.glide.gifdecoder.copy.StandardGifDecoder
+import com.bumptech.glide.gifdecoder.StandardGifDecoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

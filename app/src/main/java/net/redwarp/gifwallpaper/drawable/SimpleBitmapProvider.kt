@@ -16,7 +16,7 @@
 package net.redwarp.gifwallpaper.drawable
 
 import android.graphics.Bitmap
-import com.bumptech.glide.gifdecoder.copy.GifDecoder
+import com.bumptech.glide.gifdecoder.GifDecoder
 import java.util.LinkedList
 import java.util.Queue
 

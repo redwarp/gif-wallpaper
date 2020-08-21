@@ -25,7 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Google, Inc.
  */
-package com.bumptech.glide.gifdecoder.copy;
+package com.bumptech.glide.gifdecoder;
 
 import androidx.annotation.ColorInt;
 

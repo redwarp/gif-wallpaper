@@ -25,7 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Google, Inc.
  */
-package com.bumptech.glide.gifdecoder.copy;
+package com.bumptech.glide.gifdecoder;
 
 import android.util.Log;
 
@@ -37,9 +37,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import static com.bumptech.glide.gifdecoder.copy.GifDecoder.STATUS_FORMAT_ERROR;
-import static com.bumptech.glide.gifdecoder.copy.GifFrame.DISPOSAL_NONE;
-import static com.bumptech.glide.gifdecoder.copy.GifFrame.DISPOSAL_UNSPECIFIED;
+import static com.bumptech.glide.gifdecoder.GifDecoder.STATUS_FORMAT_ERROR;
+import static com.bumptech.glide.gifdecoder.GifFrame.DISPOSAL_NONE;
+import static com.bumptech.glide.gifdecoder.GifFrame.DISPOSAL_UNSPECIFIED;
 
 /**
  * A class responsible for creating {@link com.bumptech.glide.gifdecoder.GifHeader}s from data

@@ -25,7 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Google, Inc.
  */
-package com.bumptech.glide.gifdecoder.copy;
+package com.bumptech.glide.gifdecoder;
 
 /*
  * Copyright (c) 2013 Xcellent Creations, Inc.
@@ -50,10 +50,10 @@ package com.bumptech.glide.gifdecoder.copy;
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import static com.bumptech.glide.gifdecoder.copy.GifFrame.DISPOSAL_BACKGROUND;
-import static com.bumptech.glide.gifdecoder.copy.GifFrame.DISPOSAL_NONE;
-import static com.bumptech.glide.gifdecoder.copy.GifFrame.DISPOSAL_PREVIOUS;
-import static com.bumptech.glide.gifdecoder.copy.GifFrame.DISPOSAL_UNSPECIFIED;
+import static com.bumptech.glide.gifdecoder.GifFrame.DISPOSAL_BACKGROUND;
+import static com.bumptech.glide.gifdecoder.GifFrame.DISPOSAL_NONE;
+import static com.bumptech.glide.gifdecoder.GifFrame.DISPOSAL_PREVIOUS;
+import static com.bumptech.glide.gifdecoder.GifFrame.DISPOSAL_UNSPECIFIED;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;

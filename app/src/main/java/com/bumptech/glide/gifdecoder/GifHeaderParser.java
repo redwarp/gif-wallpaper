@@ -195,7 +195,7 @@ public class GifHeaderParser {
     readHeader();
     if (!err()) {
       readContents();
-      if (header.frameCount < 0) {
+      if (header.numFrames < 0) {
         header.status = STATUS_FORMAT_ERROR;
       }
     }
@@ -212,7 +212,7 @@ public class GifHeaderParser {
     if (!err()) {
       readContents(2 /* maxFrames */);
     }
-    return header.frameCount > 1;
+    return header.numFrames > 1;
   }
 
   /**
@@ -228,7 +228,7 @@ public class GifHeaderParser {
   private void readContents(int maxFrames) {
     // Read GIF file content blocks.
     boolean done = false;
-    while (!(done || err() || header.frameCount > maxFrames)) {
+    while (!(done || err() || header.numFrames > maxFrames)) {
       int code = read();
       switch (code) {
         case IMAGE_SEPARATOR:
@@ -367,7 +367,7 @@ public class GifHeaderParser {
       return;
     }
 
-    header.frameCount++;
+    header.numFrames++;
     // Add image to frame.
     header.frames.add(header.currentFrame);
   }

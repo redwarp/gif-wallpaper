@@ -113,6 +113,7 @@ class GifDrawable private constructor(
         currentFrame?.let(bitmapProvider::release)
         nextFrame?.let(bitmapProvider::release)
         isRecycled = true
+        bitmapProvider.flush()
     }
 
     private inline fun measureElapsedRealtime(crossinline block: () -> Unit): Long {

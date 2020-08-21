@@ -189,13 +189,13 @@ public class StandardGifDecoder implements GifDecoder {
 
   @Override
   public void advance() {
-    framePointer = (framePointer + 1) % header.frameCount;
+    framePointer = (framePointer + 1) % header.numFrames;
   }
 
   @Override
   public int getDelay(int n) {
     int delay = -1;
-    if ((n >= 0) && (n < header.frameCount)) {
+    if ((n >= 0) && (n < header.numFrames)) {
       delay = header.frames.get(n).delay;
     }
     return delay;
@@ -203,7 +203,7 @@ public class StandardGifDecoder implements GifDecoder {
 
   @Override
   public int getNextDelay() {
-    if (header.frameCount <= 0 || framePointer < 0) {
+    if (header.numFrames <= 0 || framePointer < 0) {
       return 0;
     }
 
@@ -212,7 +212,7 @@ public class StandardGifDecoder implements GifDecoder {
 
   @Override
   public int getFrameCount() {
-    return header.frameCount;
+    return header.numFrames;
   }
 
   @Override
@@ -223,15 +223,6 @@ public class StandardGifDecoder implements GifDecoder {
   @Override
   public void resetFrameIndex() {
     framePointer = INITIAL_FRAME_POINTER;
-  }
-
-  @Deprecated
-  @Override
-  public int getLoopCount() {
-    if (header.loopCount == GifHeader.NETSCAPE_LOOP_COUNT_DOES_NOT_EXIST) {
-      return 1;
-    }
-    return header.loopCount;
   }
 
   @Override
@@ -258,10 +249,10 @@ public class StandardGifDecoder implements GifDecoder {
   @Nullable
   @Override
   public synchronized Bitmap getNextFrame() {
-    if (header.frameCount <= 0 || framePointer < 0) {
+    if (header.numFrames <= 0 || framePointer < 0) {
       if (Log.isLoggable(TAG, Log.DEBUG)) {
         Log.d(TAG, "Unable to decode frame"
-            + ", frameCount=" + header.frameCount
+            + ", frameCount=" + header.numFrames
             + ", framePointer=" + framePointer
         );
       }

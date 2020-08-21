@@ -33,6 +33,8 @@ class SimpleBitmapProvider : GifDecoder.BitmapProvider {
     }
 
     override fun release(bitmap: Bitmap) {
+        if (bitmap.isRecycled) return
+
         val queue = bitmaps[bitmap.allocationByteCount]
             ?: LinkedList<Bitmap>().also { bitmaps[bitmap.allocationByteCount] = it }
         queue.offer(bitmap)
@@ -54,6 +56,19 @@ class SimpleBitmapProvider : GifDecoder.BitmapProvider {
 
     override fun obtainIntArray(size: Int): IntArray {
         return intArrays[size]?.poll() ?: IntArray(size)
+    }
+
+    override fun flush() {
+        intArrays.clear()
+        byteArrays.clear()
+        bitmaps.iterator().forEach { entry ->
+            val queueIterator = entry.value.iterator()
+            while (queueIterator.hasNext()) {
+                queueIterator.next().recycle()
+                queueIterator.remove()
+            }
+        }
+        bitmaps.clear()
     }
 
     private fun findBitmap(cacheKey: Int): Bitmap? {

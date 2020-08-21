@@ -123,12 +123,12 @@ class GifDrawable private constructor(
 
     companion object {
         fun decode(byteArray: ByteArray): GifDrawable {
-            val myBitmapProvider = SimpleBitmapProvider()
-            val gifDecoder = StandardGifDecoder(myBitmapProvider).apply {
+            val bitmapProvider = SimpleBitmapProvider()
+            val gifDecoder = StandardGifDecoder(bitmapProvider).apply {
                 read(byteArray)
             }
 
-            return GifDrawable(gifDecoder, myBitmapProvider)
+            return GifDrawable(gifDecoder, bitmapProvider)
         }
     }
 }

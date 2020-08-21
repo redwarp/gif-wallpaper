@@ -24,9 +24,7 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
-import com.bumptech.glide.Glide
-import com.bumptech.glide.gifdecoder.StandardGifDecoder
-import com.bumptech.glide.load.resource.gif.GifBitmapProvider
+import com.bumptech.glide.gifdecoder.copy.StandardGifDecoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,7 +33,7 @@ import kotlinx.coroutines.launch
 
 class GifDrawable private constructor(
     private val gifDecoder: StandardGifDecoder,
-    private val bitmapProvider: GifBitmapProvider
+    private val bitmapProvider: SimpleBitmapProvider
 ) : Drawable(), Animatable {
 
     private var currentFrame: Bitmap?
@@ -125,12 +123,13 @@ class GifDrawable private constructor(
 
     companion object {
         fun decode(context: Context, byteArray: ByteArray): GifDrawable {
-            val bitmapProvider = GifBitmapProvider(Glide.get(context).bitmapPool)
-            val gifDecoder = StandardGifDecoder(bitmapProvider).apply {
+            // val bitmapProvider = GifBitmapProvider(Glide.get(context).bitmapPool)
+            val myBitmapProvider = SimpleBitmapProvider()
+            val gifDecoder = StandardGifDecoder(myBitmapProvider).apply {
                 read(byteArray)
             }
 
-            return GifDrawable(gifDecoder, bitmapProvider)
+            return GifDrawable(gifDecoder, myBitmapProvider)
         }
     }
 }

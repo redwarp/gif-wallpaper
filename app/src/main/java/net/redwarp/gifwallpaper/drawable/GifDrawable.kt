@@ -15,7 +15,6 @@
  */
 package net.redwarp.gifwallpaper.drawable
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.ColorFilter
@@ -24,9 +23,7 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
-import com.bumptech.glide.Glide
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
-import com.bumptech.glide.load.resource.gif.GifBitmapProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,7 +32,7 @@ import kotlinx.coroutines.launch
 
 class GifDrawable private constructor(
     private val gifDecoder: StandardGifDecoder,
-    private val bitmapProvider: GifBitmapProvider
+    private val bitmapProvider: SimpleBitmapProvider
 ) : Drawable(), Animatable {
 
     private var currentFrame: Bitmap?
@@ -115,6 +112,7 @@ class GifDrawable private constructor(
         currentFrame?.let(bitmapProvider::release)
         nextFrame?.let(bitmapProvider::release)
         isRecycled = true
+        bitmapProvider.flush()
     }
 
     private inline fun measureElapsedRealtime(crossinline block: () -> Unit): Long {
@@ -124,8 +122,8 @@ class GifDrawable private constructor(
     }
 
     companion object {
-        fun decode(context: Context, byteArray: ByteArray): GifDrawable {
-            val bitmapProvider = GifBitmapProvider(Glide.get(context).bitmapPool)
+        fun decode(byteArray: ByteArray): GifDrawable {
+            val bitmapProvider = SimpleBitmapProvider()
             val gifDecoder = StandardGifDecoder(bitmapProvider).apply {
                 read(byteArray)
             }

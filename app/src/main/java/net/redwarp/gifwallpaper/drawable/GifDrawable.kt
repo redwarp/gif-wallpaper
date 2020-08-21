@@ -15,7 +15,6 @@
  */
 package net.redwarp.gifwallpaper.drawable
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.ColorFilter
@@ -123,8 +122,7 @@ class GifDrawable private constructor(
     }
 
     companion object {
-        fun decode(context: Context, byteArray: ByteArray): GifDrawable {
-            // val bitmapProvider = GifBitmapProvider(Glide.get(context).bitmapPool)
+        fun decode(byteArray: ByteArray): GifDrawable {
             val myBitmapProvider = SimpleBitmapProvider()
             val gifDecoder = StandardGifDecoder(myBitmapProvider).apply {
                 read(byteArray)

@@ -52,7 +52,7 @@ class Gif private constructor(gif: Any) {
 
         private fun getGifDrawable(context: Context, uri: Uri): GifDrawable? {
             return context.contentResolver.openInputStream(uri)?.use {
-                return GifDrawable.decode(context, it.readBytes())
+                return GifDrawable.decode(it.readBytes())
             }
         }
     }

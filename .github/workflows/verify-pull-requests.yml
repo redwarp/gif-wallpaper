@@ -1,8 +1,5 @@
-name: Verify
-on: 
-  push:
-    branches:
-      - '*'
+name: Verify pull requests
+on:
   pull_request:
     branches: 
       - '*'

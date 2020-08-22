@@ -46,7 +46,7 @@ class TextRenderer(
         color = Color.WHITE
         textAlign = Paint.Align.CENTER
         typeface = Typeface.SANS_SERIF
-        textSize = context.resources.getDimension(R.dimen.title)
+        textSize = context.resources.getDimension(R.dimen.text_renderer_font_size)
     }
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
     private var handler: Handler? = null
@@ -79,11 +79,14 @@ class TextRenderer(
             .setAlignment(Layout.Alignment.ALIGN_NORMAL)
             .build()
 
+    @Suppress("DEPRECATION")
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun buildStaticLayout21(textWidth: Int) =
         StaticLayout(text, textPaint, textWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 0f, true)
 
     private fun draw() {
+        val staticLayout = staticLayout ?: return
+
         holder?.let { holder ->
             val canvas = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 holder.lockHardwareCanvas()
@@ -94,8 +97,12 @@ class TextRenderer(
             canvas.drawRect(canvasRect, emptyPaint)
 
             canvas.save()
-            canvas.translate(canvasRect.centerX(), canvasRect.centerY())
-            staticLayout?.draw(canvas)
+            canvas.translate(
+                canvasRect.centerX(),
+                canvasRect.centerY() - staticLayout.height.toFloat() / 2f
+            )
+
+            staticLayout.draw(canvas)
             canvas.restore()
 
             holder.unlockCanvasAndPost(canvas)

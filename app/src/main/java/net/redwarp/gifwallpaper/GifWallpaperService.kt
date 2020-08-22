@@ -122,11 +122,11 @@ class GifWallpaperService : WallpaperService() {
         private fun requestWallpaperColorsComputation() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
                 handler?.let { handler ->
-                    if (!handler.hasMessages(MESSAGE_REFRESH_WALLPAPER_COLORS)) {
-                        val message = Message.obtain(null, refreshWallpaperColorsRunnable)
-                        message.what = MESSAGE_REFRESH_WALLPAPER_COLORS
-                        handler.sendMessageDelayed(message, REFRESH_DELAY)
-                    }
+                    // Delete previous message, they are obsolete.
+                    handler.removeMessages(MESSAGE_REFRESH_WALLPAPER_COLORS)
+                    val message = Message.obtain(null, refreshWallpaperColorsRunnable)
+                    message.what = MESSAGE_REFRESH_WALLPAPER_COLORS
+                    handler.sendMessageDelayed(message, REFRESH_DELAY)
                 }
             }
         }

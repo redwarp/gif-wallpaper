@@ -1,0 +1,31 @@
+name: Verify
+on: 
+  push:
+    branches:
+      - develop 
+      - release
+  pull_request:
+    branches: 
+      - '*'
+jobs:
+  test:
+    runs-on: [ubuntu-latest]
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v2
+    - name: Cache Gradle Folders
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches/
+          ~/.gradle/wrapper/
+        key: cache-gradle-${{ matrix.kotlin-version }}-${{ hashFiles('build.gradle') }}
+        restore-keys: |
+          cache-gradle-${{ matrix.version }}-
+          cache-gradle-
+    - name: Run all the tests
+      run: ./gradlew test
+
+    - name: Stop Gradle
+      run: ./gradlew --stop

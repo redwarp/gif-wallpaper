@@ -1,6 +1,8 @@
 name: Verify
 on: 
   push:
+    branches:
+      - '*'
   pull_request:
     branches: 
       - '*'
@@ -11,16 +13,6 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2
-    - name: Cache Gradle Folders
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.gradle/caches/
-          ~/.gradle/wrapper/
-        key: cache-gradle-${{ matrix.kotlin-version }}-${{ hashFiles('build.gradle') }}
-        restore-keys: |
-          cache-gradle-${{ matrix.version }}-
-          cache-gradle-
     - name: Run all the tests
       run: ./gradlew test
 

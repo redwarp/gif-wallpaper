@@ -1,0 +1,17 @@
+name: Verify pull requests
+on:
+  pull_request:
+    branches: 
+      - '*'
+jobs:
+  test:
+    runs-on: [ubuntu-latest]
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v2
+    - name: Run all the tests
+      run: ./gradlew test
+
+    - name: Stop Gradle
+      run: ./gradlew --stop

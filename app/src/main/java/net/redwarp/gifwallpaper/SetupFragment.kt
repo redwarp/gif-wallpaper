@@ -15,20 +15,25 @@
  */
 package net.redwarp.gifwallpaper
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
+import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Keep
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -62,6 +67,7 @@ class SetupFragment : Fragment() {
             change_color_button.isEnabled = value != null
         }
     private var currentColor: Int? = null
+    private lateinit var detector: GestureDetectorCompat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +82,7 @@ class SetupFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_setup, container, false)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -104,7 +111,8 @@ class SetupFragment : Fragment() {
             model = model,
             surfaceHolder = surface_view.holder,
             animated = true,
-            unsetText = getString(R.string.click_the_open_gif_button)
+            unsetText = getString(R.string.click_the_open_gif_button),
+            isService = false
         ).observe(
             viewLifecycleOwner,
             Observer { renderer: Renderer ->
@@ -130,6 +138,12 @@ class SetupFragment : Fragment() {
             change_scale_button.isEnabled = isWallpaperSet
             rotate_button.isEnabled = isWallpaperSet
         })
+
+        detector = GestureDetectorCompat(requireContext(), MyGestureListener())
+        surface_view.setOnTouchListener { _, event ->
+            Log.d("SetupFragment", "Detect touche event")
+            detector.onTouchEvent(event)
+        }
     }
 
     override fun onDestroyView() {
@@ -244,6 +258,18 @@ class SetupFragment : Fragment() {
         super.onDestroy()
         if (activity?.isFinishing == true) {
             (renderCallback?.renderer as? WallpaperRenderer)?.recycle()
+        }
+    }
+
+    private inner class MyGestureListener : GestureDetector.SimpleOnGestureListener() {
+        override fun onScroll(
+            e1: MotionEvent?,
+            e2: MotionEvent?,
+            distanceX: Float,
+            distanceY: Float
+        ): Boolean {
+            model.postTranslate(-distanceX, -distanceY)
+            return true
         }
     }
 }

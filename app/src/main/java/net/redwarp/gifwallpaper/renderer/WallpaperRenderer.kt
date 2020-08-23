@@ -46,7 +46,8 @@ class WallpaperRenderer(
     private val gif: Gif,
     private var scaleType: ScaleType = ScaleType.FIT_CENTER,
     private var rotation: Rotation = Rotation.NORTH,
-    backgroundColor: Int = Color.BLACK
+    backgroundColor: Int = Color.BLACK,
+    private var translation: Pair<Float, Float> = 0f to 0f
 ) : Renderer {
 
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
@@ -94,6 +95,17 @@ class WallpaperRenderer(
         }
     }
 
+    fun setTranslate(translateX: Float, translateY: Float) {
+        this.translation = translateX to translateY
+        invalidate()
+    }
+
+    fun postTranslate(translateX: Float, translateY: Float) {
+        translation = (translation.first + translateX) to (translation.second + translateY)
+        matrix.postTranslate(translateX, translateY)
+        requestDraw()
+    }
+
     fun setBackgroundColor(backgroundColor: Int) {
         backgroundPaint.color = backgroundColor
         invalidate()
@@ -117,7 +129,8 @@ class WallpaperRenderer(
         scaleType: ScaleType,
         rotation: Rotation,
         canvasRect: RectF,
-        gifRect: RectF
+        gifRect: RectF,
+        translation: Pair<Float, Float>
     ) {
         when (scaleType) {
             ScaleType.FIT_CENTER ->
@@ -151,6 +164,8 @@ class WallpaperRenderer(
                 else -> Unit
             }
         }
+        val (translateX, translateY) = translation
+        matrix.postTranslate(translateX, translateY)
     }
 
     override fun invalidate() {
@@ -159,7 +174,7 @@ class WallpaperRenderer(
 
         matrixAnimator?.cancel()
         cancelDraw()
-        computeMatrix(matrix, scaleType, rotation, canvasRect, gifRect)
+        computeMatrix(matrix, scaleType, rotation, canvasRect, gifRect, translation)
 
         gif.drawable.callback = drawableCallback
         gif.animatable.start()
@@ -198,7 +213,7 @@ class WallpaperRenderer(
             Bitmap.Config.ARGB_8888
         )
         val matrix = Matrix()
-        computeMatrix(matrix, scaleType, rotation, miniCanvasRect, gifRect)
+        computeMatrix(matrix, scaleType, rotation, miniCanvasRect, gifRect, translation)
 
         val canvas = Canvas(bitmap)
         draw(canvas, miniCanvasRect, matrix, gif)
@@ -219,6 +234,7 @@ class WallpaperRenderer(
 
     private fun draw() {
         if (isRecycled) return
+
         holder?.let { holder ->
             val canvas = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 holder.lockHardwareCanvas()
@@ -243,7 +259,7 @@ class WallpaperRenderer(
 
     private fun transformMatrix(scaleType: ScaleType, rotation: Rotation) {
         val targetMatrix = Matrix().also {
-            computeMatrix(it, scaleType, rotation, canvasRect, gifRect)
+            computeMatrix(it, scaleType, rotation, canvasRect, gifRect, 0f to 0f)
         }
         val sourceMatrix = Matrix(matrix)
 

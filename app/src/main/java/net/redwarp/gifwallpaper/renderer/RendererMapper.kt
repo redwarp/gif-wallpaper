@@ -29,8 +29,9 @@ import net.redwarp.gifwallpaper.data.WallpaperStatus
 class RendererMapper(
     model: Model,
     surfaceHolder: SurfaceHolder,
-    animated: Boolean = false,
-    unsetText: String
+    animated: Boolean,
+    unsetText: String,
+    isService: Boolean
 ) :
     MediatorLiveData<Renderer>() {
     init {
@@ -66,13 +67,15 @@ class RendererMapper(
                             model.scaleTypeData.value ?: WallpaperRenderer.ScaleType.FIT_CENTER
                         val rotation = model.rotationData.value ?: WallpaperRenderer.Rotation.NORTH
                         val backgroundColor = model.backgroundColorData.value ?: Color.BLACK
+                        val translation = model.translationData.value ?: (0f to 0f)
                         postValue(
                             WallpaperRenderer(
                                 surfaceHolder,
                                 gif,
                                 scaleType,
                                 rotation,
-                                backgroundColor
+                                backgroundColor,
+                                translation
                             )
                         )
                     }
@@ -87,6 +90,15 @@ class RendererMapper(
         }
         addSource(model.rotationData) { rotation ->
             (value as? WallpaperRenderer)?.setRotation(rotation, animated)
+        }
+        if (isService) {
+            addSource(model.translationData) { (translateX, translateY) ->
+                (value as? WallpaperRenderer)?.setTranslate(translateX, translateY)
+            }
+        } else {
+            addSource(model.postTranslationData) { (translateX, translateY) ->
+                (value as? WallpaperRenderer)?.postTranslate(translateX, translateY)
+            }
         }
     }
 

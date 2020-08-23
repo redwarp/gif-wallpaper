@@ -21,6 +21,7 @@ import android.net.Uri
 import androidx.annotation.ColorInt
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import net.redwarp.gifwallpaper.renderer.WallpaperRenderer
 
 internal const val SHARED_PREF_NAME = "wallpaper_pref"
@@ -28,18 +29,24 @@ internal const val KEY_WALLPAPER_URI = "wallpaper_uri"
 internal const val KEY_WALLPAPER_SCALE_TYPE = "wallpaper_scale_type"
 internal const val KEY_WALLPAPER_BACKGROUND_COLOR = "wallpaper_background_color"
 internal const val KEY_WALLPAPER_ROTATION = "wallpaper_rotation"
+internal const val KEY_WALLPAPER_TRANSLATE_X = "wallpaper_translate_x"
+internal const val KEY_WALLPAPER_TRANSLATE_Y = "wallpaper_translate_y"
 
 class Model private constructor(val context: Context) {
     private val _wallpaperStatus = WallpaperLiveData(context)
     private val _scaleTypeData = ScaleTypeData(context)
     private val _rotationData = RotationData(context)
     private val _backgroundColorData = MediatorLiveData<Int>()
+    private val _postTranslateData = MutableLiveData<Pair<Float, Float>>()
+    private val _translateData = MutableLiveData<Pair<Float, Float>>()
 
     val wallpaperStatus: LiveData<WallpaperStatus> get() = _wallpaperStatus
     val scaleTypeData: LiveData<WallpaperRenderer.ScaleType> get() = _scaleTypeData
     val rotationData: LiveData<WallpaperRenderer.Rotation> get() = _rotationData
     val colorInfoData: LiveData<ColorInfo> = ColorLiveData(context, wallpaperStatus)
     val backgroundColorData: LiveData<Int> get() = _backgroundColorData
+    val postTranslationData: LiveData<Pair<Float, Float>> get() = _postTranslateData
+    val translationData: LiveData<Pair<Float, Float>> get() = _translateData
 
     private var isColorSet = true
 
@@ -58,6 +65,10 @@ class Model private constructor(val context: Context) {
         _backgroundColorData.observeForever { backgroundColor ->
             storeBackgroundColor(context, backgroundColor)
         }
+        _translateData.value = loadTranslation(context)
+        _translateData.observeForever { (translateX, translateY) ->
+            storeTranslation(context, translateX, translateY)
+        }
         wallpaperStatus.observeForever {
             if (it is WallpaperStatus.NotSet) isColorSet = false
         }
@@ -75,6 +86,24 @@ class Model private constructor(val context: Context) {
         return sharedPreferences.getInt(KEY_WALLPAPER_BACKGROUND_COLOR, Color.RED)
     }
 
+    private fun loadTranslation(context: Context): Pair<Float, Float> {
+        val sharedPreferences =
+            context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+        return sharedPreferences.getFloat(
+            KEY_WALLPAPER_TRANSLATE_X,
+            0f
+        ) to sharedPreferences.getFloat(KEY_WALLPAPER_TRANSLATE_Y, 0f)
+    }
+
+    private fun storeTranslation(context: Context, translateX: Float, translateY: Float) {
+        val sharedPreferences =
+            context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
+        sharedPreferences.edit()
+            .putFloat(KEY_WALLPAPER_TRANSLATE_X, translateX)
+            .putFloat(KEY_WALLPAPER_TRANSLATE_Y, translateY)
+            .apply()
+    }
+
     fun loadNewGif(uri: Uri) {
         isColorSet = false
         _wallpaperStatus.loadNewGif(uri)
@@ -90,14 +119,32 @@ class Model private constructor(val context: Context) {
 
     fun setScaleType(scaleType: WallpaperRenderer.ScaleType) {
         _scaleTypeData.setScaleType(scaleType)
+        resetTranslate()
     }
 
     fun setRotation(rotation: WallpaperRenderer.Rotation) {
         _rotationData.setRotation(rotation)
+        resetTranslate()
     }
 
     fun setBackgroundColor(@ColorInt color: Int) {
         _backgroundColorData.postValue(color)
+    }
+
+    fun postTranslate(translateX: Float, translateY: Float) {
+        _postTranslateData.postValue(translateX to translateY)
+        val translatePair: Pair<Float, Float> =
+            _translateData.value?.let { (previousX, previousY) ->
+                (previousX + translateX) to (previousY + translateY)
+            } ?: (translateX to translateY)
+        _translateData.postValue(translatePair)
+    }
+
+    fun resetTranslate() {
+        _translateData.value?.let {
+            _postTranslateData.postValue(-it.first to -it.second)
+        }
+        _translateData.postValue(0f to 0f)
     }
 
     private class ScaleTypeData(private val context: Context) :

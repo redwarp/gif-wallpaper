@@ -35,29 +35,38 @@ class SimpleBitmapProvider : GifDecoder.BitmapProvider {
     override fun release(bitmap: Bitmap) {
         if (bitmap.isRecycled) return
 
-        val queue = bitmaps[bitmap.allocationByteCount]
-            ?: LinkedList<Bitmap>().also { bitmaps[bitmap.allocationByteCount] = it }
-        queue.offer(bitmap)
+        synchronized(this) {
+            val queue = bitmaps[bitmap.allocationByteCount]
+                ?: LinkedList<Bitmap>().also { bitmaps[bitmap.allocationByteCount] = it }
+            queue.offer(bitmap)
+        }
     }
 
+    @Synchronized
     override fun release(bytes: ByteArray) {
-        byteArrays[bytes.size] ?: LinkedList<ByteArray>().also { byteArrays[bytes.size] = it }
-            .offer(bytes)
+        byteArrays[bytes.size] ?: LinkedList<ByteArray>().also {
+            byteArrays[bytes.size] = it
+        }.offer(bytes)
     }
 
+    @Synchronized
     override fun release(array: IntArray) {
-        intArrays[array.size] ?: LinkedList<IntArray>().also { intArrays[array.size] = it }
-            .offer(array)
+        intArrays[array.size] ?: LinkedList<IntArray>().also {
+            intArrays[array.size] = it
+        }.offer(array)
     }
 
+    @Synchronized
     override fun obtainByteArray(size: Int): ByteArray {
         return byteArrays[size]?.poll() ?: ByteArray(size)
     }
 
+    @Synchronized
     override fun obtainIntArray(size: Int): IntArray {
         return intArrays[size]?.poll() ?: IntArray(size)
     }
 
+    @Synchronized
     override fun flush() {
         intArrays.clear()
         byteArrays.clear()
@@ -71,6 +80,7 @@ class SimpleBitmapProvider : GifDecoder.BitmapProvider {
         bitmaps.clear()
     }
 
+    @Synchronized
     private fun findBitmap(cacheKey: Int): Bitmap? {
         return bitmaps[cacheKey]?.poll()
     }

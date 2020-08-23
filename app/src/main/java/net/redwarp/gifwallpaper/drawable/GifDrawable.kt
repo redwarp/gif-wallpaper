@@ -41,6 +41,7 @@ class GifDrawable private constructor(
         gifDecoder.resetFrameIndex()
         gifDecoder.advance()
         currentFrame = gifDecoder.nextFrame
+        gifDecoder.advance()
     }
 
     private var nextFrame: Bitmap? = null

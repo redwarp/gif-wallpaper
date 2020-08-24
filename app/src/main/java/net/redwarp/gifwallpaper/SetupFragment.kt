@@ -285,5 +285,10 @@ class SetupFragment : Fragment() {
             model.postTranslate(-distanceX, -distanceY)
             return true
         }
+
+        override fun onDoubleTap(e: MotionEvent): Boolean {
+            model.resetTranslate()
+            return true
+        }
     }
 }

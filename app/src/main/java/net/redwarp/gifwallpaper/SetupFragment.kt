@@ -19,10 +19,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.Menu
@@ -34,9 +34,9 @@ import android.view.ViewGroup
 import androidx.annotation.Keep
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.android.synthetic.main.activity_setup.*
 import kotlinx.android.synthetic.main.fragment_setup.*
@@ -68,6 +68,7 @@ class SetupFragment : Fragment() {
         }
     private var currentColor: Int? = null
     private lateinit var detector: GestureDetectorCompat
+    private var systemGestureInsetsRect = Rect()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,36 +114,44 @@ class SetupFragment : Fragment() {
             animated = true,
             unsetText = getString(R.string.click_the_open_gif_button),
             isService = false
-        ).observe(
-            viewLifecycleOwner,
-            Observer { renderer: Renderer ->
-                renderCallback?.renderer = renderer
-            })
+        ).observe(viewLifecycleOwner) { renderer: Renderer ->
+            renderCallback?.renderer = renderer
+        }
 
-        model.colorInfoData.observe(viewLifecycleOwner, Observer { colorStatus ->
+        model.colorInfoData.observe(viewLifecycleOwner) { colorStatus ->
             colorInfo = colorStatus as? ColorScheme
             change_color_button.isEnabled = colorStatus is ColorScheme
-        })
-        model.backgroundColorData.observe(viewLifecycleOwner, Observer {
+        }
+        model.backgroundColorData.observe(viewLifecycleOwner) {
             currentColor = it
             adjustTheme(it)
-        })
-        model.scaleTypeData.observe(viewLifecycleOwner, Observer {
+        }
+        model.scaleTypeData.observe(viewLifecycleOwner) {
             currentScale = it.ordinal
-        })
-        model.rotationData.observe(viewLifecycleOwner, Observer {
+        }
+        model.rotationData.observe(viewLifecycleOwner) {
             currentRotation = it.ordinal
-        })
-        model.wallpaperStatus.observe(viewLifecycleOwner, Observer {
+        }
+        model.wallpaperStatus.observe(viewLifecycleOwner) {
             val isWallpaperSet = it is WallpaperStatus.Wallpaper
             change_scale_button.isEnabled = isWallpaperSet
             rotate_button.isEnabled = isWallpaperSet
-        })
+        }
 
         detector = GestureDetectorCompat(requireContext(), MyGestureListener())
-        surface_view.setOnTouchListener { _, event ->
-            Log.d("SetupFragment", "Detect touche event")
-            detector.onTouchEvent(event)
+        surface_view.setOnTouchListener { surfaceView, event ->
+            if (event.outside(surfaceView, systemGestureInsetsRect)) false
+            else detector.onTouchEvent(event)
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(surface_view) { _, inset ->
+            systemGestureInsetsRect.set(
+                inset.systemGestureInsets.left,
+                inset.systemGestureInsets.top,
+                inset.systemGestureInsets.right,
+                inset.systemGestureInsets.bottom,
+            )
+
+            inset
         }
     }
 
@@ -150,6 +159,48 @@ class SetupFragment : Fragment() {
         super.onDestroyView()
         renderCallback?.let(lifecycle::removeObserver)
         renderCallback = null
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
+            data?.data?.also { uri ->
+                model.loadNewGif(uri)
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.extras, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.clear_gif -> {
+                model.clearGif()
+                return true
+            }
+            R.id.about -> {
+                startActivity(TextActivity.getIntent(requireContext(), "about.md"))
+
+                return true
+            }
+            R.id.privacy -> {
+                startActivity(TextActivity.getIntent(requireContext(), "privacy.md"))
+
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (activity?.isFinishing == true) {
+            (renderCallback?.renderer as? WallpaperRenderer)?.recycle()
+        }
     }
 
     private fun adjustTheme(backgroundColor: Int) {
@@ -219,46 +270,9 @@ class SetupFragment : Fragment() {
         model.setRotation(WallpaperRenderer.Rotation.values()[currentRotation])
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private fun MotionEvent.outside(view: View, rect: Rect): Boolean {
 
-        if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
-            data?.data?.also { uri ->
-                model.loadNewGif(uri)
-            }
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.extras, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.clear_gif -> {
-                model.clearGif()
-                return true
-            }
-            R.id.about -> {
-                startActivity(TextActivity.getIntent(requireContext(), "about.md"))
-
-                return true
-            }
-            R.id.privacy -> {
-                startActivity(TextActivity.getIntent(requireContext(), "privacy.md"))
-
-                return true
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (activity?.isFinishing == true) {
-            (renderCallback?.renderer as? WallpaperRenderer)?.recycle()
-        }
+        return x < view.left + rect.left || x > view.right - rect.right || y < view.top + rect.top || y > view.bottom - rect.bottom
     }
 
     private inner class MyGestureListener : GestureDetector.SimpleOnGestureListener() {

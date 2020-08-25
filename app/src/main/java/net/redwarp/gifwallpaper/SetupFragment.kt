@@ -165,6 +165,7 @@ class SetupFragment : Fragment() {
         if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
                 model.loadNewGif(uri)
+                model.resetTranslate()
             }
         }
     }

@@ -19,7 +19,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
@@ -31,6 +30,7 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.annotation.Keep
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GestureDetectorCompat
@@ -68,7 +68,6 @@ class SetupFragment : Fragment() {
         }
     private var currentColor: Int? = null
     private lateinit var detector: GestureDetectorCompat
-    private var systemGestureInsetsRect = Rect()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,12 +138,11 @@ class SetupFragment : Fragment() {
         }
 
         detector = GestureDetectorCompat(requireContext(), MyGestureListener())
-        surface_view.setOnTouchListener { surfaceView, event ->
-            if (event.outside(surfaceView, systemGestureInsetsRect)) false
-            else detector.onTouchEvent(event)
+        touch_area.setOnTouchListener { _, event ->
+            detector.onTouchEvent(event)
         }
         ViewCompat.setOnApplyWindowInsetsListener(surface_view) { _, inset ->
-            systemGestureInsetsRect.set(
+            (touch_area.layoutParams as? FrameLayout.LayoutParams)?.setMargins(
                 inset.systemGestureInsets.left,
                 inset.systemGestureInsets.top,
                 inset.systemGestureInsets.right,
@@ -268,11 +266,6 @@ class SetupFragment : Fragment() {
     private fun rotate() {
         currentRotation = (currentRotation + 1) % WallpaperRenderer.Rotation.values().size
         model.setRotation(WallpaperRenderer.Rotation.values()[currentRotation])
-    }
-
-    private fun MotionEvent.outside(view: View, rect: Rect): Boolean {
-
-        return x < view.left + rect.left || x > view.right - rect.right || y < view.top + rect.top || y > view.bottom - rect.bottom
     }
 
     private inner class MyGestureListener : GestureDetector.SimpleOnGestureListener() {

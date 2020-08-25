@@ -42,10 +42,10 @@ class GifFrame {
      * *Indicates the way in which the graphic is to be treated after being displayed.*
      * Disposal methods 0-3 are defined, 4-7 are reserved for future use.
      *
-     * @see .DISPOSAL_UNSPECIFIED
-     * @see .DISPOSAL_NONE
-     * @see .DISPOSAL_BACKGROUND
-     * @see .DISPOSAL_PREVIOUS
+     * @see [DISPOSAL_UNSPECIFIED]
+     * @see [DISPOSAL_NONE]
+     * @see [DISPOSAL_BACKGROUND]
+     * @see [DISPOSAL_PREVIOUS]
      */
     @Retention(AnnotationRetention.SOURCE)
     @IntDef(value = [DISPOSAL_UNSPECIFIED, DISPOSAL_NONE, DISPOSAL_BACKGROUND, DISPOSAL_PREVIOUS])

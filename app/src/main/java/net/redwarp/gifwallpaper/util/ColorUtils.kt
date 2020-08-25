@@ -32,9 +32,7 @@ fun Int.isDark(): Boolean {
 fun Context.themeColor(
     @AttrRes themeAttrId: Int
 ): Int {
-    return obtainStyledAttributes(
-        intArrayOf(themeAttrId)
-    ).use {
+    return obtainStyledAttributes(intArrayOf(themeAttrId)).use {
         it.getColor(0, Color.MAGENTA)
     }
 }

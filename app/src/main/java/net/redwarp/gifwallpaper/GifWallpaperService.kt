@@ -28,7 +28,6 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.Observer
 import net.redwarp.gifwallpaper.data.Model
 import net.redwarp.gifwallpaper.renderer.RenderCallback
 import net.redwarp.gifwallpaper.renderer.Renderer
@@ -72,22 +71,20 @@ class GifWallpaperService : WallpaperService() {
                 unsetText = getString(R.string.open_app),
                 isService = true
             ).apply {
-                observe(
-                    this@GifEngine,
-                    Observer { renderer: Renderer ->
-                        renderCallback?.renderer = renderer
-                        requestWallpaperColorsComputation()
-                    })
+                observe(this@GifEngine) { renderer: Renderer ->
+                    renderCallback?.renderer = renderer
+                    requestWallpaperColorsComputation()
+                }
             }
-            model.backgroundColorData.observe(this, Observer {
+            model.backgroundColorData.observe(this) {
                 requestWallpaperColorsComputation()
-            })
-            model.scaleTypeData.observe(this, Observer {
+            }
+            model.scaleTypeData.observe(this) {
                 requestWallpaperColorsComputation()
-            })
-            model.rotationData.observe(this, Observer {
+            }
+            model.rotationData.observe(this) {
                 requestWallpaperColorsComputation()
-            })
+            }
 
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         }

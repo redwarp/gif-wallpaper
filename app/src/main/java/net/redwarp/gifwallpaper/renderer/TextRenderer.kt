@@ -21,16 +21,16 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.os.Build
-import android.os.Handler
 import android.os.Looper
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
+import android.view.Choreographer
 import android.view.SurfaceHolder
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import kotlin.math.max
 import net.redwarp.gifwallpaper.R
+import kotlin.math.max
 
 class TextRenderer(
     context: Context,
@@ -49,12 +49,12 @@ class TextRenderer(
         textSize = context.resources.getDimension(R.dimen.text_renderer_font_size)
     }
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
-    private var handler: Handler? = null
+    private var choreographer: Choreographer? = null
     private var staticLayout: StaticLayout? = null
     private val textPadding = context.resources.getDimension(R.dimen.text_renderer_padding)
 
     override fun invalidate() {
-        handler?.post {
+        choreographer?.postFrameCallback {
             draw()
         }
     }
@@ -115,12 +115,11 @@ class TextRenderer(
 
     override fun onDestroy() {
         holder = null
-        handler = null
     }
 
     override fun onCreate(surfaceHolder: SurfaceHolder, looper: Looper) {
         holder = surfaceHolder
-        handler = Handler(looper)
+        choreographer = Choreographer.getInstance()
         invalidate()
     }
 }

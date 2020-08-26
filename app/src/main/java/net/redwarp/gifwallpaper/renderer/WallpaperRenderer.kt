@@ -33,11 +33,11 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.graphics.withMatrix
-import kotlin.math.max
 import net.redwarp.gifwallpaper.Gif
 import net.redwarp.gifwallpaper.util.MatrixEvaluator
 import net.redwarp.gifwallpaper.util.setCenterCropRectInRect
 import net.redwarp.gifwallpaper.util.setCenterRectInRect
+import kotlin.math.max
 
 private const val MESSAGE_SCHEDULE = 1
 
@@ -58,6 +58,9 @@ class WallpaperRenderer(
     private val workArray = FloatArray(2)
     private var isCreated = false
     private var isRecycled = false
+
+    @Volatile
+    private var hasPendingFrame = false
 
     init {
         gifRect.right = gif.drawable.intrinsicWidth.toFloat()
@@ -221,15 +224,23 @@ class WallpaperRenderer(
         return bitmap
     }
 
-    private val choreographerCallback: (Long) -> Unit = { draw() }
+    private val choreographerCallback: (Long) -> Unit = {
+        draw()
+        hasPendingFrame = false
+    }
 
     private fun requestDraw() {
-        if (isRecycled) return
-        choreographer?.postFrameCallback(choreographerCallback)
+        if (isRecycled || hasPendingFrame) return
+
+        choreographer?.let {
+            hasPendingFrame = true
+            it.postFrameCallback(choreographerCallback)
+        }
     }
 
     private fun cancelDraw() {
         choreographer?.removeFrameCallback(choreographerCallback)
+        hasPendingFrame = false
     }
 
     private fun draw() {

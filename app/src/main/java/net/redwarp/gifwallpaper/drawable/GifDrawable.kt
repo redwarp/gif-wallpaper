@@ -28,22 +28,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class GifDrawable private constructor(
     private val gifDecoder: StandardGifDecoder,
     private val bitmapProvider: SimpleBitmapProvider
 ) : Drawable(), Animatable {
-    @Volatile
-    private var currentFrame: Bitmap?
 
     init {
         gifDecoder.resetFrameIndex()
         gifDecoder.advance()
-        currentFrame = gifDecoder.nextFrame
-        gifDecoder.advance()
     }
 
+    private var currentFrame: Bitmap? = null
     private var nextFrame: Bitmap? = null
     private var isRunning: Boolean = false
     private var isRecycled: Boolean = false
@@ -88,8 +86,8 @@ class GifDrawable private constructor(
 
         invalidateSelf()
 
-        loopJob = CoroutineScope(Dispatchers.IO).launch {
-            while (isRunning && !isRecycled) {
+        loopJob = CoroutineScope(Dispatchers.Default).launch {
+            while (isActive && isRunning && !isRecycled) {
                 val frameDelay = gifDecoder.nextDelay.toLong()
                 val elapsedTime = measureElapsedRealtime {
                     nextFrame = gifDecoder.nextFrame
@@ -108,11 +106,13 @@ class GifDrawable private constructor(
         loopJob?.cancel()
     }
 
+    @Synchronized
     fun recycle() {
+        isRecycled = true
+
         stop()
         currentFrame?.let(bitmapProvider::release)
         nextFrame?.let(bitmapProvider::release)
-        isRecycled = true
         bitmapProvider.flush()
     }
 

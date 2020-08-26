@@ -30,8 +30,6 @@ import android.os.Message
 import android.view.Choreographer
 import android.view.SurfaceHolder
 import android.view.animation.AccelerateDecelerateInterpolator
-import androidx.core.animation.doOnEnd
-import androidx.core.animation.doOnStart
 import androidx.core.graphics.withMatrix
 import net.redwarp.gifwallpaper.Gif
 import net.redwarp.gifwallpaper.util.MatrixEvaluator
@@ -243,6 +241,7 @@ class WallpaperRenderer(
         hasPendingFrame = false
     }
 
+    @Synchronized
     private fun draw() {
         if (isRecycled) return
 
@@ -285,27 +284,22 @@ class WallpaperRenderer(
             }
             interpolator = AccelerateDecelerateInterpolator()
             duration = 500
-            doOnStart {
-                gif.drawable.callback = null
-            }
-            doOnEnd {
-                invalidate()
-            }
             start()
         }
     }
 
     private val drawableCallback = object : Drawable.Callback {
-        override fun unscheduleDrawable(who: Drawable, what: Runnable) {
-            cancelDraw()
-        }
-
         override fun invalidateDrawable(who: Drawable) {
             requestDraw()
         }
 
         override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) {
             handler?.scheduleRunnable(what, `when`)
+        }
+
+        override fun unscheduleDrawable(who: Drawable, what: Runnable) {
+            cancelDraw()
+            handler?.unscheduleRunnable()
         }
     }
 
@@ -315,6 +309,10 @@ class WallpaperRenderer(
         fun scheduleRunnable(what: Runnable, `when`: Long) {
             if (hasMessages(MESSAGE_SCHEDULE)) return
             sendMessageAtTime(Message.obtain(this, what), `when`)
+        }
+
+        fun unscheduleRunnable() {
+            removeMessages(MESSAGE_SCHEDULE)
         }
 
         override fun handleMessage(msg: Message) {

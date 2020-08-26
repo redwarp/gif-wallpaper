@@ -23,12 +23,11 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
+import android.view.animation.AnimationUtils
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class GifDrawable private constructor(
@@ -36,12 +35,15 @@ class GifDrawable private constructor(
     private val bitmapProvider: SimpleBitmapProvider
 ) : Drawable(), Animatable {
 
+    private var currentFrame: Bitmap?
+
     init {
         gifDecoder.resetFrameIndex()
         gifDecoder.advance()
+        currentFrame = gifDecoder.nextFrame
+        gifDecoder.advance()
     }
 
-    private var currentFrame: Bitmap? = null
     private var nextFrame: Bitmap? = null
     private var isRunning: Boolean = false
     private var isRecycled: Boolean = false
@@ -84,25 +86,35 @@ class GifDrawable private constructor(
 
         isRunning = true
 
+        delayedRunnable.run()
+    }
+
+    private fun prepareNextFrame() {
+        val frameDelay = gifDecoder.nextDelay.toLong()
+        val elapsedTime = measureElapsedRealtime {
+            nextFrame = gifDecoder.nextFrame
+        }
+        val delay = (frameDelay - elapsedTime).coerceIn(0L, frameDelay)
+        gifDecoder.advance()
+        scheduleSelf(delayedRunnable, AnimationUtils.currentAnimationTimeMillis() + delay)
+    }
+
+    private val delayedRunnable = Runnable {
+        currentFrame?.let(bitmapProvider::release)
+        currentFrame = nextFrame
+
         invalidateSelf()
 
-        loopJob = CoroutineScope(Dispatchers.Default).launch {
-            while (isActive && isRunning && !isRecycled) {
-                val frameDelay = gifDecoder.nextDelay.toLong()
-                val elapsedTime = measureElapsedRealtime {
-                    nextFrame = gifDecoder.nextFrame
-                }
-                delay((frameDelay - elapsedTime).coerceIn(0L, frameDelay))
-                currentFrame?.let(bitmapProvider::release)
-                currentFrame = nextFrame
-                invalidateSelf()
-                gifDecoder.advance()
+        if (isRunning && !isRecycled) {
+            CoroutineScope(Dispatchers.Default).launch {
+                prepareNextFrame()
             }
         }
     }
 
     override fun stop() {
         isRunning = false
+        unscheduleSelf(delayedRunnable)
         loopJob?.cancel()
     }
 

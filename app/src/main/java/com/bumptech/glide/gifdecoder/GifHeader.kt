@@ -29,7 +29,6 @@ package com.bumptech.glide.gifdecoder
 
 import androidx.annotation.ColorInt
 import com.bumptech.glide.gifdecoder.GifDecoder.GifDecodeStatus
-import java.util.ArrayList
 
 /**
  * A header object containing the number of frames in an animated GIF image as well as basic
@@ -47,8 +46,6 @@ class GifHeader {
     /**
      * Global status code of GIF data parsing.
      */
-    @JvmField
-    @get:GifDecodeStatus
     @GifDecodeStatus
     var status = GifDecoder.STATUS_OK
 
@@ -59,7 +56,7 @@ class GifHeader {
     var currentFrame: GifFrame? = null
 
     @JvmField
-    val frames: List<GifFrame> = ArrayList()
+    val frames: MutableList<GifFrame> = mutableListOf()
 
     /** Logical screen size: Full image width.  */
     @JvmField
@@ -70,14 +67,12 @@ class GifHeader {
     var height = 0
 
     // 1 : global color table flag.
-    @JvmField
     var gctFlag = false
 
     /**
      * Size of Global Color Table.
      * The value is already computed to be a regular number, this field doesn't store the exponent.
      */
-    @JvmField
     var gctSize = 0
 
     /** Background color index into the Global/Local color table.  */
@@ -88,7 +83,6 @@ class GifHeader {
      * Pixel aspect ratio.
      * Factor used to compute an approximation of the aspect ratio of the pixel in the original image.
      */
-    @JvmField
     var pixelAspect = 0
 
     @JvmField

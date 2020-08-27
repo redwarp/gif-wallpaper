@@ -172,13 +172,13 @@ interface GifDecoder {
      * <td>`1`</td></tr>
      * <tr><td>`n (n > 0)`</td>
      * <td>`n + 1`</td></tr>
-    </table> *
+     </table> *
      *
      *
      * @see [Discussion about
      * the iteration count of animated GIFs
      * @return total iteration count calculated from "Netscape" loop count.
-    ](https://bugs.chromium.org/p/chromium/issues/detail?id=592735.c5) */
+     ](https://bugs.chromium.org/p/chromium/issues/detail?id=592735.c5) */
     val totalIterationCount: Int
 
     /**
@@ -196,11 +196,11 @@ interface GifDecoder {
     /**
      * Reads GIF image from stream.
      *
-     * @param is containing GIF file.
+     * @param `is` containing GIF file.
      * @return read status code (0 = no errors).
      */
     @GifDecodeStatus
-    fun read(`is`: InputStream?, contentLength: Int): Int
+    fun read(inputStream: InputStream, contentLength: Int): Int
     fun clear()
     fun setData(header: GifHeader, data: ByteArray)
     fun setData(header: GifHeader, buffer: ByteBuffer)
@@ -213,7 +213,7 @@ interface GifDecoder {
      * @return read status code (0 = no errors).
      */
     @GifDecodeStatus
-    fun read(data: ByteArray?): Int
+    fun read(data: ByteArray): Int
 
     /**
      * Sets the default [android.graphics.Bitmap.Config] to use when decoding frames of a GIF.

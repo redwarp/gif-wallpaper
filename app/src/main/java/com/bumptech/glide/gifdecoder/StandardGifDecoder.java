@@ -132,8 +132,6 @@ public class StandardGifDecoder implements GifDecoder {
      */
     private byte[] block;
 
-    private GifHeaderParser parser;
-
     // LZW decoder working arrays.
     private short[] prefix;
     private byte[] suffix;
@@ -394,18 +392,10 @@ public class StandardGifDecoder implements GifDecoder {
         mainScratch = bitmapProvider.obtainIntArray(downsampledWidth * downsampledHeight);
     }
 
-    @NonNull
-    private GifHeaderParser getHeaderParser() {
-        if (parser == null) {
-            parser = new GifHeaderParser();
-        }
-        return parser;
-    }
-
     @Override
     @GifDecodeStatus
     public synchronized int read(@NonNull byte[] data) {
-        this.header = getHeaderParser().setData(data).parseHeader();
+        this.header = new GifHeaderParser(data).parseHeader();
         setData(header, data);
 
         return status;

@@ -29,7 +29,6 @@ package com.bumptech.glide.gifdecoder
 
 import androidx.annotation.ColorInt
 import com.bumptech.glide.gifdecoder.GifDecoder.GifDecodeStatus
-import java.util.ArrayList
 
 /**
  * A header object containing the number of frames in an animated GIF image as well as basic
@@ -59,7 +58,7 @@ class GifHeader {
     var currentFrame: GifFrame? = null
 
     @JvmField
-    val frames: List<GifFrame> = ArrayList()
+    val frames: MutableList<GifFrame> = mutableListOf()
 
     /** Logical screen size: Full image width.  */
     @JvmField

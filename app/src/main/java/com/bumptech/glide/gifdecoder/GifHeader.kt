@@ -46,8 +46,6 @@ class GifHeader {
     /**
      * Global status code of GIF data parsing.
      */
-    @JvmField
-    @get:GifDecodeStatus
     @GifDecodeStatus
     var status = GifDecoder.STATUS_OK
 
@@ -69,14 +67,12 @@ class GifHeader {
     var height = 0
 
     // 1 : global color table flag.
-    @JvmField
     var gctFlag = false
 
     /**
      * Size of Global Color Table.
      * The value is already computed to be a regular number, this field doesn't store the exponent.
      */
-    @JvmField
     var gctSize = 0
 
     /** Background color index into the Global/Local color table.  */
@@ -87,7 +83,6 @@ class GifHeader {
      * Pixel aspect ratio.
      * Factor used to compute an approximation of the aspect ratio of the pixel in the original image.
      */
-    @JvmField
     var pixelAspect = 0
 
     @JvmField

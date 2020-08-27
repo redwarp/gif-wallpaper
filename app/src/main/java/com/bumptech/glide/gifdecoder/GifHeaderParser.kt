@@ -32,6 +32,7 @@ import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.Arrays
+import kotlin.math.pow
 
 /**
  * A class responsible for creating [com.bumptech.glide.gifdecoder.GifHeader]s from data
@@ -200,10 +201,7 @@ class GifHeaderParser(data: ByteArray) {
          */
         val packed = read()
         val lctFlag = packed and DESCRIPTOR_MASK_LCT_FLAG != 0
-        val lctSize = Math.pow(
-            2.0,
-            (packed and DESCRIPTOR_MASK_LCT_SIZE) + 1.toDouble()
-        ).toInt()
+        val lctSize = 2.0.pow((packed and DESCRIPTOR_MASK_LCT_SIZE) + 1.toDouble()).toInt()
         inFrame.interlace = packed and DESCRIPTOR_MASK_INTERLACE_FLAG != 0
         if (lctFlag) {
             inFrame.lct = readColorTable(lctSize)
@@ -279,7 +277,7 @@ class GifHeaderParser(data: ByteArray) {
          */
         val packed = read()
         header.gctFlag = packed and LSD_MASK_GCT_FLAG != 0
-        header.gctSize = Math.pow(2.0, (packed and LSD_MASK_GCT_SIZE) + 1.toDouble())
+        header.gctSize = 2.0.pow((packed and LSD_MASK_GCT_SIZE) + 1.toDouble())
             .toInt()
         // Background color index.
         header.bgIndex = read()

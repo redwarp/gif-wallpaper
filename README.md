@@ -3,7 +3,12 @@
 # gif-wallpaper
 Playing with GIFs, animatable and drawable
 
-Download the app on the [Play Store](https://play.google.com/store/apps/details?id=net.redwarp.gifwallpaper).
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/net.redwarp.gifwallpaper/)
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+     alt="Get it on Google Play"
+     height="80">](https://play.google.com/store/apps/details?id=net.redwarp.gifwallpaper)
 
 ## Inspiration
 

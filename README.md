@@ -1,14 +1,14 @@
-[![GitHub license](https://img.shields.io/github/license/redwarp/gif-wallpaper)](https://github.com/redwarp/gif-wallpaper/blob/master/LICENSE) ![GitHub top language](https://img.shields.io/github/languages/top/redwarp/gif-wallpaper)
+[![GitHub license](https://img.shields.io/github/license/redwarp/gif-wallpaper)](https://github.com/redwarp/gif-wallpaper/blob/master/LICENSE) ![GitHub top language](https://img.shields.io/github/languages/top/redwarp/gif-wallpaper) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/redwarp/gif-wallpaper) [![F-Droid (including pre-releases)](https://img.shields.io/f-droid/v/net.redwarp.gifwallpaper)](https://f-droid.org/packages/net.redwarp.gifwallpaper/)
 
 # gif-wallpaper
 Playing with GIFs, animatable and drawable
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"
-     height="80">](https://f-droid.org/packages/net.redwarp.gifwallpaper/)
+     height="50">](https://f-droid.org/packages/net.redwarp.gifwallpaper/)
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
      alt="Get it on Google Play"
-     height="80">](https://play.google.com/store/apps/details?id=net.redwarp.gifwallpaper)
+     height="50">](https://play.google.com/store/apps/details?id=net.redwarp.gifwallpaper)
 
 ## Inspiration
 

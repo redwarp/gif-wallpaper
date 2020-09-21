@@ -77,7 +77,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-service:2.2.0'
     implementation 'androidx.palette:palette:1.0.0'
     implementation "dev.sasikanth:colorsheet:1.0.1"
-    implementation "io.noties.markwon:core:4.5.1"
+    implementation "io.noties.markwon:core:4.6.0"
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'org.robolectric:robolectric:4.4'

@@ -1,2 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="about">"около"</string>
+    <string name="activate">"активировать"</string>
+    <string name="app_name">"GIF Живые Обои"</string>
+    <string name="change_color">"сменить цвет"</string>
+    <string name="change_scale">"изменить масштаб"</string>
+    <string name="clear_gif">"очистить GIF"</string>
+    <string name="click_the_open_gif_button">"нажмите кнопку Открыть GIF"</string>
+
+    <!-- Have an error code? -->
+    <string name="error_wallpaper_chooser">"ошибка выбора обоев"</string>
+    <string name="loading">"загрузка"</string>
+    <string name="open_app">"открыть приложение"</string>
+    <string name="open_gif">"открыть GIF"</string>
+    <string name="pick_a_color">"выбери цвет"</string>
+    <string name="privacy">"конфиденциальность"</string>
+    <string name="rotate">"вращять"</string>
+</resources>

@@ -2,3 +2,5 @@ A Live Wallpaper that will display animated GIFs as your phone background.
 No ads or anything of the sort, just a pet project.
 
 Source available on https://github.com/redwarp/gif-wallpaper
+
+Interested in using it in your own language? Contact me if you would like to help with the translations!

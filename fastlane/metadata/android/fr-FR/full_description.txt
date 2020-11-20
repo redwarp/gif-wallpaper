@@ -2,3 +2,5 @@ Un fond d'écran animé permettant d'afficher des GIFs en lieu de place de fond 
 Garanti sans publicité, il s'agit d'un projet passion.
 
 Le code source est disponible ici: https://github.com/redwarp/gif-wallpaper.
+
+Si vous souhaitez aider pour la traduction d'en d'autres langues, contactez-moi !

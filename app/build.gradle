@@ -18,7 +18,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        resConfigs "en", "fr"
+        resConfigs "en", "fr", "ru"
     }
 
     buildTypes {
@@ -75,7 +75,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
     implementation 'androidx.lifecycle:lifecycle-service:2.2.0'
-    implementation 'androidx.palette:palette:1.0.0'
+    implementation 'androidx.palette:palette-ktx:1.0.0'
     implementation "dev.sasikanth:colorsheet:1.0.1"
     implementation "io.noties.markwon:core:4.6.0"
 

@@ -1,4 +1,5 @@
 {
-    "store_short_description": "Affichez vos GIFs favori comme fonds d'écran animés",
-    "store_full_description": "Un fond d'écran animé permettant d'afficher des GIFs en lieu de place de fond d'écran.\nGaranti sans publicité, il s'agit d'un projet passion.\n\nLe code source est disponible ici: https://github.com/redwarp/gif-wallpaper.\n\nSi vous souhaitez aider pour la traduction d'en d'autres langues, contactez-moi !"
+    "app_name": "GIF Live Wallpaper",
+    "store_full_description": "Un fond d'écran animé permettant d'afficher des GIFs en lieu de place de fond d'écran.\nGaranti sans publicité, il s'agit d'un projet passion.\n\nLe code source est disponible ici: https://github.com/redwarp/gif-wallpaper.\n\nSi vous souhaitez aider pour la traduction d'en d'autres langues, contactez-moi !",
+    "store_short_description": "Affichez vos GIFs favori comme fonds d'écran animés"
 }

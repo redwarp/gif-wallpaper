@@ -1,0 +1,22 @@
+name: Update Playstore metadata
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Setup ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: "2.7"
+      - name: Setup Fastlane
+        run: bundle install
+      - name: Update Metadata
+        run: |
+          gem install bundler
+          bundle exec fastlane android update_playstore
+        env:
+          SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}

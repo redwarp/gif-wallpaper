@@ -8,10 +8,12 @@ use std::{
 
 #[derive(Deserialize)]
 struct StoreInfo {
-    #[serde(rename = "store_short_description")]
-    pub short_description: Option<String>,
+    #[serde(rename = "app_name")]
+    pub title: Option<String>,
     #[serde(rename = "store_full_description")]
     pub full_description: Option<String>,
+    #[serde(rename = "store_short_description")]
+    pub short_description: Option<String>,
 }
 
 fn main() -> Result<()> {
@@ -51,9 +53,9 @@ fn update_fastlane_for_entry(entry: DirEntry) -> Result<()> {
 
     fs::create_dir_all(dir_path.clone())?;
 
-    if let Some(short_description) = &store_info.short_description {
+    if let Some(title) = &store_info.title {
         let mut file_path = dir_path.clone();
-        file_path.push("short_description.txt");
+        file_path.push("title.txt");
 
         let mut file = OpenOptions::new()
             .write(true)
@@ -61,7 +63,7 @@ fn update_fastlane_for_entry(entry: DirEntry) -> Result<()> {
             .truncate(true)
             .open(file_path)?;
 
-        file.write_all(&short_description.clone().into_bytes())?;
+        file.write_all(&title.clone().into_bytes())?;
         file.write_all(b"\n")?;
     }
 
@@ -76,6 +78,20 @@ fn update_fastlane_for_entry(entry: DirEntry) -> Result<()> {
             .open(file_path)?;
 
         file.write_all(&full_description.clone().into_bytes())?;
+        file.write_all(b"\n")?;
+    }
+
+    if let Some(short_description) = &store_info.short_description {
+        let mut file_path = dir_path.clone();
+        file_path.push("short_description.txt");
+
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(file_path)?;
+
+        file.write_all(&short_description.clone().into_bytes())?;
         file.write_all(b"\n")?;
     }
 

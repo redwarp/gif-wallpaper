@@ -1,0 +1,21 @@
+default_platform(:android)
+
+platform :android do
+  lane :update_playstore_local do
+    supply(
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_changelogs: true,
+      json_key: ENV["SERVICE_ACCOUNT_KEY"]
+    )
+  end
+
+  lane :update_playstore do
+    supply(
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_changelogs: true,
+      json_key_data: ENV["SERVICE_ACCOUNT_JSON"]
+    )
+  end
+end

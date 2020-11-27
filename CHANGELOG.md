@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/redwarp/gif-wallpaper/compare/v1.4.0...v1.4.1) (2020-11-27)
+
+
+### Bug Fixes
+
+* Fix frame decoding order, it should remove some weird stutter. (The ([890c7e2](https://github.com/redwarp/gif-wallpaper/commit/890c7e2fd13a9a3eea6f89fb86e40792e5f31164))
+
 ## [1.4.0](https://github.com/redwarp/gif-wallpaper/compare/v1.3.4...v1.4.0) (2020-11-20)
 
 

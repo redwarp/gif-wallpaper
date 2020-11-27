@@ -41,7 +41,6 @@ class GifDrawable private constructor(
         gifDecoder.resetFrameIndex()
         gifDecoder.advance()
         currentFrame = gifDecoder.nextFrame
-        gifDecoder.advance()
     }
 
     private var nextFrame: Bitmap? = null
@@ -91,11 +90,11 @@ class GifDrawable private constructor(
 
     private fun prepareNextFrame() {
         val frameDelay = gifDecoder.nextDelay.toLong()
+        gifDecoder.advance()
         val elapsedTime = measureElapsedRealtime {
             nextFrame = gifDecoder.nextFrame
         }
         val delay = (frameDelay - elapsedTime).coerceIn(0L, frameDelay)
-        gifDecoder.advance()
         scheduleSelf(delayedRunnable, AnimationUtils.currentAnimationTimeMillis() + delay)
     }
 

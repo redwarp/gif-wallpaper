@@ -1,6 +1,11 @@
 name: Update Playstore metadata
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - "master"
+    paths:
+      - "fastlane/**"
 
 jobs:
   update:

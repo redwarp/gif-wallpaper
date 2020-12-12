@@ -1,1 +1,5 @@
-{}
+{
+    "app_name": "GIF Live Wallpaper",
+    "store_full_description": "Hast du eine GIF Datei, die du als Hintergrund benutzen möchtest? \n\nDann ist GIF Live Wallpaper genau die richtige App für dich! \n\nGIF Live Wallpaper ist die wahrscheinlich einfachste Methode um dein Lieblings-GIF im Handumdrehen in einen Live Hintergrund umzuwandeln. \n\nVorteile von GIF Live Wallpaper:\n- Keine Werbung\n- Kein Root-Zugriff\n- Kleine Dateigröße (<3 MB)\n- Minimaler Batterieverbrauch \n\nQuelle unter https://github.com/redwarp/gif-wallpaper",
+    "store_short_description": "Dein Lieblings-GIF als Live Wallpaper"
+}

@@ -1,2 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources/>
+<resources>
+    <string name="about">"Über die App"</string>
+    <string name="activate">"Starten"</string>
+    <string name="app_name">"GIF Live Wallpaper"</string>
+    <string name="change_color">"Farbe ändern"</string>
+    <string name="change_scale">"Skalieren"</string>
+    <string name="clear_gif">"GIF löschen"</string>
+    <string name="click_the_open_gif_button">"Auf \"GIF öffnen\" tappen."</string>
+    <string name="error_wallpaper_chooser">"Hintergrund Auswähler konnte nicht gestartet werden. GIF Live Wallpaper kann manuell über Startbildschirm -&gt; Hintergründe -&gt; Live Hintergründe gestartet werden. "</string>
+    <string name="loading">"Lädt..."</string>
+    <string name="open_app">"Öffne die GIF Live Wallpaper App und lade dein Lieblings-GIF um zu starten."</string>
+    <string name="open_gif">"GIF öffnen"</string>
+    <string name="pick_a_color">"Farbe auswählen"</string>
+    <string name="privacy">"Datenschutz"</string>
+    <string name="rotate">"Drehen"</string>
+</resources>

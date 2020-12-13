@@ -1,0 +1,13 @@
+Hast du eine GIF Datei, die du als Hintergrund benutzen möchtest? 
+
+Dann ist GIF Live Wallpaper genau die richtige App für dich! 
+
+GIF Live Wallpaper ist die wahrscheinlich einfachste Methode um dein Lieblings-GIF im Handumdrehen in einen Live Hintergrund umzuwandeln. 
+
+Vorteile von GIF Live Wallpaper:
+- Keine Werbung
+- Kein Root-Zugriff
+- Kleine Dateigröße (<3 MB)
+- Minimaler Batterieverbrauch 
+
+Quelle unter https://github.com/redwarp/gif-wallpaper

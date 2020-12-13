@@ -1,5 +1,21 @@
-Un fond d'écran animé permettant d'afficher des GIFs en lieu de place de fond d'écran.
-Garanti sans publicité, il s'agit d'un projet passion.
+Vous avez téléchargé un GIF animé et souhaitez l'utiliser comme fond d'écran ?
+
+Alors GIF Live Wallpaper est fait pour vous ! Probablement l'app la plus simple pour afficher un GIF comme fond d'écran !
+
+Tout ça en quatres étapes simples :
+
+1. Ouvrez l'app
+2. Activez là
+3. Cliquez sur "Choisir un GIF"
+4. Choisissez votre GIF préalablement téléchargé, ou sauvegardé sur dropbox ou drive
+
+Et voilà. Félicitations, votre GIF animé s'affichera comme fond d'écran.
+
+GIF Live Wallpaper, c'est :
+- Une app qui nécessite pas d'accès root.
+- Une taille d'installation minimale, < 3 MO, pour ne pas encombrer votre téléphone.
+- Se met en pause automatiquement lorsque le fond d'écran n'est pas visible, ou lorsque votre écran est éteint, pour ne pas user votre batterie.
+- Garantie sans publicité, il s'agit d'un projet passion ! Pas de collecte de donnée, pas d'appel réseau bizarre ou autre.
 
 Le code source est disponible ici: https://github.com/redwarp/gif-wallpaper.
 

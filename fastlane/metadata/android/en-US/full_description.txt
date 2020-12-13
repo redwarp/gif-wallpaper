@@ -1,5 +1,20 @@
-A Live Wallpaper that will display animated GIFs as your phone background.
-No ads or anything of the sort, just a pet project.
+Did you download a GIF and would like to use it as your phone's wallpaper?
+
+GIF Live Wallpaper is what you need! Probably the easiest way to use a GIF file as a live wallpaper.
+
+All this is done in a few simple steps:
+
+Step 1 - Open the app 
+Step 2 - Activate it.
+Step 3 - Click "Open GIF".
+Step 4 - Select the file you want.
+
+If everything fits, that's it! Enjoy your new wallpaper!
+
+The application stands out: 
+- No need for root rights, small file size (<3MB)
+- Stops automatically when the wallpaper is not visible or the device is locked, thereby not consuming battery power.
+- And of course, no ads, and will not share your data or gather informations!
 
 Source available on https://github.com/redwarp/gif-wallpaper
 

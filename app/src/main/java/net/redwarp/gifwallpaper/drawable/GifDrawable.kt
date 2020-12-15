@@ -25,7 +25,6 @@ import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.SystemClock
-import android.view.animation.AnimationUtils
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -101,7 +100,7 @@ class GifDrawable private constructor(
             nextFrame = gifDecoder.nextFrame
         }
         val delay = (frameDelay - elapsedTime).coerceIn(0L, frameDelay)
-        scheduleSelf(delayedRunnable, AnimationUtils.currentAnimationTimeMillis() + delay)
+        scheduleSelf(delayedRunnable, SystemClock.uptimeMillis() + delay)
     }
 
     private val delayedRunnable = Runnable {

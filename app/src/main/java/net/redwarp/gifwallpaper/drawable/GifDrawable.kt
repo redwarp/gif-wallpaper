@@ -15,6 +15,7 @@
  */
 package net.redwarp.gifwallpaper.drawable
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.ColorFilter
@@ -22,6 +23,7 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.SystemClock
 import android.view.animation.AnimationUtils
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
@@ -52,6 +54,10 @@ class GifDrawable private constructor(
     private val bitmapPaint = Paint().apply {
         isAntiAlias = false
         isFilterBitmap = false
+    }
+
+    init {
+        setBounds(0, 0, intrinsicWidth, intrinsicHeight)
     }
 
     override fun draw(canvas: Canvas) {
@@ -99,7 +105,10 @@ class GifDrawable private constructor(
     }
 
     private val delayedRunnable = Runnable {
-        currentFrame?.let(bitmapProvider::release)
+        val oldFrame = currentFrame
+        currentFrame = null
+        oldFrame?.let(bitmapProvider::release)
+
         currentFrame = nextFrame
 
         invalidateSelf()
@@ -134,13 +143,19 @@ class GifDrawable private constructor(
     }
 
     companion object {
-        fun decode(byteArray: ByteArray): GifDrawable {
+        private fun decode(byteArray: ByteArray): GifDrawable {
             val bitmapProvider = SimpleBitmapProvider()
             val gifDecoder = StandardGifDecoder(bitmapProvider).apply {
                 read(byteArray)
             }
 
             return GifDrawable(gifDecoder, bitmapProvider)
+        }
+
+        fun getGifDrawable(context: Context, uri: Uri): GifDrawable? {
+            return context.contentResolver.openInputStream(uri)?.use {
+                return decode(it.readBytes())
+            }
         }
     }
 }

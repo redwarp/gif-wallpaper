@@ -27,7 +27,7 @@ import androidx.palette.graphics.Palette
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.redwarp.gifwallpaper.Gif
+import net.redwarp.gifwallpaper.drawable.GifDrawable
 
 class ColorLiveData(val context: Context, wallpaperLiveData: LiveData<WallpaperStatus>) :
     MediatorLiveData<ColorInfo>() {
@@ -45,10 +45,10 @@ class ColorLiveData(val context: Context, wallpaperLiveData: LiveData<WallpaperS
     private fun extractColorScheme(wallpaper: WallpaperStatus.Wallpaper) {
         postValue(NotSet)
         CoroutineScope(Dispatchers.IO).launch {
-            val gif = Gif.loadGif(context, wallpaper.uri) ?: return@launch
+            val gif = GifDrawable.getGifDrawable(context, wallpaper.uri) ?: return@launch
 
-            val defaultColor = calculateDefaultBackgroundColor(gif.drawable)
-            val palette = calculatePalette(gif.drawable)
+            val defaultColor = calculateDefaultBackgroundColor(gif)
+            val palette = calculatePalette(gif)
 
             postValue(ColorScheme(defaultColor, palette))
         }

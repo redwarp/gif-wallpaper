@@ -31,7 +31,7 @@ import android.view.Choreographer
 import android.view.SurfaceHolder
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.graphics.withMatrix
-import net.redwarp.gifwallpaper.Gif
+import net.redwarp.gifwallpaper.drawable.GifDrawable
 import net.redwarp.gifwallpaper.util.MatrixEvaluator
 import net.redwarp.gifwallpaper.util.setCenterCropRectInRect
 import net.redwarp.gifwallpaper.util.setCenterRectInRect
@@ -41,7 +41,7 @@ private const val MESSAGE_SCHEDULE = 1
 
 class WallpaperRenderer(
     private var holder: SurfaceHolder?,
-    private val gif: Gif,
+    private val gif: GifDrawable,
     private var scaleType: ScaleType = ScaleType.FIT_CENTER,
     private var rotation: Rotation = Rotation.NORTH,
     backgroundColor: Int = Color.BLACK,
@@ -61,8 +61,8 @@ class WallpaperRenderer(
     private var hasPendingFrame = false
 
     init {
-        gifRect.right = gif.drawable.intrinsicWidth.toFloat()
-        gifRect.bottom = gif.drawable.intrinsicHeight.toFloat()
+        gifRect.right = gif.intrinsicWidth.toFloat()
+        gifRect.bottom = gif.intrinsicHeight.toFloat()
     }
 
     private val backgroundPaint: Paint = Paint().apply {
@@ -119,8 +119,8 @@ class WallpaperRenderer(
     override fun onPause() {
         matrixAnimator?.cancel()
 
-        gif.drawable.callback = null
-        gif.animatable.stop()
+        gif.callback = null
+        gif.stop()
 
         cancelDraw()
     }
@@ -177,8 +177,8 @@ class WallpaperRenderer(
         cancelDraw()
         computeMatrix(matrix, scaleType, rotation, canvasRect, gifRect, translation)
 
-        gif.drawable.callback = drawableCallback
-        gif.animatable.start()
+        gif.callback = drawableCallback
+        gif.start()
 
         requestDraw()
     }
@@ -199,7 +199,7 @@ class WallpaperRenderer(
 
     fun recycle() {
         isRecycled = true
-        gif.animatable.stop()
+        gif.stop()
         cancelDraw()
         gif.recycle()
     }
@@ -258,12 +258,12 @@ class WallpaperRenderer(
         }
     }
 
-    private fun draw(canvas: Canvas, canvasRect: RectF, matrix: Matrix, gif: Gif) {
+    private fun draw(canvas: Canvas, canvasRect: RectF, matrix: Matrix, gif: GifDrawable) {
         canvas.clipRect(canvasRect)
         canvas.drawRect(canvasRect, backgroundPaint)
 
         canvas.withMatrix(matrix) {
-            gif.drawable.draw(this)
+            gif.draw(this)
         }
     }
 

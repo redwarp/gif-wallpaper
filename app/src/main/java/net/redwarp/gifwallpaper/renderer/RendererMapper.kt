@@ -21,10 +21,10 @@ import androidx.lifecycle.MediatorLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.redwarp.gifwallpaper.Gif
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.Model
 import net.redwarp.gifwallpaper.data.WallpaperStatus
+import net.redwarp.gifwallpaper.drawable.GifDrawable
 
 class RendererMapper(
     model: Model,
@@ -51,7 +51,7 @@ class RendererMapper(
                 )
                 is WallpaperStatus.Wallpaper -> {
                     CoroutineScope(Dispatchers.IO).launch {
-                        val gif = Gif.loadGif(model.context, status.uri)
+                        val gif = GifDrawable.getGifDrawable(model.context, status.uri)
                         if (gif == null) {
                             postValue(
                                 TextRenderer(

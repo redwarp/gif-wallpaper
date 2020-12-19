@@ -29,7 +29,11 @@ import com.bumptech.glide.gifdecoder.StandardGifDecoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 class GifDrawable private constructor(
     private val gifDecoder: StandardGifDecoder,
@@ -44,7 +48,6 @@ class GifDrawable private constructor(
         currentFrame = gifDecoder.nextFrame
     }
 
-    private var nextFrame: Bitmap? = null
     private var isRunning: Boolean = false
     private var isRecycled: Boolean = false
     private var loopJob: Job? = null
@@ -90,38 +93,15 @@ class GifDrawable private constructor(
 
         isRunning = true
 
-        delayedRunnable.run()
-    }
-
-    private fun prepareNextFrame() {
-        val frameDelay = gifDecoder.nextDelay.toLong()
-        gifDecoder.advance()
-        val elapsedTime = measureElapsedRealtime {
-            nextFrame = gifDecoder.nextFrame
-        }
-        val delay = (frameDelay - elapsedTime).coerceIn(0L, frameDelay)
-        scheduleSelf(delayedRunnable, SystemClock.uptimeMillis() + delay)
-    }
-
-    private val delayedRunnable = Runnable {
-        val oldFrame = currentFrame
-        currentFrame = null
-        oldFrame?.let(bitmapProvider::release)
-
-        currentFrame = nextFrame
-
-        invalidateSelf()
-
-        if (isRunning && !isRecycled) {
-            CoroutineScope(Dispatchers.Default).launch {
-                prepareNextFrame()
-            }
+        val previousJob = loopJob
+        loopJob = CoroutineScope(Dispatchers.Default).launch {
+            previousJob?.cancelAndJoin()
+            animationLoop()
         }
     }
 
     override fun stop() {
         isRunning = false
-        unscheduleSelf(delayedRunnable)
         loopJob?.cancel()
     }
 
@@ -131,14 +111,28 @@ class GifDrawable private constructor(
 
         stop()
         currentFrame?.let(bitmapProvider::release)
-        nextFrame?.let(bitmapProvider::release)
         bitmapProvider.flush()
     }
 
-    private inline fun measureElapsedRealtime(crossinline block: () -> Unit): Long {
-        val startTime = SystemClock.elapsedRealtime()
-        block()
-        return SystemClock.elapsedRealtime() - startTime
+    private suspend fun animationLoop() {
+        while (true) {
+            coroutineContext.ensureActive()
+            gifDecoder.advance()
+
+            val frameDelay = gifDecoder.nextDelay.toLong()
+            val startTime = SystemClock.elapsedRealtime()
+            val nextFrame = gifDecoder.nextFrame
+            val elapsedTime = SystemClock.elapsedRealtime() - startTime
+
+            val delay = (frameDelay - elapsedTime).coerceIn(0L, frameDelay)
+
+            coroutineContext.ensureActive()
+            delay(delay)
+
+            coroutineContext.ensureActive()
+            currentFrame = nextFrame
+            invalidateSelf()
+        }
     }
 
     companion object {

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.1](https://github.com/redwarp/gif-wallpaper/compare/v1.5.0...v1.5.1) (2020-12-19)
+
+
+### Bug Fixes
+
+* Fix animation loop by switching back to coroutine. That works ([a0e815b](https://github.com/redwarp/gif-wallpaper/commit/a0e815bc51bad7c1991fa3ee5c1128f9dcced137))
+* Fix timing of GIFs by using proper time base for animation. ([18da797](https://github.com/redwarp/gif-wallpaper/commit/18da7973709722b367e2c3770ef78c5f774c0d1c))
+
 ## [1.5.0](https://github.com/redwarp/gif-wallpaper/compare/v1.4.1...v1.5.0) (2020-12-13)
 
 

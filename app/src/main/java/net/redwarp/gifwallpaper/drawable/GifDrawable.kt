@@ -117,9 +117,9 @@ class GifDrawable private constructor(
     private suspend fun animationLoop() {
         while (true) {
             coroutineContext.ensureActive()
+            val frameDelay = gifDecoder.nextDelay.toLong()
             gifDecoder.advance()
 
-            val frameDelay = gifDecoder.nextDelay.toLong()
             val startTime = SystemClock.elapsedRealtime()
             val nextFrame = gifDecoder.nextFrame
             val elapsedTime = SystemClock.elapsedRealtime() - startTime

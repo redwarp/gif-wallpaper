@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.3](https://github.com/redwarp/gif-wallpaper/compare/v1.5.2...v1.5.3) (2020-12-20)
+
+
+### Bug Fixes
+
+* Streamline memory usage by reusing bitmap ([68a032d](https://github.com/redwarp/gif-wallpaper/commit/68a032d511a84f3682cdf7d36edeeb6f5d092aa4))
+
 ### [1.5.2](https://github.com/redwarp/gif-wallpaper/compare/v1.5.1...v1.5.2) (2020-12-20)
 
 

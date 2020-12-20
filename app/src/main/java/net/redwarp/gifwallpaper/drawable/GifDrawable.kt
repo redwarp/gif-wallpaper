@@ -130,6 +130,7 @@ class GifDrawable private constructor(
             delay(delay)
 
             coroutineContext.ensureActive()
+            currentFrame?.let(bitmapProvider::release)
             currentFrame = nextFrame
             invalidateSelf()
         }

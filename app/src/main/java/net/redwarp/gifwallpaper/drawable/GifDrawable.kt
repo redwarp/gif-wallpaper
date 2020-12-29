@@ -30,10 +30,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
+import kotlinx.coroutines.withContext
 
 class GifDrawable private constructor(
     private val gifDecoder: StandardGifDecoder,
@@ -114,7 +115,7 @@ class GifDrawable private constructor(
         bitmapProvider.flush()
     }
 
-    private suspend fun animationLoop() {
+    private suspend fun animationLoop() = coroutineScope {
         while (true) {
             coroutineContext.ensureActive()
             val frameDelay = gifDecoder.nextDelay.toLong()
@@ -132,7 +133,10 @@ class GifDrawable private constructor(
             coroutineContext.ensureActive()
             currentFrame?.let(bitmapProvider::release)
             currentFrame = nextFrame
-            invalidateSelf()
+
+            withContext(Dispatchers.Main) {
+                invalidateSelf()
+            }
         }
     }
 

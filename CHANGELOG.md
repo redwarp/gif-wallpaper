@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.4](https://github.com/redwarp/gif-wallpaper/compare/v1.5.3...v1.5.4) (2020-12-29)
+
+
+### Bug Fixes
+
+* Fix coroutine dispatcher for invalidateSelf ([3efb7a1](https://github.com/redwarp/gif-wallpaper/commit/3efb7a18835c31aa3d1cf8838c3e51a78dffb03a))
+
 ### [1.5.3](https://github.com/redwarp/gif-wallpaper/compare/v1.5.2...v1.5.3) (2020-12-20)
 
 

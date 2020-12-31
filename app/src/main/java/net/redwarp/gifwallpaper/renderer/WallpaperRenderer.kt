@@ -31,7 +31,7 @@ import android.view.Choreographer
 import android.view.SurfaceHolder
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.graphics.withMatrix
-import net.redwarp.gifwallpaper.drawable.GifDrawable
+import net.redwarp.gif.android.GifDrawable
 import net.redwarp.gifwallpaper.util.MatrixEvaluator
 import net.redwarp.gifwallpaper.util.setCenterCropRectInRect
 import net.redwarp.gifwallpaper.util.setCenterRectInRect
@@ -201,7 +201,7 @@ class WallpaperRenderer(
         isRecycled = true
         gif.stop()
         cancelDraw()
-        gif.recycle()
+        // gif.recycle()
     }
 
     fun createMiniature(): Bitmap {

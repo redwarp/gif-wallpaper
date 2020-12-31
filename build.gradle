@@ -19,7 +19,17 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenLocal() {
+            content {
+                includeGroup "net.redwarp.gif"
+            }
+        }
     }
+}
+
+configurations.all {
+    // Check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
 task clean(type: Delete) {

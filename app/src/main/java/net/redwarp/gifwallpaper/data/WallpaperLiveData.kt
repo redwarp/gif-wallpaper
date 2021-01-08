@@ -19,12 +19,16 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
-import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.redwarp.gif.decoder.Parser
+import net.redwarp.gif.decoder.descriptors.GifDescriptor
 import net.redwarp.gifwallpaper.TAG
 import net.redwarp.gifwallpaper.util.FileUtils
+import java.io.File
 
 internal class WallpaperLiveData(private val context: Context) :
     LiveData<WallpaperStatus>() {
@@ -33,13 +37,15 @@ internal class WallpaperLiveData(private val context: Context) :
 
     init {
         postValue(WallpaperStatus.Loading)
-        loadInitialValue()
+        GlobalScope.launch {
+            loadInitialValue()
+        }
     }
 
     fun loadNewGif(uri: Uri) {
         if (uri == currentUri) return
 
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             postValue(WallpaperStatus.Loading)
             val copiedUri =
                 FileUtils.copyFileLocally(context, uri)
@@ -47,15 +53,24 @@ internal class WallpaperLiveData(private val context: Context) :
                 postValue(WallpaperStatus.NotSet)
             } else {
                 postValue(
-                    WallpaperStatus.Wallpaper(
-                        copiedUri
-                    )
+                    loadGifDescriptor(copiedUri)
                 )
             }
             cleanupOldUri(localUri)
             currentUri = uri
             localUri = copiedUri
             storeCurrentWallpaperUri(context, copiedUri)
+        }
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
+    suspend fun loadGifDescriptor(uri: Uri): WallpaperStatus = withContext(Dispatchers.IO) {
+        context.contentResolver.openInputStream(uri).use { inputStream ->
+            return@withContext if (inputStream == null) {
+                WallpaperStatus.NotSet
+            } else {
+                WallpaperStatus.Wallpaper(Parser.parse(inputStream))
+            }
         }
     }
 
@@ -67,16 +82,14 @@ internal class WallpaperLiveData(private val context: Context) :
         localUri = null
     }
 
-    private fun loadInitialValue() {
+    private suspend fun loadInitialValue() {
         val uri: Uri? = loadCurrentWallpaperUri(context)
         localUri = uri
         if (uri == null) {
             postValue(WallpaperStatus.NotSet)
         } else {
             postValue(
-                WallpaperStatus.Wallpaper(
-                    uri
-                )
+                loadGifDescriptor(uri)
             )
         }
     }
@@ -110,5 +123,5 @@ internal class WallpaperLiveData(private val context: Context) :
 sealed class WallpaperStatus {
     object NotSet : WallpaperStatus()
     object Loading : WallpaperStatus()
-    data class Wallpaper(val uri: Uri) : WallpaperStatus()
+    data class Wallpaper(val uri: GifDescriptor) : WallpaperStatus()
 }

@@ -15,9 +15,7 @@
  */
 package net.redwarp.gifwallpaper.renderer
 
-import android.content.Context
 import android.graphics.Color
-import android.net.Uri
 import android.view.SurfaceHolder
 import androidx.lifecycle.MediatorLiveData
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +24,6 @@ import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.Model
 import net.redwarp.gifwallpaper.data.WallpaperStatus
-import net.redwarp.gifwallpaper.drawable.GifDrawable
 
 class RendererMapper(
     model: Model,
@@ -53,18 +50,7 @@ class RendererMapper(
                 )
                 is WallpaperStatus.Wallpaper -> {
                     CoroutineScope(Dispatchers.IO).launch {
-                        val gif = drawableFromUrl(model.context, status.uri)
-                        // val gif = GifDrawable.getGifDrawable(model.context, status.uri)
-                        if (gif == null) {
-                            postValue(
-                                TextRenderer(
-                                    model.context,
-                                    surfaceHolder,
-                                    unsetText
-                                )
-                            )
-                            return@launch
-                        }
+                        val gif = net.redwarp.gif.android.GifDrawable(status.uri)
 
                         val scaleType =
                             model.scaleTypeData.value ?: WallpaperRenderer.ScaleType.FIT_CENTER
@@ -110,11 +96,5 @@ class RendererMapper(
         super.setValue(value)
 
         (previousRenderer as? WallpaperRenderer)?.recycle()
-    }
-
-    fun drawableFromUrl(context: Context, uri: Uri): net.redwarp.gif.android.GifDrawable? {
-        return context.contentResolver.openInputStream(uri)?.use { inputStream ->
-            net.redwarp.gif.android.GifDrawable.from(inputStream)
-        }
     }
 }

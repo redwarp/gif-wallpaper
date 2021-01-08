@@ -201,7 +201,6 @@ class WallpaperRenderer(
         isRecycled = true
         gif.stop()
         cancelDraw()
-        // gif.recycle()
     }
 
     fun createMiniature(): Bitmap {

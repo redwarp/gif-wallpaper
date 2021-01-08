@@ -69,7 +69,11 @@ internal class WallpaperLiveData(private val context: Context) :
             return@withContext if (inputStream == null) {
                 WallpaperStatus.NotSet
             } else {
-                WallpaperStatus.Wallpaper(Parser.parse(inputStream))
+                try {
+                    WallpaperStatus.Wallpaper(Parser.parse(inputStream))
+                } catch (_: Exception) {
+                    WallpaperStatus.NotSet
+                }
             }
         }
     }

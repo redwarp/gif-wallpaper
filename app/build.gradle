@@ -78,8 +78,8 @@ dependencies {
     implementation 'androidx.palette:palette-ktx:1.0.0'
     implementation "dev.sasikanth:colorsheet:1.0.1"
     implementation "io.noties.markwon:core:4.6.1"
-    implementation "net.redwarp.gif:decoder:0.1.1"
-    implementation "net.redwarp.gif:android-drawable:0.1.1"
+    implementation "net.redwarp.gif:decoder:0.2.0"
+    implementation "net.redwarp.gif:android-drawable:0.2.0"
 
     testImplementation 'junit:junit:4.13.1'
     testImplementation 'org.robolectric:robolectric:4.4'

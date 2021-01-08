@@ -28,28 +28,32 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import net.redwarp.gifwallpaper.data.Model
-import net.redwarp.gifwallpaper.renderer.RenderCallback
-import net.redwarp.gifwallpaper.renderer.Renderer
-import net.redwarp.gifwallpaper.renderer.RendererMapper
-import net.redwarp.gifwallpaper.renderer.WallpaperRenderer
+import net.redwarp.gifwallpaper.renderer.DrawableMapper
+import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
+import net.redwarp.gifwallpaper.renderer.createMiniature
 
 private const val MESSAGE_REFRESH_WALLPAPER_COLORS = 1
 
 /**
  * Arbitrary delay to avoid over-requesting colors refresh.
  */
-private const val REFRESH_DELAY = 30L
+private const val REFRESH_DELAY = 200L
 
 class GifWallpaperService : WallpaperService() {
-    private lateinit var rendererMapper: RendererMapper
+    private lateinit var drawableMapper: DrawableMapper
 
     override fun onCreateEngine(): Engine {
         return GifEngine()
     }
 
     inner class GifEngine : Engine(), LifecycleOwner {
-        private var renderCallback: RenderCallback? = null
+        private var surfaceDrawableRenderer: SurfaceDrawableRenderer? = null
+
         private val handlerThread = HandlerThread("WallpaperLooper")
         private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
         private var handler: Handler? = null
@@ -61,21 +65,23 @@ class GifWallpaperService : WallpaperService() {
             handlerThread.start()
             handler = Handler(handlerThread.looper)
 
-            renderCallback =
-                RenderCallback(surfaceHolder, handlerThread.looper).also(lifecycle::addObserver)
+            surfaceDrawableRenderer =
+                SurfaceDrawableRenderer(surfaceHolder, handlerThread.looper)
+
             val model = Model.get(this@GifWallpaperService)
-            rendererMapper = RendererMapper(
+
+            drawableMapper = DrawableMapper(
                 model = model,
-                surfaceHolder = surfaceHolder,
                 animated = false,
-                unsetText = getString(R.string.open_app),
+                getString(R.string.open_app),
                 isService = true
             ).apply {
-                observe(this@GifEngine) { renderer: Renderer ->
-                    renderCallback?.renderer = renderer
+                observe(this@GifEngine) { drawable ->
+                    surfaceDrawableRenderer?.drawable = drawable
                     requestWallpaperColorsComputation()
                 }
             }
+
             model.backgroundColorData.observe(this) {
                 requestWallpaperColorsComputation()
             }
@@ -102,6 +108,7 @@ class GifWallpaperService : WallpaperService() {
             } else {
                 lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
             }
+            surfaceDrawableRenderer?.visibilityChanged(visible)
         }
 
         override fun getLifecycle(): Lifecycle {
@@ -110,11 +117,13 @@ class GifWallpaperService : WallpaperService() {
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
         val refreshWallpaperColorsRunnable: Runnable = Runnable {
-            wallpaperColors = (renderCallback?.renderer as? WallpaperRenderer)?.run {
-                val miniature = this.createMiniature()
-                WallpaperColors.fromBitmap(miniature).also { miniature.recycle() }
-            } ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
-            notifyColorsChanged()
+            CoroutineScope(Dispatchers.Default).launch {
+                wallpaperColors =
+                    drawableMapper.value?.createMiniature()?.let(WallpaperColors::fromBitmap)
+                    ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
+                yield()
+                notifyColorsChanged()
+            }
         }
 
         private fun requestWallpaperColorsComputation() {

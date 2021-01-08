@@ -43,10 +43,10 @@ import kotlinx.android.synthetic.main.fragment_setup.*
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.Model
 import net.redwarp.gifwallpaper.data.WallpaperStatus
-import net.redwarp.gifwallpaper.renderer.RenderCallback
-import net.redwarp.gifwallpaper.renderer.Renderer
-import net.redwarp.gifwallpaper.renderer.RendererMapper
-import net.redwarp.gifwallpaper.renderer.WallpaperRenderer
+import net.redwarp.gifwallpaper.renderer.DrawableMapper
+import net.redwarp.gifwallpaper.renderer.Rotation
+import net.redwarp.gifwallpaper.renderer.ScaleType
+import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.util.isDark
 import net.redwarp.gifwallpaper.util.themeColor
 
@@ -57,7 +57,6 @@ const val PICK_GIF_FILE = 2
  */
 @Keep
 class SetupFragment : Fragment() {
-    private var renderCallback: RenderCallback? = null
     private var currentScale = 0
     private var currentRotation = 0
     private lateinit var model: Model
@@ -103,18 +102,16 @@ class SetupFragment : Fragment() {
             insets
         }
 
-        renderCallback =
-            RenderCallback(surface_view.holder, Looper.getMainLooper()).also(lifecycle::addObserver)
+        val renderer = SurfaceDrawableRenderer(surface_view.holder, Looper.getMainLooper())
 
         model = Model.get(requireContext())
-        RendererMapper(
+        DrawableMapper(
             model = model,
-            surfaceHolder = surface_view.holder,
             animated = true,
             unsetText = getString(R.string.click_the_open_gif_button),
             isService = false
-        ).observe(viewLifecycleOwner) { renderer: Renderer ->
-            renderCallback?.renderer = renderer
+        ).observe(viewLifecycleOwner) { drawable ->
+            renderer.drawable = drawable
         }
 
         model.colorInfoData.observe(viewLifecycleOwner) { colorStatus ->
@@ -153,12 +150,6 @@ class SetupFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        renderCallback?.let(lifecycle::removeObserver)
-        renderCallback = null
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -193,13 +184,6 @@ class SetupFragment : Fragment() {
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (activity?.isFinishing == true) {
-            (renderCallback?.renderer as? WallpaperRenderer)?.recycle()
-        }
     }
 
     private fun adjustTheme(backgroundColor: Int) {
@@ -239,8 +223,8 @@ class SetupFragment : Fragment() {
     }
 
     private fun changeScale() {
-        currentScale = (currentScale + 1) % WallpaperRenderer.ScaleType.values().size
-        model.setScaleType(WallpaperRenderer.ScaleType.values()[currentScale])
+        currentScale = (currentScale + 1) % ScaleType.values().size
+        model.setScaleType(ScaleType.values()[currentScale])
     }
 
     private fun changeColor() {
@@ -265,8 +249,8 @@ class SetupFragment : Fragment() {
     }
 
     private fun rotate() {
-        currentRotation = (currentRotation + 1) % WallpaperRenderer.Rotation.values().size
-        model.setRotation(WallpaperRenderer.Rotation.values()[currentRotation])
+        currentRotation = (currentRotation + 1) % Rotation.values().size
+        model.setRotation(Rotation.values()[currentRotation])
     }
 
     private inner class MyGestureListener : GestureDetector.SimpleOnGestureListener() {

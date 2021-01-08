@@ -22,7 +22,8 @@ import androidx.annotation.ColorInt
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import net.redwarp.gifwallpaper.renderer.WallpaperRenderer
+import net.redwarp.gifwallpaper.renderer.Rotation
+import net.redwarp.gifwallpaper.renderer.ScaleType
 
 internal const val SHARED_PREF_NAME = "wallpaper_pref"
 internal const val KEY_WALLPAPER_URI = "wallpaper_uri"
@@ -39,25 +40,25 @@ class Model private constructor(val context: Context) {
     private val _backgroundColorData = MediatorLiveData<Int>()
     private val _postTranslateData = MutableLiveData<Pair<Float, Float>>()
     private val _translateData = MutableLiveData<Pair<Float, Float>>()
+    private val _translationEvents = MutableLiveData<TranslationEvent>()
 
     val wallpaperStatus: LiveData<WallpaperStatus> get() = _wallpaperStatus
-    val scaleTypeData: LiveData<WallpaperRenderer.ScaleType> get() = _scaleTypeData
-    val rotationData: LiveData<WallpaperRenderer.Rotation> get() = _rotationData
+    val scaleTypeData: LiveData<ScaleType> get() = _scaleTypeData
+    val rotationData: LiveData<Rotation> get() = _rotationData
     val colorInfoData: LiveData<ColorInfo> = ColorLiveData(context, wallpaperStatus)
     val backgroundColorData: LiveData<Int> get() = _backgroundColorData
     val postTranslationData: LiveData<Pair<Float, Float>> get() = _postTranslateData
     val translationData: LiveData<Pair<Float, Float>> get() = _translateData
+    val translationEvents: LiveData<TranslationEvent> get() = _translationEvents
 
     private var isColorSet = true
 
     init {
         _backgroundColorData.addSource(colorInfoData) { colorInfo ->
             if (!isColorSet) {
-                when (colorInfo) {
-                    is ColorScheme -> {
-                        _backgroundColorData.postValue(colorInfo.defaultColor)
-                        isColorSet = true
-                    }
+                if (colorInfo is ColorScheme) {
+                    _backgroundColorData.postValue(colorInfo.defaultColor)
+                    isColorSet = true
                 }
             }
         }
@@ -65,10 +66,12 @@ class Model private constructor(val context: Context) {
         _backgroundColorData.observeForever { backgroundColor ->
             storeBackgroundColor(context, backgroundColor)
         }
-        _translateData.value = loadTranslation(context)
+        val loadTranslation = loadTranslation(context)
+        _translateData.value = loadTranslation
         _translateData.observeForever { (translateX, translateY) ->
             storeTranslation(context, translateX, translateY)
         }
+
         wallpaperStatus.observeForever {
             if (it is WallpaperStatus.NotSet) isColorSet = false
         }
@@ -113,18 +116,18 @@ class Model private constructor(val context: Context) {
         isColorSet = false
         _wallpaperStatus.clearGif()
         setBackgroundColor(Color.BLACK)
-        setScaleType(WallpaperRenderer.ScaleType.FIT_CENTER)
-        setRotation(WallpaperRenderer.Rotation.NORTH)
+        setScaleType(ScaleType.FIT_CENTER)
+        setRotation(Rotation.NORTH)
     }
 
-    fun setScaleType(scaleType: WallpaperRenderer.ScaleType) {
+    fun setScaleType(scaleType: ScaleType) {
+        resetTranslate()
         _scaleTypeData.setScaleType(scaleType)
-        resetTranslate()
     }
 
-    fun setRotation(rotation: WallpaperRenderer.Rotation) {
-        _rotationData.setRotation(rotation)
+    fun setRotation(rotation: Rotation) {
         resetTranslate()
+        _rotationData.setRotation(rotation)
     }
 
     fun setBackgroundColor(@ColorInt color: Int) {
@@ -138,17 +141,17 @@ class Model private constructor(val context: Context) {
                 (previousX + translateX) to (previousY + translateY)
             } ?: (translateX to translateY)
         _translateData.postValue(translatePair)
+
+        _translationEvents.postValue(TranslationEvent.PostTranslate(translateX, translateY))
     }
 
     fun resetTranslate() {
-        _translateData.value?.let {
-            _postTranslateData.postValue(-it.first to -it.second)
-        }
         _translateData.postValue(0f to 0f)
+        _translationEvents.postValue(TranslationEvent.Reset)
     }
 
     private class ScaleTypeData(private val context: Context) :
-        LiveData<WallpaperRenderer.ScaleType>() {
+        LiveData<ScaleType>() {
         init {
             loadInitialValue()
         }
@@ -157,51 +160,51 @@ class Model private constructor(val context: Context) {
             postValue(loadCurrentScaleType(context))
         }
 
-        private fun loadCurrentScaleType(context: Context): WallpaperRenderer.ScaleType {
+        private fun loadCurrentScaleType(context: Context): ScaleType {
             val sharedPreferences =
                 context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
             val scaleTypeOrdinal = sharedPreferences.getInt(KEY_WALLPAPER_SCALE_TYPE, 0)
-            return WallpaperRenderer.ScaleType.values()[scaleTypeOrdinal]
+            return ScaleType.values()[scaleTypeOrdinal]
         }
 
         private fun storeCurrentScaleType(
             context: Context,
-            scaleType: WallpaperRenderer.ScaleType
+            scaleType: ScaleType
         ) {
             val sharedPreferences =
                 context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
             sharedPreferences.edit().putInt(KEY_WALLPAPER_SCALE_TYPE, scaleType.ordinal).apply()
         }
 
-        fun setScaleType(scaleType: WallpaperRenderer.ScaleType) {
+        fun setScaleType(scaleType: ScaleType) {
             storeCurrentScaleType(context, scaleType)
             postValue(scaleType)
         }
     }
 
     private class RotationData(private val context: Context) :
-        LiveData<WallpaperRenderer.Rotation>() {
+        LiveData<Rotation>() {
         init {
             postValue(loadCurrentRotation(context))
         }
 
-        private fun loadCurrentRotation(context: Context): WallpaperRenderer.Rotation {
+        private fun loadCurrentRotation(context: Context): Rotation {
             val sharedPreferences =
                 context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
             val rotationOrdinal = sharedPreferences.getInt(KEY_WALLPAPER_ROTATION, 0)
-            return WallpaperRenderer.Rotation.values()[rotationOrdinal]
+            return Rotation.values()[rotationOrdinal]
         }
 
         private fun storeCurrentRotation(
             context: Context,
-            rotation: WallpaperRenderer.Rotation
+            rotation: Rotation
         ) {
             val sharedPreferences =
                 context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
             sharedPreferences.edit().putInt(KEY_WALLPAPER_ROTATION, rotation.ordinal).apply()
         }
 
-        fun setRotation(rotation: WallpaperRenderer.Rotation) {
+        fun setRotation(rotation: Rotation) {
             storeCurrentRotation(context, rotation)
             postValue(rotation)
         }
@@ -212,9 +215,11 @@ class Model private constructor(val context: Context) {
 
         fun get(context: Context): Model {
             instance =
-                if (Companion::instance.isInitialized) instance else (Model(
-                    context.applicationContext
-                ))
+                if (Companion::instance.isInitialized) instance else (
+                    Model(
+                        context.applicationContext
+                    )
+                    )
 
             return instance
         }

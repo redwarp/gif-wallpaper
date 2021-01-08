@@ -25,19 +25,21 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import io.noties.markwon.Markwon
-import java.io.InputStream
-import kotlinx.android.synthetic.main.activity_text.*
+import net.redwarp.gifwallpaper.databinding.ActivityTextBinding
 import net.redwarp.gifwallpaper.util.themeColor
+import java.io.InputStream
 
 private const val KEY_MARKDOWN_FILENAME = "markdown_filename"
 
 class TextActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityTextBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_text)
-        textView.setOnApplyWindowInsetsListener { _, insets ->
-            textView.y = insets.systemWindowInsetTop.toFloat()
+        binding = ActivityTextBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.textView.setOnApplyWindowInsetsListener { _, insets ->
+            binding.textView.y = insets.systemWindowInsetTop.toFloat()
             insets
         }
         window.apply {
@@ -58,7 +60,7 @@ class TextActivity : AppCompatActivity() {
         intent.getStringExtra(KEY_MARKDOWN_FILENAME)?.let {
             val content = loadMarkdownFile(it) ?: return@let
 
-            Markwon.create(this).setMarkdown(textView, content)
+            Markwon.create(this).setMarkdown(binding.textView, content)
         }
     }
 

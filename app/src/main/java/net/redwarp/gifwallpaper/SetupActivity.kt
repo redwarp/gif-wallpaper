@@ -17,9 +17,7 @@ package net.redwarp.gifwallpaper
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_setup.*
-
-const val TAG = "GifWallpaper"
+import androidx.appcompat.widget.Toolbar
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -35,6 +33,7 @@ class SetupActivity : AppCompatActivity() {
     }
 
     private fun setupActionBar() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.setOnApplyWindowInsetsListener { _, insets ->
             toolbar.y = insets.systemWindowInsetTop.toFloat()

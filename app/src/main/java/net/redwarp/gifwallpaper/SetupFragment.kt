@@ -32,17 +32,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.Keep
+import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import dev.sasikanth.colorsheet.ColorSheet
-import kotlinx.android.synthetic.main.activity_setup.*
-import kotlinx.android.synthetic.main.fragment_setup.*
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.Model
 import net.redwarp.gifwallpaper.data.WallpaperStatus
+import net.redwarp.gifwallpaper.databinding.FragmentSetupBinding
 import net.redwarp.gifwallpaper.renderer.DrawableMapper
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
@@ -60,10 +60,14 @@ class SetupFragment : Fragment() {
     private var currentScale = 0
     private var currentRotation = 0
     private lateinit var model: Model
+
+    private var _binding: FragmentSetupBinding? = null
+    private val binding get() = _binding!!
+
     private var colorInfo: ColorScheme? = null
         set(value) {
             field = value
-            change_color_button.isEnabled = value != null
+            binding.changeColorButton.isEnabled = value != null
         }
     private var currentColor: Int? = null
     private lateinit var detector: GestureDetectorCompat
@@ -77,32 +81,38 @@ class SetupFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_setup, container, false)
+    ): View {
+        _binding = FragmentSetupBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        open_gif_button.setOnClickListener {
+        binding.openGifButton.setOnClickListener {
             pickDocument()
         }
-        change_scale_button.setOnClickListener {
+        binding.changeScaleButton.setOnClickListener {
             changeScale()
         }
-        change_color_button.setOnClickListener {
+        binding.changeColorButton.setOnClickListener {
             changeColor()
         }
-        rotate_button.setOnClickListener {
+        binding.rotateButton.setOnClickListener {
             rotate()
         }
-        button_container.setOnApplyWindowInsetsListener { _, insets ->
-            button_container.updatePadding(bottom = insets.systemWindowInsetBottom)
+        binding.buttonContainer.setOnApplyWindowInsetsListener { _, insets ->
+            binding.buttonContainer.updatePadding(bottom = insets.systemWindowInsetBottom)
             insets
         }
 
-        val renderer = SurfaceDrawableRenderer(surface_view.holder, Looper.getMainLooper())
+        val renderer = SurfaceDrawableRenderer(binding.surfaceView.holder, Looper.getMainLooper())
 
         model = Model.get(requireContext())
         DrawableMapper(
@@ -116,7 +126,7 @@ class SetupFragment : Fragment() {
 
         model.colorInfoData.observe(viewLifecycleOwner) { colorStatus ->
             colorInfo = colorStatus as? ColorScheme
-            change_color_button.isEnabled = colorStatus is ColorScheme
+            binding.changeColorButton.isEnabled = colorStatus is ColorScheme
         }
         model.backgroundColorData.observe(viewLifecycleOwner) {
             currentColor = it
@@ -130,16 +140,16 @@ class SetupFragment : Fragment() {
         }
         model.wallpaperStatus.observe(viewLifecycleOwner) {
             val isWallpaperSet = it is WallpaperStatus.Wallpaper
-            change_scale_button.isEnabled = isWallpaperSet
-            rotate_button.isEnabled = isWallpaperSet
+            binding.changeScaleButton.isEnabled = isWallpaperSet
+            binding.rotateButton.isEnabled = isWallpaperSet
         }
 
         detector = GestureDetectorCompat(requireContext(), MyGestureListener())
-        touch_area.setOnTouchListener { _, event ->
+        binding.touchArea.setOnTouchListener { _, event ->
             detector.onTouchEvent(event)
         }
-        ViewCompat.setOnApplyWindowInsetsListener(surface_view) { _, inset ->
-            (touch_area.layoutParams as? FrameLayout.LayoutParams)?.setMargins(
+        ViewCompat.setOnApplyWindowInsetsListener(binding.surfaceView) { _, inset ->
+            (binding.touchArea.layoutParams as? FrameLayout.LayoutParams)?.setMargins(
                 inset.systemGestureInsets.left,
                 inset.systemGestureInsets.top,
                 inset.systemGestureInsets.right,
@@ -190,11 +200,12 @@ class SetupFragment : Fragment() {
         setStatusBarColor(backgroundColor.isDark())
         val overflowColor = if (backgroundColor.isDark()) Color.WHITE else Color.BLACK
 
-        val icon = activity?.toolbar?.overflowIcon?.let {
+        val toolbar: Toolbar? = (view?.parent as? ViewGroup)?.findViewById(R.id.toolbar)
+        val icon = toolbar?.overflowIcon?.let {
             DrawableCompat.wrap(it).also { wrapped -> wrapped.setTint(overflowColor) }
         }
 
-        activity?.toolbar?.overflowIcon = icon
+        toolbar?.overflowIcon = icon
     }
 
     private fun setStatusBarColor(isDark: Boolean) {

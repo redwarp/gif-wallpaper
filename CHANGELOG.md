@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/redwarp/gif-wallpaper/compare/v1.5.4...v1.6.0) (2021-01-08)
+
+
+### Features
+
+* Rewrite the rendering pipeline to be simpler ([#86](https://github.com/redwarp/gif-wallpaper/issues/86)) ([5736b4e](https://github.com/redwarp/gif-wallpaper/commit/5736b4ea59267baa3751ddfea49f46623f84e19b))
+* Switch to the dedicated gif library and remove java code ([296aa6e](https://github.com/redwarp/gif-wallpaper/commit/296aa6ed8a9005821f317d297829bfbeb9cdf669))
+
 ### [1.5.4](https://github.com/redwarp/gif-wallpaper/compare/v1.5.3...v1.5.4) (2020-12-29)
 
 

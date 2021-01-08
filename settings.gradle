@@ -1,2 +1,10 @@
 rootProject.name='Gif Wallpaper'
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
 include ':app'

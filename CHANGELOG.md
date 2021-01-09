@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://github.com/redwarp/gif-wallpaper/compare/v1.6.0...v1.6.1) (2021-01-09)
+
+
+### Bug Fixes
+
+* Catch throwable instead of exception, hoping to mitigate OutOfMemory errors. Probably a shot in the dark to be honest ([3aad711](https://github.com/redwarp/gif-wallpaper/commit/3aad711ae15f06320af2a14a1fc46c705007055c))
+* Prevent crash if locking canvas returns null ([87fe8fa](https://github.com/redwarp/gif-wallpaper/commit/87fe8fa1a21d912e1153fad9ba591d8b35265673))
+* Remove deprecated kotlin android extension ([0d0539f](https://github.com/redwarp/gif-wallpaper/commit/0d0539fa6dee3302abb0d0002e194ae4349a84bb))
+
 ## [1.6.0](https://github.com/redwarp/gif-wallpaper/compare/v1.5.4...v1.6.0) (2021-01-08)
 
 

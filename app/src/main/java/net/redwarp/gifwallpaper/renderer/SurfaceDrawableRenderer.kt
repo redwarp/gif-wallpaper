@@ -91,17 +91,19 @@ class SurfaceDrawableRenderer(
 
     private fun drawOnSurface() {
         if (isCreated && drawable != null) {
-            val canvas =
+            val canvas: Canvas? =
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     holder.lockHardwareCanvas()
                 } else {
                     holder.lockCanvas()
                 }
 
-            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-            draw(canvas)
+            if (canvas != null) {
+                canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                draw(canvas)
 
-            holder.unlockCanvasAndPost(canvas)
+                holder.unlockCanvasAndPost(canvas)
+            }
         }
     }
 

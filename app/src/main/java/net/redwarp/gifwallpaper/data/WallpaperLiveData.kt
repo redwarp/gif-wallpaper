@@ -69,7 +69,7 @@ internal class WallpaperLiveData(private val context: Context) :
             } else {
                 try {
                     WallpaperStatus.Wallpaper(Parser.parse(inputStream))
-                } catch (_: Exception) {
+                } catch (_: Throwable) {
                     WallpaperStatus.NotSet
                 }
             }

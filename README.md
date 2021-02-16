@@ -30,9 +30,9 @@ Alex Redfish. [Check their art](https://www.artstation.com/artwork/5wm5W), it's 
 ## Example
 #### Actual GIF
 
-<iframe src="https://giphy.com/embed/lNG8ZbSxsj9QcNikGJ" width="240" height="240" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/lNG8ZbSxsj9QcNikGJ">via GIPHY</a></p>
+[<img src="assets/samples/rocket.gif" alt="a flying rocket" width="480" height="480">](https://github.com/redwarp/gif-wallpaper/blob/main/assets/samples/rocket.gif)
 
 #### Set as Wallpaper
-[<img src="homescreen.jpeg"
-     alt="Man hitting walls"
-     height="400">](https://gph.is/g/ZWdw6rL)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png"
+     alt="a flying rocket on your homescreen"
+     height="400">](https://github.com/redwarp/gif-wallpaper/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png)

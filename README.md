@@ -26,3 +26,13 @@ Alex Redfish. [Check their art](https://www.artstation.com/artwork/5wm5W), it's 
 
 - [Poussinou](https://github.com/Poussinou) - F-Droid and Google Play Store links
 - Mister klaid - Russian translations
+
+## Example
+#### Actual GIF
+
+[<img src="assets/samples/rocket.gif" alt="a flying rocket" width="480" height="480">](https://github.com/redwarp/gif-wallpaper/blob/main/assets/samples/rocket.gif)
+
+#### Set as Wallpaper
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png"
+     alt="a flying rocket on your homescreen"
+     height="400">](https://github.com/redwarp/gif-wallpaper/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png)

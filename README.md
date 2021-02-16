@@ -26,3 +26,13 @@ Alex Redfish. [Check their art](https://www.artstation.com/artwork/5wm5W), it's 
 
 - [Poussinou](https://github.com/Poussinou) - F-Droid and Google Play Store links
 - Mister klaid - Russian translations
+
+## Example
+#### Actual GIF
+
+<iframe src="https://giphy.com/embed/lNG8ZbSxsj9QcNikGJ" width="240" height="240" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/lNG8ZbSxsj9QcNikGJ">via GIPHY</a></p>
+
+#### Set as Wallpaper
+[<img src="homescreen.jpeg"
+     alt="Man hitting walls"
+     height="400">](https://gph.is/g/ZWdw6rL)

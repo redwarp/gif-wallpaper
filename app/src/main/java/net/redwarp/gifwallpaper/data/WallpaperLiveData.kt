@@ -18,13 +18,13 @@ package net.redwarp.gifwallpaper.data
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
+import app.redwarp.gif.decoder.Parser
+import app.redwarp.gif.decoder.descriptors.GifDescriptor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.redwarp.gif.decoder.Parser
-import net.redwarp.gif.decoder.descriptors.GifDescriptor
 import net.redwarp.gifwallpaper.util.FileUtils
 import java.io.File
 

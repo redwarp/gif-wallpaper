@@ -24,10 +24,10 @@ import androidx.core.graphics.alpha
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.palette.graphics.Palette
+import app.redwarp.gif.android.GifDrawable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.redwarp.gif.android.GifDrawable
 
 class ColorLiveData(val context: Context, wallpaperLiveData: LiveData<WallpaperStatus>) :
     MediatorLiveData<ColorInfo>() {

@@ -3,6 +3,7 @@ rootProject.name='Gif Wallpaper'
 dependencyResolutionManagement {
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
 }

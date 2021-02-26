@@ -27,7 +27,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.view.animation.AccelerateDecelerateInterpolator
-import net.redwarp.gif.android.GifDrawable
+import app.redwarp.gif.android.GifDrawable
 import net.redwarp.gifwallpaper.util.MatrixEvaluator
 import net.redwarp.gifwallpaper.util.setCenterCropRectInRect
 import net.redwarp.gifwallpaper.util.setCenterRectInRect

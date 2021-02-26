@@ -18,7 +18,7 @@ package net.redwarp.gifwallpaper.renderer
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.MediatorLiveData
-import net.redwarp.gif.android.GifDrawable
+import app.redwarp.gif.android.GifDrawable
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.Model
 import net.redwarp.gifwallpaper.data.TranslationEvent

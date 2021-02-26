@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.2](https://github.com/redwarp/gif-wallpaper/compare/v1.6.1...v1.6.2) (2021-02-26)
+
+
+### Bug Fixes
+
+* Prepare to ditch jcenter and update minor deps ([b841b50](https://github.com/redwarp/gif-wallpaper/commit/b841b50b32d369b44a9077dd4908ce2e5d2f2c69))
+
 ### [1.6.1](https://github.com/redwarp/gif-wallpaper/compare/v1.6.0...v1.6.1) (2021-01-09)
 
 

@@ -46,7 +46,7 @@ class DrawableMapper(
                     )
                 )
                 is WallpaperStatus.Wallpaper -> {
-                    val gif = GifDrawable(status.uri).apply {
+                    val gif = GifDrawable(status.gifDescriptor).apply {
                         start()
                     }
                     val scaleType =

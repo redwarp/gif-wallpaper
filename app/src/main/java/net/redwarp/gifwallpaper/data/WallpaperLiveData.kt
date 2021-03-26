@@ -63,17 +63,28 @@ internal class WallpaperLiveData(private val context: Context) :
 
     @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun loadGifDescriptor(uri: Uri): WallpaperStatus = withContext(Dispatchers.IO) {
-        context.contentResolver.openInputStream(uri).use { inputStream ->
-            return@withContext if (inputStream == null) {
-                WallpaperStatus.NotSet
+        val file = File(uri.path)
+        return@withContext try {
+            if (file.length() > 5 * 1024 * 1024) {
+                WallpaperStatus.Wallpaper(Parser.parse(file))
             } else {
-                try {
-                    WallpaperStatus.Wallpaper(Parser.parse(inputStream))
-                } catch (_: Throwable) {
-                    WallpaperStatus.NotSet
-                }
+                WallpaperStatus.Wallpaper(Parser.parse(file.inputStream()))
             }
+        } catch (_: Throwable) {
+            WallpaperStatus.NotSet
         }
+
+        // context.contentResolver.openInputStream(uri).use { inputStream ->
+        //     return@withContext if (inputStream == null) {
+        //         WallpaperStatus.NotSet
+        //     } else {
+        //         try {
+        //             WallpaperStatus.Wallpaper(Parser.parse(inputStream))
+        //         } catch (_: Throwable) {
+        //             WallpaperStatus.NotSet
+        //         }
+        //     }
+        // }
     }
 
     fun clearGif() {
@@ -125,5 +136,5 @@ internal class WallpaperLiveData(private val context: Context) :
 sealed class WallpaperStatus {
     object NotSet : WallpaperStatus()
     object Loading : WallpaperStatus()
-    data class Wallpaper(val uri: GifDescriptor) : WallpaperStatus()
+    data class Wallpaper(val gifDescriptor: GifDescriptor) : WallpaperStatus()
 }

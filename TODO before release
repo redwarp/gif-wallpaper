@@ -1,0 +1,45 @@
+TODO: Clearing the gif also clears the file, which makes the GifDrawable display on the wallpaper background also fail and crash badly.
+
+2021-02-28 11:38:23.767 13983-14021/net.redwarp.gifwallpaper E/AndroidRuntime: FATAL EXCEPTION: DefaultDispatcher-worker-1
+    Process: net.redwarp.gifwallpaper, PID: 13983
+    java.io.FileNotFoundException: /data/user/0/net.redwarp.gifwallpaper/files/e0166589-2c72-4b2a-8aba-1344e82b265b.gif: open failed: ENOENT (No such file or directory)
+        at libcore.io.IoBridge.open(IoBridge.java:496)
+        at java.io.RandomAccessFile.<init>(RandomAccessFile.java:289)
+        at app.redwarp.gif.decoder.streams.RandomAccessFileInputStream.getRandomAccessFile(RandomAccessFileInputStream.kt:11)
+        at app.redwarp.gif.decoder.streams.RandomAccessFileInputStream.seek(RandomAccessFileInputStream.kt:16)
+        at app.redwarp.gif.decoder.Gif.getFrame(Gif.kt:142)
+        at app.redwarp.gif.decoder.Gif.getCurrentFrame(Gif.kt:112)
+        at app.redwarp.gif.android.GifDrawable.getCurrentFrame(GifDrawable.kt:269)
+        at app.redwarp.gif.android.GifDrawable.access$getCurrentFrame(GifDrawable.kt:30)
+        at app.redwarp.gif.android.GifDrawable$animationLoop$2.invokeSuspend(GifDrawable.kt:238)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+        at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:571)
+        at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:750)
+        at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:678)
+        at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:665)
+    	Suppressed: java.io.FileNotFoundException: /data/user/0/net.redwarp.gifwallpaper/files/e0166589-2c72-4b2a-8aba-1344e82b265b.gif: open failed: ENOENT (No such file or directory)
+        at libcore.io.IoBridge.open(IoBridge.java:496)
+        at java.io.RandomAccessFile.<init>(RandomAccessFile.java:289)
+        at app.redwarp.gif.decoder.streams.RandomAccessFileInputStream.getRandomAccessFile(RandomAccessFileInputStream.kt:11)
+        at app.redwarp.gif.decoder.streams.RandomAccessFileInputStream.close(RandomAccessFileInputStream.kt:36)
+        at kotlin.io.CloseableKt.closeFinally(Closeable.kt:60)
+        at app.redwarp.gif.decoder.Gif.getFrame(Gif.kt:141)
+        		... 10 more
+     Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+        at libcore.io.Linux.open(Native Method)
+        at libcore.io.ForwardingOs.open(ForwardingOs.java:167)
+        at libcore.io.BlockGuardOs.open(BlockGuardOs.java:252)
+        at libcore.io.ForwardingOs.open(ForwardingOs.java:167)
+        at android.app.ActivityThread$AndroidOs.open(ActivityThread.java:7255)
+        at libcore.io.IoBridge.open(IoBridge.java:482)
+        		... 15 more
+     Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+        at libcore.io.Linux.open(Native Method)
+        at libcore.io.ForwardingOs.open(ForwardingOs.java:167)
+        at libcore.io.BlockGuardOs.open(BlockGuardOs.java:252)
+        at libcore.io.ForwardingOs.open(ForwardingOs.java:167)
+        at android.app.ActivityThread$AndroidOs.open(ActivityThread.java:7255)
+        at libcore.io.IoBridge.open(IoBridge.java:482)
+        	... 14 more
+2021-02-28 11:38:23.945 2036-2132/? E/InputDispatcher: channel 'e23800d net.redwarp.gifwallpaper.GifWallpaperService (server)' ~ Channel is unrecoverably broken and will be disposed!

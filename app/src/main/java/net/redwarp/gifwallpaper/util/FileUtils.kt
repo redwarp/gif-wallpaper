@@ -25,8 +25,8 @@ import java.io.FileOutputStream
 import java.util.UUID
 
 object FileUtils {
-    @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun copyFileLocally(context: Context, uri: Uri): Uri? = withContext(Dispatchers.IO) {
+
+    suspend fun copyFileLocally(context: Context, uri: Uri): File? = withContext(Dispatchers.IO) {
         val localDir = context.filesDir
         val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
         val localFileName = UUID.randomUUID().toString().let {
@@ -37,23 +37,25 @@ object FileUtils {
             }
         }
 
-        val file = File(localDir, localFileName).apply {
-            createNewFile()
-            setWritable(true, true)
-        }
-
-        var copiedLength = 0L
-        context.contentResolver.openInputStream(uri)?.use { inputStream ->
-            FileOutputStream(file).use { outputStream ->
-                copiedLength = inputStream.copyTo(outputStream)
+        runCatching {
+            val file = File(localDir, localFileName).apply {
+                createNewFile()
+                setWritable(true, true)
             }
-        }
 
-        if (copiedLength == 0L) {
-            file.delete()
-            null
-        } else {
-            Uri.fromFile(file)
-        }
+            var copiedLength = 0L
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                FileOutputStream(file).use { outputStream ->
+                    copiedLength = inputStream.copyTo(outputStream)
+                }
+            }
+
+            if (copiedLength == 0L) {
+                file.delete()
+                null
+            } else {
+                file
+            }
+        }.getOrNull()
     }
 }

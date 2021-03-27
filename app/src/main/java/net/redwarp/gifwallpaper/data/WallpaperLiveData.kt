@@ -19,6 +19,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import app.redwarp.gif.decoder.Parser
+import app.redwarp.gif.decoder.Result
 import app.redwarp.gif.decoder.descriptors.GifDescriptor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,10 +29,12 @@ import kotlinx.coroutines.withContext
 import net.redwarp.gifwallpaper.util.FileUtils
 import java.io.File
 
+private const val FILE_SIZE_THRESHOLD = 5 * 1024 * 1024
+
 internal class WallpaperLiveData(private val context: Context) :
     LiveData<WallpaperStatus>() {
     private var currentUri: Uri? = null
-    private var localUri: Uri? = null
+    private var localFile: File? = null
 
     init {
         postValue(WallpaperStatus.Loading)
@@ -45,59 +48,49 @@ internal class WallpaperLiveData(private val context: Context) :
 
         CoroutineScope(Dispatchers.IO).launch {
             postValue(WallpaperStatus.Loading)
-            val copiedUri =
-                FileUtils.copyFileLocally(context, uri)
-            if (copiedUri == null) {
+            val copiedFile = FileUtils.copyFileLocally(context, uri)
+            if (copiedFile == null) {
                 postValue(WallpaperStatus.NotSet)
             } else {
-                postValue(
-                    loadGifDescriptor(copiedUri)
-                )
+                postValue(loadGifDescriptor(copiedFile))
             }
-            cleanupOldUri(localUri)
+            localFile?.let(this@WallpaperLiveData::cleanupOldUri)
             currentUri = uri
-            localUri = copiedUri
-            storeCurrentWallpaperUri(context, copiedUri)
+            localFile = copiedFile
+            storeCurrentWallpaperFile(context, copiedFile)
         }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun loadGifDescriptor(uri: Uri): WallpaperStatus = withContext(Dispatchers.IO) {
-        val file = File(uri.path)
-        return@withContext try {
-            if (file.length() > 5 * 1024 * 1024) {
-                WallpaperStatus.Wallpaper(Parser.parse(file))
-            } else {
-                WallpaperStatus.Wallpaper(Parser.parse(file.inputStream()))
-            }
-        } catch (_: Throwable) {
-            WallpaperStatus.NotSet
+    private suspend fun loadGifDescriptor(file: File): WallpaperStatus =
+        withContext(Dispatchers.IO) {
+            kotlin.runCatching {
+                val result = if (file.length() > FILE_SIZE_THRESHOLD) {
+                    Parser.parse(file)
+                } else {
+                    Parser.parse(file.inputStream())
+                }
+                when (result) {
+                    is Result.Success -> {
+                        WallpaperStatus.Wallpaper(result.value)
+                    }
+                    else -> {
+                        WallpaperStatus.NotSet
+                    }
+                }
+            }.getOrDefault(WallpaperStatus.NotSet)
         }
-
-        // context.contentResolver.openInputStream(uri).use { inputStream ->
-        //     return@withContext if (inputStream == null) {
-        //         WallpaperStatus.NotSet
-        //     } else {
-        //         try {
-        //             WallpaperStatus.Wallpaper(Parser.parse(inputStream))
-        //         } catch (_: Throwable) {
-        //             WallpaperStatus.NotSet
-        //         }
-        //     }
-        // }
-    }
 
     fun clearGif() {
         postValue(WallpaperStatus.NotSet)
-        cleanupOldUri(localUri)
-        storeCurrentWallpaperUri(context, null)
+        localFile?.let(this::cleanupOldUri)
+        storeCurrentWallpaperFile(context, null)
         currentUri = null
-        localUri = null
+        localFile = null
     }
 
     private suspend fun loadInitialValue() {
-        val uri: Uri? = loadCurrentWallpaperUri(context)
-        localUri = uri
+        val uri: File? = loadCurrentWallpaperFile(context)
+        localFile = uri
         if (uri == null) {
             postValue(WallpaperStatus.NotSet)
         } else {
@@ -107,26 +100,33 @@ internal class WallpaperLiveData(private val context: Context) :
         }
     }
 
-    private fun loadCurrentWallpaperUri(context: Context): Uri? {
+    private fun loadCurrentWallpaperFile(context: Context): File? {
         val sharedPreferences =
             context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
         val urlString = sharedPreferences.getString(KEY_WALLPAPER_URI, null)
-        return urlString?.let { Uri.parse(it) }
+        return urlString?.let {
+            val path = Uri.parse(it).path
+            if (path != null) {
+                File(path)
+            } else {
+                null
+            }
+        }
     }
 
-    private fun storeCurrentWallpaperUri(context: Context, uri: Uri?) {
+    private fun storeCurrentWallpaperFile(context: Context, file: File?) {
         val sharedPreferences =
             context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
-        if (uri != null) {
+
+        if (file != null) {
+            val uri = Uri.fromFile(file)
             sharedPreferences.edit().putString(KEY_WALLPAPER_URI, uri.toString()).apply()
         } else {
             sharedPreferences.edit().remove(KEY_WALLPAPER_URI).apply()
         }
     }
 
-    private fun cleanupOldUri(uri: Uri?) {
-        val path = uri?.path ?: return
-        val file = File(path)
+    private fun cleanupOldUri(file: File) {
         if (file.exists()) {
             file.delete()
         }

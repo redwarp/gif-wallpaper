@@ -45,7 +45,7 @@ class ColorLiveData(val context: Context, wallpaperLiveData: LiveData<WallpaperS
     private fun extractColorScheme(wallpaper: WallpaperStatus.Wallpaper) {
         postValue(NotSet)
         CoroutineScope(Dispatchers.IO).launch {
-            val gif = GifDrawable(wallpaper.uri)
+            val gif = GifDrawable(wallpaper.gifDescriptor)
 
             val defaultColor = calculateDefaultBackgroundColor(gif)
             val palette = calculatePalette(gif)

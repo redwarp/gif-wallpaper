@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.1](https://github.com/redwarp/gif-wallpaper/compare/v1.7.0...v1.7.1) (2021-03-29)
+
+
+### Bug Fixes
+
+* Set Proguard config for netty ([046d5ac](https://github.com/redwarp/gif-wallpaper/commit/046d5acae076b14f1de51b13248cc5a1d088b8fa))
+
 ## [1.7.0](https://github.com/redwarp/gif-wallpaper/compare/v1.6.2...v1.7.0) (2021-03-27)
 
 

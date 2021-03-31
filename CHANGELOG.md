@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.2](https://github.com/redwarp/gif-wallpaper/compare/v1.7.1...v1.7.2) (2021-03-31)
+
+
+### Bug Fixes
+
+* Update gifdecoder to ditch netty ([4868e91](https://github.com/redwarp/gif-wallpaper/commit/4868e915ff40767b04275e9e3d8b42ab536f61ab))
+
 ### [1.7.1](https://github.com/redwarp/gif-wallpaper/compare/v1.7.0...v1.7.1) (2021-03-29)
 
 

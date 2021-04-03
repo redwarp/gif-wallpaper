@@ -26,7 +26,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import io.noties.markwon.Markwon
 import net.redwarp.gifwallpaper.databinding.ActivityTextBinding
-import net.redwarp.gifwallpaper.util.themeColor
+import net.redwarp.gifwallpaper.util.setStatusBarColor
 import java.io.InputStream
 
 private const val KEY_MARKDOWN_FILENAME = "markdown_filename"
@@ -43,11 +43,16 @@ class TextActivity : AppCompatActivity() {
             insets
         }
         window.apply {
-            clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
             statusBarColor = Color.TRANSPARENT
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                setDecorFitsSystemWindows(false)
+            } else {
+                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            }
         }
 
         val nightModeFlags = resources.configuration.uiMode and
@@ -75,22 +80,6 @@ class TextActivity : AppCompatActivity() {
             content = null
         }
         return content
-    }
-
-    private fun setStatusBarColor(isDark: Boolean) {
-        window?.apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (isDark) {
-                    decorView.systemUiVisibility =
-                        decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-                } else {
-                    decorView.systemUiVisibility =
-                        decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                }
-            } else {
-                statusBarColor = context.themeColor(R.attr.colorPrimary)
-            }
-        }
     }
 
     companion object {

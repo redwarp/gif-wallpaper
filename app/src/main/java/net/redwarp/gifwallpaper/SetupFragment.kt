@@ -19,7 +19,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.view.GestureDetector
@@ -48,7 +47,7 @@ import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.util.isDark
-import net.redwarp.gifwallpaper.util.themeColor
+import net.redwarp.gifwallpaper.util.setStatusBarColor
 
 const val PICK_GIF_FILE = 2
 
@@ -200,28 +199,12 @@ class SetupFragment : Fragment() {
         setStatusBarColor(backgroundColor.isDark())
         val overflowColor = if (backgroundColor.isDark()) Color.WHITE else Color.BLACK
 
-        val toolbar: Toolbar? = (view?.parent as? ViewGroup)?.findViewById(R.id.toolbar)
+        val toolbar: Toolbar? = (activity as? SetupActivity)?.toolbar
         val icon = toolbar?.overflowIcon?.let {
             DrawableCompat.wrap(it).also { wrapped -> wrapped.setTint(overflowColor) }
         }
 
         toolbar?.overflowIcon = icon
-    }
-
-    private fun setStatusBarColor(isDark: Boolean) {
-        activity?.window?.apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (isDark) {
-                    decorView.systemUiVisibility =
-                        decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-                } else {
-                    decorView.systemUiVisibility =
-                        decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                }
-            } else {
-                statusBarColor = context.themeColor(R.attr.colorPrimary)
-            }
-        }
     }
 
     private fun pickDocument() {

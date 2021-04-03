@@ -43,19 +43,22 @@ class SurfaceDrawableRenderer(
 
     var drawable: Drawable? = drawable
         set(value) {
-            field?.callback = null
+            synchronized(this) {
+                field?.callback = null
 
-            field = value
-            if (value != null) {
-                value.setBounds(0, 0, width, height)
+                field = value
+                if (value != null) {
+                    value.setBounds(0, 0, width, height)
 
-                if (isCreated && isVisible) {
-                    value.callback = this
-                    drawOnSurface()
+                    if (isCreated && isVisible) {
+                        value.callback = this
+                        drawOnSurface()
+                    }
                 }
             }
         }
 
+    @Synchronized
     fun visibilityChanged(isVisible: Boolean) {
         this.isVisible = isVisible
 
@@ -67,6 +70,7 @@ class SurfaceDrawableRenderer(
         }
     }
 
+    @Synchronized
     override fun surfaceCreated(holder: SurfaceHolder) {
         isCreated = true
 
@@ -75,6 +79,7 @@ class SurfaceDrawableRenderer(
         drawOnSurface()
     }
 
+    @Synchronized
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         this.width = width
         this.height = height
@@ -84,12 +89,15 @@ class SurfaceDrawableRenderer(
         drawOnSurface()
     }
 
+    @Synchronized
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         drawable?.callback = null
         isCreated = false
     }
 
+    @Synchronized
     private fun drawOnSurface() {
+        val drawable = drawable
         if (isCreated && drawable != null) {
             val canvas: Canvas? =
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -100,15 +108,16 @@ class SurfaceDrawableRenderer(
 
             if (canvas != null) {
                 canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-                draw(canvas)
+                draw(canvas, drawable)
 
                 holder.unlockCanvasAndPost(canvas)
             }
         }
     }
 
-    private fun draw(canvas: Canvas) {
-        drawable?.draw(canvas)
+    @Synchronized
+    private fun draw(canvas: Canvas, drawable: Drawable) {
+        drawable.draw(canvas)
     }
 
     override fun invalidateDrawable(who: Drawable) {

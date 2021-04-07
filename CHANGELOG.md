@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.4](https://github.com/redwarp/gif-wallpaper/compare/v1.7.3...v1.7.4) (2021-04-07)
+
+
+### Bug Fixes
+
+* Update theme to pastel ([9109d66](https://github.com/redwarp/gif-wallpaper/commit/9109d66e14e58ab6076d4a6ef0b66a3fb97e8844))
+
 ### [1.7.3](https://github.com/redwarp/gif-wallpaper/compare/v1.7.2...v1.7.3) (2021-04-03)
 
 

@@ -1,13 +1,13 @@
 <svg width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0)">
 <g clip-path="url(#clip1)">
-<path d="M0 0H129.6V108H0V0Z" fill="#FF7A7A"/>
-<path d="M0 36L10.8 0H0V36Z" fill="#FF9264"/>
-<path d="M0 90V108H10.8L43.2 0H27L0 90Z" fill="#FF9264"/>
-<path d="M59.4 0L27 108H43.2L75.6 0H59.4Z" fill="#FF9264"/>
-<path d="M91.8 0L59.4 108H75.6L108 0H91.8Z" fill="#FF9264"/>
-<path d="M124.2 0L91.8 108H108L129.6 36V0H124.2Z" fill="#FF9264"/>
-<path d="M129.6 90L124.2 108H129.6V90Z" fill="#FF9264"/>
+<rect width="129.6" height="108" fill="#F2E1C2"/>
+<path d="M0 36L10.8 0H0V36Z" fill="#F2EDDC"/>
+<path d="M0 90V108H10.8L43.2 0H27L0 90Z" fill="#F2EDDC"/>
+<path d="M59.4 0L27 108H43.2L75.6 0H59.4Z" fill="#F2EDDC"/>
+<path d="M91.8 0L59.4 108H75.6L108 0H91.8Z" fill="#F2EDDC"/>
+<path d="M124.2 0L91.8 108H108L129.6 36V0H124.2Z" fill="#F2EDDC"/>
+<path d="M129.6 90L124.2 108H129.6V90Z" fill="#F2EDDC"/>
 </g>
 <g clip-path="url(#clip2)">
 <path d="M65.875 32.6H41.125V75.5H65.875V32.6Z" fill="white"/>
@@ -16,7 +16,7 @@
 <rect x="47.725" y="28.475" width="12.375" height="1.65" rx="0.825" fill="white"/>
 <rect x="47.725" y="77.975" width="12.375" height="1.65" rx="0.824999" fill="white"/>
 <g clip-path="url(#clip3)">
-<rect x="44.425" y="40.85" width="18.15" height="13.1381" fill="#69B7FF"/>
+<rect width="18.15" height="13.1381" transform="translate(44.425 40.85)" fill="#69B7FF"/>
 <path d="M57.625 49.0381L55.15 51.5131V53.9881H62.575L57.625 49.0381Z" fill="#67E863"/>
 <path d="M51.85 46.5631L44.425 53.9881H58.45L51.85 46.5631Z" fill="#008400"/>
 <path d="M51.85 48.2956L51.025 47.3881L51.85 46.5631L54.0495 49.0381L53.6375 49.4506L52.2625 47.8831L51.85 48.2956Z" fill="white"/>
@@ -32,13 +32,13 @@
 <rect width="108" height="108" fill="white"/>
 </clipPath>
 <clipPath id="clip1">
-<path d="M0 0H129.6V108H0V0Z" fill="white"/>
+<rect width="129.6" height="108" fill="white"/>
 </clipPath>
 <clipPath id="clip2">
-<path d="M37 26H70V82.925H37V26Z" fill="white"/>
+<rect width="33" height="56.925" fill="white" transform="translate(37 26)"/>
 </clipPath>
 <clipPath id="clip3">
-<rect x="44.425" y="40.85" width="18.15" height="13.1381" fill="white"/>
+<rect width="18.15" height="13.1381" fill="white" transform="translate(44.425 40.85)"/>
 </clipPath>
 </defs>
 </svg>

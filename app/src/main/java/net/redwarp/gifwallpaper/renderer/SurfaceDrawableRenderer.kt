@@ -30,11 +30,12 @@ class SurfaceDrawableRenderer(
     private val holder: SurfaceHolder,
     looper: Looper,
     drawable: Drawable? = null
-) : SurfaceHolder.Callback, Drawable.Callback {
+) : SurfaceHolder.Callback2, Drawable.Callback {
     private var width: Int = 0
     private var height: Int = 0
     private var isCreated = false
     private var isVisible = true
+    private var hasDimension = false
     private val handler: Handler = Handler(looper)
 
     init {
@@ -75,8 +76,6 @@ class SurfaceDrawableRenderer(
         isCreated = true
 
         if (isVisible) drawable?.callback = this
-
-        drawOnSurface()
     }
 
     @Synchronized
@@ -86,6 +85,8 @@ class SurfaceDrawableRenderer(
 
         drawable?.setBounds(0, 0, width, height)
 
+        hasDimension = true
+
         drawOnSurface()
     }
 
@@ -93,12 +94,25 @@ class SurfaceDrawableRenderer(
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         drawable?.callback = null
         isCreated = false
+        hasDimension = false
+    }
+
+    @Synchronized
+    override fun surfaceRedrawNeeded(holder: SurfaceHolder) {
+        drawOnSurface()
+    }
+
+    override fun surfaceRedrawNeededAsync(holder: SurfaceHolder, drawingFinished: Runnable) {
+        synchronized(this) {
+            drawOnSurface()
+        }
+        drawingFinished.run()
     }
 
     @Synchronized
     private fun drawOnSurface() {
         val drawable = drawable
-        if (isCreated && drawable != null) {
+        if (isCreated && drawable != null && hasDimension) {
             val canvas: Canvas? =
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     holder.lockHardwareCanvas()

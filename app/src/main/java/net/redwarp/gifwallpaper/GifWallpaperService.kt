@@ -111,6 +111,11 @@ class GifWallpaperService : WallpaperService() {
             surfaceDrawableRenderer?.visibilityChanged(visible)
         }
 
+        @RequiresApi(Build.VERSION_CODES.O_MR1)
+        override fun onComputeColors(): WallpaperColors? {
+            return wallpaperColors
+        }
+
         override fun getLifecycle(): Lifecycle {
             return lifecycleRegistry
         }
@@ -139,12 +144,7 @@ class GifWallpaperService : WallpaperService() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
-        override fun onComputeColors(): WallpaperColors? {
-            return wallpaperColors
-        }
-
-        @RequiresApi(Build.VERSION_CODES.O_MR1)
-        fun Int.colorToWallpaperColor(): WallpaperColors {
+        private fun Int.colorToWallpaperColor(): WallpaperColors {
             val bitmap = Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
 

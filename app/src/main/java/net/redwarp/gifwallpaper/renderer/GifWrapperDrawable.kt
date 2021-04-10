@@ -73,6 +73,7 @@ class GifWrapperDrawable(
     fun setBackgroundColor(color: Int) {
         state.backgroundColor = color
         paint.color = color
+        invalidateSelf()
     }
 
     fun setScaledType(scaleType: ScaleType, animated: Boolean) {

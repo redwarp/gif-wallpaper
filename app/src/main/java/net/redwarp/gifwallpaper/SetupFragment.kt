@@ -133,12 +133,11 @@ class SetupFragment : Fragment() {
             renderer.drawable = drawable
         }
 
-        model.colorInfoData.observe(viewLifecycleOwner) { colorStatus ->
-            colorInfo = colorStatus as? ColorScheme
-            binding.changeColorButton.isEnabled = colorStatus is ColorScheme
-        }
-
         lifecycleScope.launchWhenStarted {
+            modelFlow.colorInfoFlow.onEach { colorInfo ->
+                this@SetupFragment.colorInfo = colorInfo as? ColorScheme
+                binding.changeColorButton.isEnabled = colorInfo is ColorScheme
+            }.launchIn(this)
             modelFlow.backgroundColorFlow.onEach { backgroundColor ->
                 currentColor = backgroundColor
                 adjustTheme(backgroundColor)
@@ -149,12 +148,11 @@ class SetupFragment : Fragment() {
             modelFlow.rotationFlow.onEach { rotation ->
                 currentRotation = rotation.ordinal
             }.launchIn(this)
-        }
-
-        model.wallpaperStatus.observe(viewLifecycleOwner) {
-            val isWallpaperSet = it is WallpaperStatus.Wallpaper
-            binding.changeScaleButton.isEnabled = isWallpaperSet
-            binding.rotateButton.isEnabled = isWallpaperSet
+            modelFlow.wallpaperStatusFlow.onEach {
+                val isWallpaperSet = it is WallpaperStatus.Wallpaper
+                binding.changeScaleButton.isEnabled = isWallpaperSet
+                binding.rotateButton.isEnabled = isWallpaperSet
+            }.launchIn(this)
         }
 
         detector = GestureDetectorCompat(requireContext(), MyGestureListener())
@@ -178,7 +176,7 @@ class SetupFragment : Fragment() {
 
         if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                model.loadNewGif(uri)
+                modelFlow.loadNewGif(uri)
                 modelFlow.resetTranslate()
             }
         }
@@ -191,7 +189,7 @@ class SetupFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.clear_gif -> {
-                model.clearGif()
+                modelFlow.clearGif()
                 return true
             }
             R.id.about -> {

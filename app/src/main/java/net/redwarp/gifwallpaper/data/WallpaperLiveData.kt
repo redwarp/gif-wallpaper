@@ -71,7 +71,7 @@ internal class WallpaperLiveData(private val context: Context) :
                 }
                 when (result) {
                     is Result.Success -> {
-                        WallpaperStatus.Wallpaper(result.value)
+                        WallpaperStatus.Wallpaper(file, result.value)
                     }
                     else -> {
                         WallpaperStatus.NotSet
@@ -136,5 +136,5 @@ internal class WallpaperLiveData(private val context: Context) :
 sealed class WallpaperStatus {
     object NotSet : WallpaperStatus()
     object Loading : WallpaperStatus()
-    data class Wallpaper(val gifDescriptor: GifDescriptor) : WallpaperStatus()
+    data class Wallpaper(val file: File, val gifDescriptor: GifDescriptor) : WallpaperStatus()
 }

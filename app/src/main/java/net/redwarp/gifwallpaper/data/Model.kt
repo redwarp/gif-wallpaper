@@ -19,7 +19,6 @@ import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 
@@ -37,16 +36,16 @@ class Model private constructor(val context: Context) {
     // private val _scaleTypeData = ScaleTypeData(context)
     // private val _rotationData = RotationData(context)
     // private val _backgroundColorData = MediatorLiveData<Int>()
-    private val _postTranslateData = MutableLiveData<Pair<Float, Float>>()
+    // private val _postTranslateData = MutableLiveData<Pair<Float, Float>>()
 
     // private val _translateData = MutableLiveData<Pair<Float, Float>>()
     // private val _translationEvents = MutableLiveData<TranslationEvent>()
 
-    val wallpaperStatus: LiveData<WallpaperStatus> get() = _wallpaperStatus
+    // val wallpaperStatus: LiveData<WallpaperStatus> get() = _wallpaperStatus
 
     // val scaleTypeData: LiveData<ScaleType> get() = _scaleTypeData
     // val rotationData: LiveData<Rotation> get() = _rotationData
-    val colorInfoData: LiveData<ColorInfo> = ColorLiveData(context, wallpaperStatus)
+    // val colorInfoData: LiveData<ColorInfo> = ColorLiveData(context, wallpaperStatus)
     // val backgroundColorData: LiveData<Int> get() = _backgroundColorData
     // val postTranslationData: LiveData<Pair<Float, Float>> get() = _postTranslateData
 
@@ -56,11 +55,14 @@ class Model private constructor(val context: Context) {
     private var isColorSet = true
 
     init {
-        colorInfoData.observeForever { colorInfo ->
-            if (colorInfo is ColorScheme) {
-                ModelFlow.get(context).setBackgroundColor(colorInfo.defaultColor)
-            }
-        }
+        // colorInfoData.observeForever { colorInfo ->
+        //     if (!isColorSet) {
+        //         if (colorInfo is ColorScheme) {
+        //             ModelFlow.get(context).setBackgroundColor(colorInfo.defaultColor)
+        //             isColorSet = true
+        //         }
+        //     }
+        // }
         // _backgroundColorData.addSource(colorInfoData) { colorInfo ->
         //     if (!isColorSet) {
         //         if (colorInfo is ColorScheme) {
@@ -79,9 +81,9 @@ class Model private constructor(val context: Context) {
         //     storeTranslation(context, translateX, translateY)
         // }
 
-        wallpaperStatus.observeForever {
-            if (it is WallpaperStatus.NotSet) isColorSet = false
-        }
+        // wallpaperStatus.observeForever {
+        //     if (it is WallpaperStatus.NotSet) isColorSet = false
+        // }
     }
 
     private fun storeBackgroundColor(context: Context, backgroundColor: Int) {

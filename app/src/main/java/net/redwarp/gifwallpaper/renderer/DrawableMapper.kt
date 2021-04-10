@@ -38,8 +38,8 @@ class DrawableMapper(
 ) : MediatorLiveData<Drawable>() {
 
     init {
-        addSource(model.wallpaperStatus) { status ->
-            lifecycleScope.launchWhenStarted {
+        lifecycleScope.launchWhenStarted {
+            modelFlow.wallpaperStatusFlow.onEach { status ->
                 when (status) {
                     WallpaperStatus.NotSet -> postValue(
                         TextDrawable(model.context, unsetText)
@@ -71,10 +71,8 @@ class DrawableMapper(
                         postValue(wrapper)
                     }
                 }
-            }
-        }
+            }.launchIn(this)
 
-        lifecycleScope.launchWhenStarted {
             modelFlow.backgroundColorFlow.onEach { backgroundColor ->
                 (value as? GifWrapperDrawable)?.setBackgroundColor(backgroundColor)
             }.launchIn(this)

@@ -18,12 +18,8 @@ package net.redwarp.gifwallpaper.data
 import android.content.Context
 import android.graphics.Color
 import android.net.Uri
-import androidx.annotation.ColorInt
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.runBlocking
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 
@@ -37,40 +33,47 @@ internal const val KEY_WALLPAPER_TRANSLATE_Y = "wallpaper_translate_y"
 
 class Model private constructor(val context: Context) {
     private val _wallpaperStatus = WallpaperLiveData(context)
+
     // private val _scaleTypeData = ScaleTypeData(context)
     // private val _rotationData = RotationData(context)
-    private val _backgroundColorData = MediatorLiveData<Int>()
+    // private val _backgroundColorData = MediatorLiveData<Int>()
     private val _postTranslateData = MutableLiveData<Pair<Float, Float>>()
 
     // private val _translateData = MutableLiveData<Pair<Float, Float>>()
-    private val _translationEvents = MutableLiveData<TranslationEvent>()
+    // private val _translationEvents = MutableLiveData<TranslationEvent>()
 
     val wallpaperStatus: LiveData<WallpaperStatus> get() = _wallpaperStatus
+
     // val scaleTypeData: LiveData<ScaleType> get() = _scaleTypeData
     // val rotationData: LiveData<Rotation> get() = _rotationData
     val colorInfoData: LiveData<ColorInfo> = ColorLiveData(context, wallpaperStatus)
-    val backgroundColorData: LiveData<Int> get() = _backgroundColorData
-    val postTranslationData: LiveData<Pair<Float, Float>> get() = _postTranslateData
+    // val backgroundColorData: LiveData<Int> get() = _backgroundColorData
+    // val postTranslationData: LiveData<Pair<Float, Float>> get() = _postTranslateData
 
     // val translationData: LiveData<Pair<Float, Float>> get() = _translateData
-    val translationEvents: LiveData<TranslationEvent> get() = _translationEvents
+    // val translationEvents: LiveData<TranslationEvent> get() = _translationEvents
 
     private var isColorSet = true
 
     init {
-        _backgroundColorData.addSource(colorInfoData) { colorInfo ->
-            if (!isColorSet) {
-                if (colorInfo is ColorScheme) {
-                    _backgroundColorData.postValue(colorInfo.defaultColor)
-                    isColorSet = true
-                }
+        colorInfoData.observeForever { colorInfo ->
+            if (colorInfo is ColorScheme) {
+                ModelFlow.get(context).setBackgroundColor(colorInfo.defaultColor)
             }
         }
-        _backgroundColorData.value = loadBackgroundColor(context)
-        _backgroundColorData.observeForever { backgroundColor ->
-            storeBackgroundColor(context, backgroundColor)
-        }
-        val loadTranslation = loadTranslation(context)
+        // _backgroundColorData.addSource(colorInfoData) { colorInfo ->
+        //     if (!isColorSet) {
+        //         if (colorInfo is ColorScheme) {
+        //             _backgroundColorData.postValue(colorInfo.defaultColor)
+        //             isColorSet = true
+        //         }
+        //     }
+        // }
+        // _backgroundColorData.value = loadBackgroundColor(context)
+        // _backgroundColorData.observeForever { backgroundColor ->
+        //     storeBackgroundColor(context, backgroundColor)
+        // }
+        // val loadTranslation = loadTranslation(context)
         // _translateData.value = loadTranslation
         // _translateData.observeForever { (translateX, translateY) ->
         //     storeTranslation(context, translateX, translateY)
@@ -119,45 +122,45 @@ class Model private constructor(val context: Context) {
     fun clearGif() {
         isColorSet = false
         _wallpaperStatus.clearGif()
-        setBackgroundColor(Color.BLACK)
-        setScaleType(ScaleType.FIT_CENTER)
-        setRotation(Rotation.NORTH)
+        ModelFlow.get(context).setBackgroundColor(Color.BLACK)
+        ModelFlow.get(context).setScaleType(ScaleType.FIT_CENTER)
+        ModelFlow.get(context).setRotation(Rotation.NORTH)
     }
 
-    fun setScaleType(scaleType: ScaleType) {
-        resetTranslate()
-        ModelFlow.get(context).setScaleType(scaleType)
-    }
+    // fun setScaleType(scaleType: ScaleType) {
+    //     resetTranslate()
+    //     ModelFlow.get(context).setScaleType(scaleType)
+    // }
 
-    fun setRotation(rotation: Rotation) {
-        resetTranslate()
-        // _rotationData.setRotation(rotation)
+    // fun setRotation(rotation: Rotation) {
+    //     resetTranslate()
+    //     // _rotationData.setRotation(rotation)
+    //
+    //     ModelFlow.get(context).setRotation(rotation)
+    // }
 
-        ModelFlow.get(context).setRotation(rotation)
-    }
+    // fun setBackgroundColor(@ColorInt color: Int) {
+    //     _backgroundColorData.postValue(color)
+    // }
 
-    fun setBackgroundColor(@ColorInt color: Int) {
-        _backgroundColorData.postValue(color)
-    }
+    // fun postTranslate(translateX: Float, translateY: Float) {
+    //     runBlocking {
+    //         _postTranslateData.postValue(translateX to translateY)
+    //         val translation =
+    //             ModelFlow.get(context).translationFlow.firstOrNull()?.let { previous ->
+    //                 Translation(previous.x + translateX, previous.y + translateY)
+    //             } ?: Translation(translateX, translateY)
+    //         ModelFlow.get(context).setTranslation(translation)
+    //     }
+    //
+    //     _translationEvents.postValue(TranslationEvent.PostTranslate(translateX, translateY))
+    // }
 
-    fun postTranslate(translateX: Float, translateY: Float) {
-        runBlocking {
-            _postTranslateData.postValue(translateX to translateY)
-            val translation =
-                ModelFlow.get(context).translationFlow.firstOrNull()?.let { previous ->
-                    Translation(previous.x + translateX, previous.y + translateY)
-                } ?: Translation(translateX, translateY)
-            ModelFlow.get(context).setTranslation(translation)
-        }
-
-        _translationEvents.postValue(TranslationEvent.PostTranslate(translateX, translateY))
-    }
-
-    fun resetTranslate() {
-        ModelFlow.get(context).setTranslation(Translation(0f, 0f))
-        // _translateData.postValue(0f to 0f)
-        _translationEvents.postValue(TranslationEvent.Reset)
-    }
+    // fun resetTranslate() {
+    //     ModelFlow.get(context).setTranslation(Translation(0f, 0f))
+    //     // _translateData.postValue(0f to 0f)
+    //     _translationEvents.postValue(TranslationEvent.Reset)
+    // }
 
     private class ScaleTypeData(private val context: Context) :
         LiveData<ScaleType>() {

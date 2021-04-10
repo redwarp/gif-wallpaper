@@ -31,7 +31,8 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import net.redwarp.gifwallpaper.data.Model
@@ -88,18 +89,18 @@ class GifWallpaperService : WallpaperService() {
                 }
             }
 
-            model.backgroundColorData.observe(this) {
-                requestWallpaperColorsComputation()
-            }
-
             lifecycleScope.launchWhenStarted {
-                modelFlow.rotationFlow.collect {
+                modelFlow.backgroundColorFlow.onEach {
                     requestWallpaperColorsComputation()
-                }
+                }.launchIn(this)
 
-                modelFlow.scaleTypeFlow.collect {
+                modelFlow.rotationFlow.onEach {
                     requestWallpaperColorsComputation()
-                }
+                }.launchIn(this)
+
+                modelFlow.scaleTypeFlow.onEach {
+                    requestWallpaperColorsComputation()
+                }.launchIn(this)
             }
 
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)

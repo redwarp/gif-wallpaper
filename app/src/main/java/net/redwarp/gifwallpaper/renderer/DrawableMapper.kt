@@ -15,7 +15,6 @@
  */
 package net.redwarp.gifwallpaper.renderer
 
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MediatorLiveData
@@ -59,7 +58,7 @@ class DrawableMapper(
                         }
                         val scaleType = modelFlow.scaleTypeFlow.first()
                         val rotation = modelFlow.rotationFlow.first()
-                        val backgroundColor = model.backgroundColorData.value ?: Color.BLACK
+                        val backgroundColor = modelFlow.backgroundColorFlow.first()
                         val translation =
                             modelFlow.translationFlow.first()
                         val wrapper = GifWrapperDrawable(
@@ -74,21 +73,19 @@ class DrawableMapper(
                 }
             }
         }
-        addSource(model.backgroundColorData) { backgroundColor ->
-            (value as? GifWrapperDrawable)?.setBackgroundColor(backgroundColor)
-        }
 
         lifecycleScope.launchWhenStarted {
+            modelFlow.backgroundColorFlow.onEach { backgroundColor ->
+                (value as? GifWrapperDrawable)?.setBackgroundColor(backgroundColor)
+            }.launchIn(this)
             modelFlow.scaleTypeFlow.onEach { scaleType ->
                 (value as? GifWrapperDrawable)?.setScaledType(scaleType, animated)
             }.launchIn(this)
             modelFlow.rotationFlow.onEach { rotation ->
                 (value as? GifWrapperDrawable)?.setRotation(rotation, animated)
             }.launchIn(this)
-        }
 
-        if (isService) {
-            lifecycleScope.launchWhenStarted {
+            if (isService) {
                 modelFlow.translationFlow.onEach { translation ->
                     (value as? GifWrapperDrawable)?.setTranslate(
                         translation.x,
@@ -96,20 +93,20 @@ class DrawableMapper(
                         animated
                     )
                 }.launchIn(this)
-            }
-        } else {
-            addSource(model.translationEvents) { event ->
-                when (event) {
-                    is TranslationEvent.PostTranslate -> {
-                        (value as? GifWrapperDrawable)?.postTranslate(
-                            event.translateX,
-                            event.translateY
-                        )
+            } else {
+                modelFlow.translationEventFlow.onEach { event ->
+                    when (event) {
+                        is TranslationEvent.PostTranslate -> {
+                            (value as? GifWrapperDrawable)?.postTranslate(
+                                event.translateX,
+                                event.translateY
+                            )
+                        }
+                        TranslationEvent.Reset -> {
+                            (value as? GifWrapperDrawable)?.resetTranslation(animated)
+                        }
                     }
-                    TranslationEvent.Reset -> {
-                        (value as? GifWrapperDrawable)?.resetTranslation(animated)
-                    }
-                }
+                }.launchIn(this)
             }
         }
     }

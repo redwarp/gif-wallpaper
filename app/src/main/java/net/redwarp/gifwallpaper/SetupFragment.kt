@@ -21,7 +21,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.Menu
@@ -64,6 +63,7 @@ class SetupFragment : Fragment() {
     private var currentScale = 0
     private var currentRotation = 0
     private lateinit var model: Model
+    private lateinit var modelFlow: ModelFlow
 
     private var _binding: FragmentSetupBinding? = null
     private val binding get() = _binding!!
@@ -121,7 +121,7 @@ class SetupFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
         }
         model = Model.get(requireContext())
-        val modelFlow = ModelFlow.get(requireContext())
+        modelFlow = ModelFlow.get(requireContext())
         DrawableMapper(
             model = model,
             modelFlow = modelFlow,
@@ -137,18 +137,16 @@ class SetupFragment : Fragment() {
             colorInfo = colorStatus as? ColorScheme
             binding.changeColorButton.isEnabled = colorStatus is ColorScheme
         }
-        model.backgroundColorData.observe(viewLifecycleOwner) {
-            currentColor = it
-            adjustTheme(it)
-        }
 
         lifecycleScope.launchWhenStarted {
+            modelFlow.backgroundColorFlow.onEach { backgroundColor ->
+                currentColor = backgroundColor
+                adjustTheme(backgroundColor)
+            }.launchIn(this)
             modelFlow.scaleTypeFlow.onEach { scaleType ->
-                Log.d("GifWallpaper", "ScaleType in coroutine $scaleType")
                 currentScale = scaleType.ordinal
             }.launchIn(this)
             modelFlow.rotationFlow.onEach { rotation ->
-                Log.d("GifWallpaper", "Rotation in coroutine $rotation")
                 currentRotation = rotation.ordinal
             }.launchIn(this)
         }
@@ -181,7 +179,7 @@ class SetupFragment : Fragment() {
         if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
                 model.loadNewGif(uri)
-                model.resetTranslate()
+                modelFlow.resetTranslate()
             }
         }
     }
@@ -234,7 +232,7 @@ class SetupFragment : Fragment() {
 
     private fun changeScale() {
         currentScale = (currentScale + 1) % ScaleType.values().size
-        model.setScaleType(ScaleType.values()[currentScale])
+        modelFlow.setScaleType(ScaleType.values()[currentScale])
     }
 
     private fun changeColor() {
@@ -249,10 +247,10 @@ class SetupFragment : Fragment() {
             ) {
                 if (it == ColorSheet.NO_COLOR) {
                     currentColor = null
-                    model.setBackgroundColor(colorInfo.defaultColor)
+                    modelFlow.setBackgroundColor(colorInfo.defaultColor)
                 } else {
                     currentColor = it
-                    model.setBackgroundColor(it)
+                    modelFlow.setBackgroundColor(it)
                 }
             }.cornerRadius(0).show(parentFragmentManager)
         }
@@ -260,7 +258,7 @@ class SetupFragment : Fragment() {
 
     private fun rotate() {
         currentRotation = (currentRotation + 1) % Rotation.values().size
-        model.setRotation(Rotation.values()[currentRotation])
+        modelFlow.setRotation(Rotation.values()[currentRotation])
     }
 
     private inner class MyGestureListener : GestureDetector.SimpleOnGestureListener() {
@@ -270,12 +268,12 @@ class SetupFragment : Fragment() {
             distanceX: Float,
             distanceY: Float
         ): Boolean {
-            model.postTranslate(-distanceX, -distanceY)
+            modelFlow.postTranslate(-distanceX, -distanceY)
             return true
         }
 
         override fun onDoubleTap(e: MotionEvent): Boolean {
-            model.resetTranslate()
+            modelFlow.resetTranslate()
             return true
         }
     }

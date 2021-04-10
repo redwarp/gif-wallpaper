@@ -28,11 +28,14 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import net.redwarp.gifwallpaper.data.Model
+import net.redwarp.gifwallpaper.data.ModelFlow
 import net.redwarp.gifwallpaper.renderer.DrawableMapper
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.createMiniature
@@ -69,11 +72,13 @@ class GifWallpaperService : WallpaperService() {
                 SurfaceDrawableRenderer(surfaceHolder, handlerThread.looper)
 
             val model = Model.get(this@GifWallpaperService)
+            val modelFlow = ModelFlow.get(this@GifWallpaperService)
 
             drawableMapper = DrawableMapper(
                 model = model,
+                modelFlow = modelFlow,
                 animated = false,
-                getString(R.string.open_app),
+                unsetText = getString(R.string.open_app),
                 isService = true
             ).apply {
                 observe(this@GifEngine) { drawable ->
@@ -88,8 +93,10 @@ class GifWallpaperService : WallpaperService() {
             model.scaleTypeData.observe(this) {
                 requestWallpaperColorsComputation()
             }
-            model.rotationData.observe(this) {
-                requestWallpaperColorsComputation()
+            lifecycleScope.launchWhenStarted {
+                modelFlow.rotationFlow.collect {
+                    requestWallpaperColorsComputation()
+                }
             }
 
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)

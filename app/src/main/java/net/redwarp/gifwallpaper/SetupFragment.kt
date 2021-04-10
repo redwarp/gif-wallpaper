@@ -21,6 +21,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.Menu
@@ -37,9 +38,12 @@ import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import dev.sasikanth.colorsheet.ColorSheet
+import kotlinx.coroutines.flow.collect
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.Model
+import net.redwarp.gifwallpaper.data.ModelFlow
 import net.redwarp.gifwallpaper.data.WallpaperStatus
 import net.redwarp.gifwallpaper.databinding.FragmentSetupBinding
 import net.redwarp.gifwallpaper.renderer.DrawableMapper
@@ -113,9 +117,13 @@ class SetupFragment : Fragment() {
 
         val renderer = SurfaceDrawableRenderer(binding.surfaceView.holder, Looper.getMainLooper())
 
+        lifecycleScope.launchWhenStarted {
+        }
         model = Model.get(requireContext())
+        val modelFlow = ModelFlow.get(requireContext())
         DrawableMapper(
             model = model,
+            modelFlow = modelFlow,
             animated = true,
             unsetText = getString(R.string.click_the_open_gif_button),
             isService = false
@@ -134,9 +142,16 @@ class SetupFragment : Fragment() {
         model.scaleTypeData.observe(viewLifecycleOwner) {
             currentScale = it.ordinal
         }
-        model.rotationData.observe(viewLifecycleOwner) {
-            currentRotation = it.ordinal
+        // model.rotationData.observe(viewLifecycleOwner) {
+        //     currentRotation = it.ordinal
+        // }
+        lifecycleScope.launchWhenStarted {
+            modelFlow.rotationFlow.collect { rotation ->
+                Log.d("GifWallpaper", "Rotation in coroutine $rotation")
+                currentRotation = rotation.ordinal
+            }
         }
+
         model.wallpaperStatus.observe(viewLifecycleOwner) {
             val isWallpaperSet = it is WallpaperStatus.Wallpaper
             binding.changeScaleButton.isEnabled = isWallpaperSet

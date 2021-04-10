@@ -19,44 +19,60 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.MediatorLiveData
 import app.redwarp.gif.android.GifDrawable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.Model
+import net.redwarp.gifwallpaper.data.ModelFlow
 import net.redwarp.gifwallpaper.data.TranslationEvent
 import net.redwarp.gifwallpaper.data.WallpaperStatus
 
-class DrawableMapper(
+class DrawableMapper constructor(
     model: Model,
+    modelFlow: ModelFlow,
     animated: Boolean,
     unsetText: String,
     isService: Boolean
 ) : MediatorLiveData<Drawable>() {
 
     init {
+
         addSource(model.wallpaperStatus) { status ->
-            when (status) {
-                WallpaperStatus.NotSet -> postValue(
-                    TextDrawable(model.context, unsetText)
-                )
-                WallpaperStatus.Loading -> postValue(
-                    TextDrawable(
-                        model.context,
-                        model.context.getString(
-                            R.string.loading
+            CoroutineScope(Dispatchers.Main).launch {
+                when (status) {
+                    WallpaperStatus.NotSet -> postValue(
+                        TextDrawable(model.context, unsetText)
+                    )
+                    WallpaperStatus.Loading -> postValue(
+                        TextDrawable(
+                            model.context,
+                            model.context.getString(
+                                R.string.loading
+                            )
                         )
                     )
-                )
-                is WallpaperStatus.Wallpaper -> {
-                    val gif = GifDrawable(status.gifDescriptor).apply {
-                        start()
+                    is WallpaperStatus.Wallpaper -> {
+                        val gif = GifDrawable(status.gifDescriptor).apply {
+                            start()
+                        }
+                        val scaleType =
+                            model.scaleTypeData.value ?: ScaleType.FIT_CENTER
+                        val rotation = modelFlow.rotationFlow.first()
+                        val backgroundColor = model.backgroundColorData.value ?: Color.BLACK
+                        val translation =
+                            modelFlow.translationFlow.first()
+                        val wrapper = GifWrapperDrawable(
+                            gif,
+                            scaleType,
+                            rotation,
+                            translation.x to translation.y
+                        )
+                        wrapper.setBackgroundColor(backgroundColor)
+                        postValue(wrapper)
                     }
-                    val scaleType =
-                        model.scaleTypeData.value ?: ScaleType.FIT_CENTER
-                    val rotation = model.rotationData.value ?: Rotation.NORTH
-                    val backgroundColor = model.backgroundColorData.value ?: Color.BLACK
-                    val translation = model.translationData.value ?: (0f to 0f)
-                    val wrapper = GifWrapperDrawable(gif, scaleType, rotation, translation)
-                    wrapper.setBackgroundColor(backgroundColor)
-                    postValue(wrapper)
                 }
             }
         }
@@ -66,13 +82,21 @@ class DrawableMapper(
         addSource(model.scaleTypeData) { scaleType ->
             (value as? GifWrapperDrawable)?.setScaledType(scaleType, animated)
         }
-        addSource(model.rotationData) { rotation ->
-            (value as? GifWrapperDrawable)?.setRotation(rotation, animated)
+        CoroutineScope(Dispatchers.Main).launch {
+            modelFlow.rotationFlow.collect { rotation ->
+                (value as? GifWrapperDrawable)?.setRotation(rotation, animated)
+            }
         }
 
         if (isService) {
-            addSource(model.translationData) { (translateX, translateY) ->
-                (value as? GifWrapperDrawable)?.setTranslate(translateX, translateY, animated)
+            CoroutineScope(Dispatchers.Main).launch {
+                modelFlow.translationFlow.collect { translation ->
+                    (value as? GifWrapperDrawable)?.setTranslate(
+                        translation.x,
+                        translation.y,
+                        animated
+                    )
+                }
             }
         } else {
             addSource(model.translationEvents) { event ->

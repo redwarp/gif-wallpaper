@@ -37,7 +37,7 @@ internal const val KEY_WALLPAPER_TRANSLATE_Y = "wallpaper_translate_y"
 
 class Model private constructor(val context: Context) {
     private val _wallpaperStatus = WallpaperLiveData(context)
-    private val _scaleTypeData = ScaleTypeData(context)
+    // private val _scaleTypeData = ScaleTypeData(context)
     // private val _rotationData = RotationData(context)
     private val _backgroundColorData = MediatorLiveData<Int>()
     private val _postTranslateData = MutableLiveData<Pair<Float, Float>>()
@@ -46,7 +46,7 @@ class Model private constructor(val context: Context) {
     private val _translationEvents = MutableLiveData<TranslationEvent>()
 
     val wallpaperStatus: LiveData<WallpaperStatus> get() = _wallpaperStatus
-    val scaleTypeData: LiveData<ScaleType> get() = _scaleTypeData
+    // val scaleTypeData: LiveData<ScaleType> get() = _scaleTypeData
     // val rotationData: LiveData<Rotation> get() = _rotationData
     val colorInfoData: LiveData<ColorInfo> = ColorLiveData(context, wallpaperStatus)
     val backgroundColorData: LiveData<Int> get() = _backgroundColorData
@@ -126,7 +126,7 @@ class Model private constructor(val context: Context) {
 
     fun setScaleType(scaleType: ScaleType) {
         resetTranslate()
-        _scaleTypeData.setScaleType(scaleType)
+        ModelFlow.get(context).setScaleType(scaleType)
     }
 
     fun setRotation(rotation: Rotation) {

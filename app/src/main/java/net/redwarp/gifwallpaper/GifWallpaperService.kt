@@ -79,7 +79,8 @@ class GifWallpaperService : WallpaperService() {
                 modelFlow = modelFlow,
                 animated = false,
                 unsetText = getString(R.string.open_app),
-                isService = true
+                isService = true,
+                lifecycleScope = lifecycleScope
             ).apply {
                 observe(this@GifEngine) { drawable ->
                     surfaceDrawableRenderer?.drawable = drawable
@@ -90,11 +91,13 @@ class GifWallpaperService : WallpaperService() {
             model.backgroundColorData.observe(this) {
                 requestWallpaperColorsComputation()
             }
-            model.scaleTypeData.observe(this) {
-                requestWallpaperColorsComputation()
-            }
+
             lifecycleScope.launchWhenStarted {
                 modelFlow.rotationFlow.collect {
+                    requestWallpaperColorsComputation()
+                }
+
+                modelFlow.scaleTypeFlow.collect {
                     requestWallpaperColorsComputation()
                 }
             }

@@ -40,7 +40,8 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import dev.sasikanth.colorsheet.ColorSheet
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.Model
 import net.redwarp.gifwallpaper.data.ModelFlow
@@ -126,7 +127,8 @@ class SetupFragment : Fragment() {
             modelFlow = modelFlow,
             animated = true,
             unsetText = getString(R.string.click_the_open_gif_button),
-            isService = false
+            isService = false,
+            lifecycleScope = lifecycleScope
         ).observe(viewLifecycleOwner) { drawable ->
             renderer.drawable = drawable
         }
@@ -139,17 +141,16 @@ class SetupFragment : Fragment() {
             currentColor = it
             adjustTheme(it)
         }
-        model.scaleTypeData.observe(viewLifecycleOwner) {
-            currentScale = it.ordinal
-        }
-        // model.rotationData.observe(viewLifecycleOwner) {
-        //     currentRotation = it.ordinal
-        // }
+
         lifecycleScope.launchWhenStarted {
-            modelFlow.rotationFlow.collect { rotation ->
+            modelFlow.scaleTypeFlow.onEach { scaleType ->
+                Log.d("GifWallpaper", "ScaleType in coroutine $scaleType")
+                currentScale = scaleType.ordinal
+            }.launchIn(this)
+            modelFlow.rotationFlow.onEach { rotation ->
                 Log.d("GifWallpaper", "Rotation in coroutine $rotation")
                 currentRotation = rotation.ordinal
-            }
+            }.launchIn(this)
         }
 
         model.wallpaperStatus.observe(viewLifecycleOwner) {

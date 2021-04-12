@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id "com.diffplug.spotless" version "5.11.1"
+    id "com.diffplug.spotless" version "5.12.0"
     id "com.github.ben-manes.versions" version "0.38.0"
 }
 

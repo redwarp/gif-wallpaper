@@ -32,6 +32,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
@@ -45,9 +46,14 @@ import kotlinx.coroutines.withContext
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 
-private const val FILE_SIZE_THRESHOLD = 5 * 1024 * 1024
+internal const val SHARED_PREF_NAME = "wallpaper_pref"
+internal const val KEY_WALLPAPER_SCALE_TYPE = "wallpaper_scale_type"
+internal const val KEY_WALLPAPER_BACKGROUND_COLOR = "wallpaper_background_color"
+internal const val KEY_WALLPAPER_ROTATION = "wallpaper_rotation"
+internal const val KEY_WALLPAPER_TRANSLATE_X = "wallpaper_translate_x"
+internal const val KEY_WALLPAPER_TRANSLATE_Y = "wallpaper_translate_y"
 
-class ModelFlow private constructor(val context: Context) {
+class FlowBasedModel private constructor(val context: Context) {
     private val _scaleTypeFlow =
         MutableSharedFlow<ScaleType>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     private val _rotationFlow =
@@ -76,7 +82,7 @@ class ModelFlow private constructor(val context: Context) {
     val translationFlow: Flow<Translation> get() = _translationFlow.distinctUntilChanged()
     val translationEventFlow: Flow<TranslationEvent> get() = _translationEventFlow.distinctUntilChanged()
     val backgroundColorFlow: Flow<Int> get() = _backgroundColorFlow.distinctUntilChanged()
-    val wallpaperStatusFlow: Flow<WallpaperStatus> get() = _wallpaperStatusFlow.distinctUntilChanged()
+    val wallpaperStatusFlow: SharedFlow<WallpaperStatus> get() = _wallpaperStatusFlow
     val colorInfoFlow: Flow<ColorInfo> get() = _colorInfoFlow.distinctUntilChanged()
 
     init {
@@ -277,13 +283,13 @@ class ModelFlow private constructor(val context: Context) {
 
     companion object {
         @SuppressLint("StaticFieldLeak") // Suppressed because it's the application context.
-        private lateinit var instance: ModelFlow
+        private lateinit var instance: FlowBasedModel
 
-        fun get(context: Context): ModelFlow {
+        fun get(context: Context): FlowBasedModel {
             instance = if (Companion::instance.isInitialized) {
                 instance
             } else {
-                ModelFlow(context.applicationContext)
+                FlowBasedModel(context.applicationContext)
             }
 
             return instance

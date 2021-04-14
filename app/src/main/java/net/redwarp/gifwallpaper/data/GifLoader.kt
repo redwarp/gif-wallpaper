@@ -26,6 +26,7 @@ import net.redwarp.gifwallpaper.util.FileUtils
 import java.io.File
 
 private const val FILE_SIZE_THRESHOLD = 5 * 1024 * 1024
+internal const val KEY_WALLPAPER_URI = "wallpaper_uri"
 
 object GifLoader {
 

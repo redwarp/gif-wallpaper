@@ -18,11 +18,13 @@ package net.redwarp.gifwallpaper
 import android.app.WallpaperColors
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Message
 import android.service.wallpaper.WallpaperService
+import android.util.Log
 import android.view.SurfaceHolder
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
@@ -31,15 +33,16 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
-import net.redwarp.gifwallpaper.data.Model
-import net.redwarp.gifwallpaper.data.ModelFlow
-import net.redwarp.gifwallpaper.renderer.DrawableMapper
+import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.createMiniature
+import net.redwarp.gifwallpaper.renderer.drawableFlow
 
 private const val MESSAGE_REFRESH_WALLPAPER_COLORS = 1
 
@@ -49,7 +52,7 @@ private const val MESSAGE_REFRESH_WALLPAPER_COLORS = 1
 private const val REFRESH_DELAY = 200L
 
 class GifWallpaperService : WallpaperService() {
-    private lateinit var drawableMapper: DrawableMapper
+    private var drawableFlow: Flow<Drawable>? = null
 
     override fun onCreateEngine(): Engine {
         return GifEngine()
@@ -72,24 +75,23 @@ class GifWallpaperService : WallpaperService() {
             surfaceDrawableRenderer =
                 SurfaceDrawableRenderer(surfaceHolder, handlerThread.looper)
 
-            val model = Model.get(this@GifWallpaperService)
-            val modelFlow = ModelFlow.get(this@GifWallpaperService)
-
-            drawableMapper = DrawableMapper(
-                model = model,
-                modelFlow = modelFlow,
-                animated = false,
-                unsetText = getString(R.string.open_app),
-                isService = true,
-                lifecycleScope = lifecycleScope
-            ).apply {
-                observe(this@GifEngine) { drawable ->
-                    surfaceDrawableRenderer?.drawable = drawable
-                    requestWallpaperColorsComputation()
-                }
-            }
+            val modelFlow = FlowBasedModel.get(this@GifWallpaperService)
 
             lifecycleScope.launchWhenStarted {
+                Log.d("GifWallpaper", "Service resumed")
+                drawableFlow(
+                    context = this@GifWallpaperService,
+                    flowBasedModel = modelFlow,
+                    unsetText = getString(R.string.open_app),
+                    animated = false,
+                    isService = true
+                ).also {
+                    this@GifWallpaperService.drawableFlow = it
+                }.onEach { drawable ->
+                    surfaceDrawableRenderer?.drawable = drawable
+                    requestWallpaperColorsComputation()
+                }.launchIn(this)
+
                 modelFlow.backgroundColorFlow.onEach {
                     requestWallpaperColorsComputation()
                 }.launchIn(this)
@@ -135,7 +137,7 @@ class GifWallpaperService : WallpaperService() {
         val refreshWallpaperColorsRunnable: Runnable = Runnable {
             CoroutineScope(Dispatchers.Default).launch {
                 wallpaperColors =
-                    drawableMapper.value?.createMiniature()?.let(WallpaperColors::fromBitmap)
+                    drawableFlow?.first()?.createMiniature()?.let(WallpaperColors::fromBitmap)
                     ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
                 yield()
                 notifyColorsChanged()

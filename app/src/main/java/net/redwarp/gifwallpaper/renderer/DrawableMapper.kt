@@ -51,8 +51,7 @@ fun CoroutineScope.drawableFlow(
                 val scaleType = flowBasedModel.scaleTypeFlow.first()
                 val rotation = flowBasedModel.rotationFlow.first()
                 val backgroundColor = flowBasedModel.backgroundColorFlow.first()
-                val translation =
-                    flowBasedModel.translationFlow.first()
+                val translation = flowBasedModel.translationFlow.first()
                 val wrapper = GifWrapperDrawable(
                     gif,
                     scaleType,
@@ -84,22 +83,22 @@ private fun CoroutineScope.setupWallpaperUpdate(
     drawableFlow: Flow<Drawable>
 ) {
     flowBasedModel.backgroundColorFlow.onEach { backgroundColor ->
-        val value = drawableFlow.first()
-        (value as? GifWrapperDrawable)?.setBackgroundColor(backgroundColor)
+        val value = drawableFlow.first() as? GifWrapperDrawable
+        value?.setBackgroundColor(backgroundColor)
     }.launchIn(this)
     flowBasedModel.scaleTypeFlow.onEach { scaleType ->
-        val value = drawableFlow.first()
-        (value as? GifWrapperDrawable)?.setScaledType(scaleType, animated)
+        val value = drawableFlow.first() as? GifWrapperDrawable
+        value?.setScaledType(scaleType, animated)
     }.launchIn(this)
     flowBasedModel.rotationFlow.onEach { rotation ->
-        val value = drawableFlow.first()
-        (value as? GifWrapperDrawable)?.setRotation(rotation, animated)
+        val value = drawableFlow.first() as? GifWrapperDrawable
+        value?.setRotation(rotation, animated)
     }.launchIn(this)
 
     if (isService) {
         flowBasedModel.translationFlow.onEach { translation ->
-            val value = drawableFlow.first()
-            (value as? GifWrapperDrawable)?.setTranslate(
+            val value = drawableFlow.first() as? GifWrapperDrawable
+            value?.setTranslate(
                 translation.x,
                 translation.y,
                 animated
@@ -107,16 +106,16 @@ private fun CoroutineScope.setupWallpaperUpdate(
         }.launchIn(this)
     } else {
         flowBasedModel.translationEventFlow.onEach { event ->
-            val value = drawableFlow.first()
+            val value = drawableFlow.first() as? GifWrapperDrawable
             when (event) {
                 is TranslationEvent.PostTranslate -> {
-                    (value as? GifWrapperDrawable)?.postTranslate(
+                    value?.postTranslate(
                         event.translateX,
                         event.translateY
                     )
                 }
                 TranslationEvent.Reset -> {
-                    (value as? GifWrapperDrawable)?.resetTranslation(animated)
+                    value?.resetTranslation(animated)
                 }
             }
         }.launchIn(this)

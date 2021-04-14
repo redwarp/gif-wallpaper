@@ -94,7 +94,7 @@ object GifLoader {
                 }
                 when (result) {
                     is Result.Success -> {
-                        WallpaperStatus.Wallpaper(file, result.value)
+                        WallpaperStatus.Wallpaper(result.value)
                     }
                     else -> {
                         WallpaperStatus.NotSet

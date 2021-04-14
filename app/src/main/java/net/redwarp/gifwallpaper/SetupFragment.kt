@@ -122,7 +122,6 @@ class SetupFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
             flowBasedModel.colorInfoFlow.onEach { colorInfo ->
                 this@SetupFragment.colorInfo = colorInfo as? ColorScheme
-                binding.changeColorButton.isEnabled = colorInfo is ColorScheme
             }.launchIn(this)
             flowBasedModel.backgroundColorFlow.onEach { backgroundColor ->
                 currentColor = backgroundColor

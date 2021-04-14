@@ -127,7 +127,7 @@ class FlowBasedModel private constructor(val context: Context) {
         _rotationFlow.tryEmit(rotation)
     }
 
-    fun setTranslation(translation: Translation) {
+    private fun setTranslation(translation: Translation) {
         _translationFlow.tryEmit(translation)
     }
 
@@ -237,7 +237,7 @@ class FlowBasedModel private constructor(val context: Context) {
     private fun loadBackgroundColor(context: Context): Int {
         val sharedPreferences =
             context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
-        return sharedPreferences.getInt(KEY_WALLPAPER_BACKGROUND_COLOR, Color.RED)
+        return sharedPreferences.getInt(KEY_WALLPAPER_BACKGROUND_COLOR, Color.BLACK)
     }
 
     private suspend fun extractColorScheme(wallpaper: WallpaperStatus.Wallpaper) =

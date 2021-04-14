@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -53,7 +53,7 @@ internal const val KEY_WALLPAPER_ROTATION = "wallpaper_rotation"
 internal const val KEY_WALLPAPER_TRANSLATE_X = "wallpaper_translate_x"
 internal const val KEY_WALLPAPER_TRANSLATE_Y = "wallpaper_translate_y"
 
-class FlowBasedModel private constructor(val context: Context) {
+class FlowBasedModel private constructor(context: Context) {
     private val _scaleTypeFlow =
         MutableSharedFlow<ScaleType>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     private val _rotationFlow =
@@ -87,18 +87,19 @@ class FlowBasedModel private constructor(val context: Context) {
 
     init {
         GlobalScope.launch {
-            loadInitialData(context)
+            val applicationContext = context.applicationContext
+            loadInitialData(applicationContext)
             rotationFlow.drop(1).onEach { rotation ->
-                storeCurrentRotation(context, rotation)
+                storeCurrentRotation(applicationContext, rotation)
             }.launchIn(this)
             scaleTypeFlow.drop(1).onEach { scaleType ->
-                storeCurrentScaleType(context, scaleType)
+                storeCurrentScaleType(applicationContext, scaleType)
             }.launchIn(this)
             translationFlow.drop(1).onEach { translation ->
-                storeTranslation(context, translation.x, translation.y)
+                storeTranslation(applicationContext, translation.x, translation.y)
             }.launchIn(this)
             backgroundColorFlow.drop(1).onEach { color ->
-                storeBackgroundColor(context, color)
+                storeBackgroundColor(applicationContext, color)
             }.launchIn(this)
             wallpaperStatusFlow.onEach { status ->
                 if (status is WallpaperStatus.NotSet) isColorSet = false
@@ -139,11 +140,10 @@ class FlowBasedModel private constructor(val context: Context) {
     fun postTranslate(translateX: Float, translateY: Float) {
         runBlocking {
             _postTranslateData.tryEmit(Translation(translateX, translateY))
-            val translation =
-                get(context).translationFlow.firstOrNull()?.let { previous ->
-                    Translation(previous.x + translateX, previous.y + translateY)
-                } ?: Translation(translateX, translateY)
-            get(context).setTranslation(translation)
+            val translation = translationFlow.first().let { previous ->
+                Translation(previous.x + translateX, previous.y + translateY)
+            }
+            setTranslation(translation)
         }
 
         _translationEventFlow.tryEmit(TranslationEvent.PostTranslate(translateX, translateY))
@@ -153,14 +153,14 @@ class FlowBasedModel private constructor(val context: Context) {
         _backgroundColorFlow.tryEmit(color)
     }
 
-    fun loadNewGif(uri: Uri) {
+    fun loadNewGif(context: Context, uri: Uri) {
         isColorSet = false
         CoroutineScope(Dispatchers.Main).launch {
             _wallpaperStatusFlow.emitAll(GifLoader.loadNewGif(context, uri))
         }
     }
 
-    fun clearGif() {
+    fun clearGif(context: Context) {
         isColorSet = false
         _wallpaperStatusFlow.tryEmit(WallpaperStatus.NotSet)
         GifLoader.clearGif(context)

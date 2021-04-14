@@ -178,7 +178,7 @@ class SetupFragment : Fragment() {
 
         if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                flowBasedModel.loadNewGif(uri)
+                flowBasedModel.loadNewGif(requireContext(), uri)
                 flowBasedModel.resetTranslate()
             }
         }
@@ -191,7 +191,7 @@ class SetupFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.clear_gif -> {
-                flowBasedModel.clearGif()
+                flowBasedModel.clearGif(requireContext())
                 return true
             }
             R.id.about -> {

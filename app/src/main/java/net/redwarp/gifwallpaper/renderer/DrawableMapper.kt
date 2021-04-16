@@ -15,79 +15,109 @@
  */
 package net.redwarp.gifwallpaper.renderer
 
-import android.graphics.Color
+import android.content.Context
 import android.graphics.drawable.Drawable
-import androidx.lifecycle.MediatorLiveData
 import app.redwarp.gif.android.GifDrawable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import net.redwarp.gifwallpaper.R
-import net.redwarp.gifwallpaper.data.Model
+import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.TranslationEvent
 import net.redwarp.gifwallpaper.data.WallpaperStatus
 
-class DrawableMapper(
-    model: Model,
-    animated: Boolean,
+fun CoroutineScope.drawableFlow(
+    context: Context,
+    flowBasedModel: FlowBasedModel,
     unsetText: String,
-    isService: Boolean
-) : MediatorLiveData<Drawable>() {
+    animated: Boolean,
+    isService: Boolean,
+): Flow<Drawable> {
+    val drawableFlow = flowBasedModel.wallpaperStatusFlow.map { status ->
+        val wallpaper = when (status) {
+            WallpaperStatus.NotSet -> TextDrawable(context, unsetText)
 
-    init {
-        addSource(model.wallpaperStatus) { status ->
-            when (status) {
-                WallpaperStatus.NotSet -> postValue(
-                    TextDrawable(model.context, unsetText)
+            WallpaperStatus.Loading ->
+                TextDrawable(context, context.getString(R.string.loading))
+            is WallpaperStatus.Wallpaper -> {
+                val gif = GifDrawable(status.gifDescriptor).apply {
+                    start()
+                }
+                val scaleType = flowBasedModel.scaleTypeFlow.first()
+                val rotation = flowBasedModel.rotationFlow.first()
+                val backgroundColor = flowBasedModel.backgroundColorFlow.first()
+                val translation = flowBasedModel.translationFlow.first()
+                val wrapper = GifWrapperDrawable(
+                    gif,
+                    scaleType,
+                    rotation,
+                    translation.x to translation.y
                 )
-                WallpaperStatus.Loading -> postValue(
-                    TextDrawable(
-                        model.context,
-                        model.context.getString(
-                            R.string.loading
-                        )
+                wrapper.setBackgroundColor(backgroundColor)
+                wrapper
+            }
+        }
+
+        wallpaper
+    }.shareIn(scope = this, started = SharingStarted.WhileSubscribed(), replay = 1)
+
+    setupWallpaperUpdate(
+        flowBasedModel = flowBasedModel,
+        animated = animated,
+        isService = isService,
+        drawableFlow = drawableFlow
+    )
+
+    return drawableFlow
+}
+
+private fun CoroutineScope.setupWallpaperUpdate(
+    flowBasedModel: FlowBasedModel,
+    animated: Boolean,
+    isService: Boolean,
+    drawableFlow: Flow<Drawable>
+) {
+    flowBasedModel.backgroundColorFlow.onEach { backgroundColor ->
+        val value = drawableFlow.first() as? GifWrapperDrawable
+        value?.setBackgroundColor(backgroundColor)
+    }.launchIn(this)
+    flowBasedModel.scaleTypeFlow.onEach { scaleType ->
+        val value = drawableFlow.first() as? GifWrapperDrawable
+        value?.setScaledType(scaleType, animated)
+    }.launchIn(this)
+    flowBasedModel.rotationFlow.onEach { rotation ->
+        val value = drawableFlow.first() as? GifWrapperDrawable
+        value?.setRotation(rotation, animated)
+    }.launchIn(this)
+
+    if (isService) {
+        flowBasedModel.translationFlow.onEach { translation ->
+            val value = drawableFlow.first() as? GifWrapperDrawable
+            value?.setTranslate(
+                translation.x,
+                translation.y,
+                animated
+            )
+        }.launchIn(this)
+    } else {
+        flowBasedModel.translationEventFlow.onEach { event ->
+            val value = drawableFlow.first() as? GifWrapperDrawable
+            when (event) {
+                is TranslationEvent.PostTranslate -> {
+                    value?.postTranslate(
+                        event.translateX,
+                        event.translateY
                     )
-                )
-                is WallpaperStatus.Wallpaper -> {
-                    val gif = GifDrawable(status.gifDescriptor).apply {
-                        start()
-                    }
-                    val scaleType =
-                        model.scaleTypeData.value ?: ScaleType.FIT_CENTER
-                    val rotation = model.rotationData.value ?: Rotation.NORTH
-                    val backgroundColor = model.backgroundColorData.value ?: Color.BLACK
-                    val translation = model.translationData.value ?: (0f to 0f)
-                    val wrapper = GifWrapperDrawable(gif, scaleType, rotation, translation)
-                    wrapper.setBackgroundColor(backgroundColor)
-                    postValue(wrapper)
+                }
+                TranslationEvent.Reset -> {
+                    value?.resetTranslation(animated)
                 }
             }
-        }
-        addSource(model.backgroundColorData) { backgroundColor ->
-            (value as? GifWrapperDrawable)?.setBackgroundColor(backgroundColor)
-        }
-        addSource(model.scaleTypeData) { scaleType ->
-            (value as? GifWrapperDrawable)?.setScaledType(scaleType, animated)
-        }
-        addSource(model.rotationData) { rotation ->
-            (value as? GifWrapperDrawable)?.setRotation(rotation, animated)
-        }
-
-        if (isService) {
-            addSource(model.translationData) { (translateX, translateY) ->
-                (value as? GifWrapperDrawable)?.setTranslate(translateX, translateY, animated)
-            }
-        } else {
-            addSource(model.translationEvents) { event ->
-                when (event) {
-                    is TranslationEvent.PostTranslate -> {
-                        (value as? GifWrapperDrawable)?.postTranslate(
-                            event.translateX,
-                            event.translateY
-                        )
-                    }
-                    TranslationEvent.Reset -> {
-                        (value as? GifWrapperDrawable)?.resetTranslation(animated)
-                    }
-                }
-            }
-        }
+        }.launchIn(this)
     }
 }

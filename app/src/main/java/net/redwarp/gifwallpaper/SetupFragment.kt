@@ -21,6 +21,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.Menu
@@ -37,15 +38,18 @@ import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import dev.sasikanth.colorsheet.ColorSheet
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import net.redwarp.gifwallpaper.data.ColorScheme
-import net.redwarp.gifwallpaper.data.Model
+import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.WallpaperStatus
 import net.redwarp.gifwallpaper.databinding.FragmentSetupBinding
-import net.redwarp.gifwallpaper.renderer.DrawableMapper
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
+import net.redwarp.gifwallpaper.renderer.drawableFlow
 import net.redwarp.gifwallpaper.util.isDark
 import net.redwarp.gifwallpaper.util.setStatusBarColor
 
@@ -55,10 +59,11 @@ const val PICK_GIF_FILE = 2
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 @Keep
+@Suppress("unused") // Not actually unused.
 class SetupFragment : Fragment() {
     private var currentScale = 0
     private var currentRotation = 0
-    private lateinit var model: Model
+    private lateinit var flowBasedModel: FlowBasedModel
 
     private var _binding: FragmentSetupBinding? = null
     private val binding get() = _binding!!
@@ -113,34 +118,44 @@ class SetupFragment : Fragment() {
 
         val renderer = SurfaceDrawableRenderer(binding.surfaceView.holder, Looper.getMainLooper())
 
-        model = Model.get(requireContext())
-        DrawableMapper(
-            model = model,
-            animated = true,
-            unsetText = getString(R.string.click_the_open_gif_button),
-            isService = false
-        ).observe(viewLifecycleOwner) { drawable ->
-            renderer.drawable = drawable
-        }
+        flowBasedModel = FlowBasedModel.get(requireContext())
 
-        model.colorInfoData.observe(viewLifecycleOwner) { colorStatus ->
-            colorInfo = colorStatus as? ColorScheme
-            binding.changeColorButton.isEnabled = colorStatus is ColorScheme
-        }
-        model.backgroundColorData.observe(viewLifecycleOwner) {
-            currentColor = it
-            adjustTheme(it)
-        }
-        model.scaleTypeData.observe(viewLifecycleOwner) {
-            currentScale = it.ordinal
-        }
-        model.rotationData.observe(viewLifecycleOwner) {
-            currentRotation = it.ordinal
-        }
-        model.wallpaperStatus.observe(viewLifecycleOwner) {
-            val isWallpaperSet = it is WallpaperStatus.Wallpaper
-            binding.changeScaleButton.isEnabled = isWallpaperSet
-            binding.rotateButton.isEnabled = isWallpaperSet
+        lifecycleScope.launchWhenStarted {
+            flowBasedModel.colorInfoFlow.onEach { colorInfo ->
+                this@SetupFragment.colorInfo = colorInfo as? ColorScheme
+            }.launchIn(this)
+            flowBasedModel.backgroundColorFlow.onEach { backgroundColor ->
+                currentColor = backgroundColor
+                adjustTheme(backgroundColor)
+            }.launchIn(this)
+            flowBasedModel.scaleTypeFlow.onEach { scaleType ->
+                currentScale = scaleType.ordinal
+            }.launchIn(this)
+            flowBasedModel.rotationFlow.onEach { rotation ->
+                currentRotation = rotation.ordinal
+            }.launchIn(this)
+            flowBasedModel.wallpaperStatusFlow.onEach {
+                val isWallpaperSet = it is WallpaperStatus.Wallpaper
+                binding.changeScaleButton.isEnabled = isWallpaperSet
+                binding.rotateButton.isEnabled = isWallpaperSet
+            }.launchIn(this)
+
+            flowBasedModel.wallpaperStatusFlow.onEach { wallpaperStatus ->
+                Log.d("GifWallpaper", "Wallpaper status: $wallpaperStatus")
+            }.launchIn(this)
+
+            drawableFlow(
+                this@SetupFragment.requireContext(),
+                flowBasedModel,
+                getString(R.string.click_the_open_gif_button),
+                animated = true,
+                isService = false
+            ).onEach { drawable ->
+                Log.d("GifWallpaper", "Wallpaper drawable: $drawable")
+                renderer.drawable = drawable
+            }.launchIn(this)
+        }.invokeOnCompletion {
+            Log.d("GifWallpaper", "Job in Fragment is finished.")
         }
 
         detector = GestureDetectorCompat(requireContext(), MyGestureListener())
@@ -164,8 +179,8 @@ class SetupFragment : Fragment() {
 
         if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                model.loadNewGif(uri)
-                model.resetTranslate()
+                flowBasedModel.loadNewGif(requireContext(), uri)
+                flowBasedModel.resetTranslate()
             }
         }
     }
@@ -177,7 +192,7 @@ class SetupFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.clear_gif -> {
-                model.clearGif()
+                flowBasedModel.clearGif(requireContext())
                 return true
             }
             R.id.about -> {
@@ -218,7 +233,7 @@ class SetupFragment : Fragment() {
 
     private fun changeScale() {
         currentScale = (currentScale + 1) % ScaleType.values().size
-        model.setScaleType(ScaleType.values()[currentScale])
+        flowBasedModel.setScaleType(ScaleType.values()[currentScale])
     }
 
     private fun changeColor() {
@@ -233,10 +248,10 @@ class SetupFragment : Fragment() {
             ) {
                 if (it == ColorSheet.NO_COLOR) {
                     currentColor = null
-                    model.setBackgroundColor(colorInfo.defaultColor)
+                    flowBasedModel.setBackgroundColor(colorInfo.defaultColor)
                 } else {
                     currentColor = it
-                    model.setBackgroundColor(it)
+                    flowBasedModel.setBackgroundColor(it)
                 }
             }.cornerRadius(0).show(parentFragmentManager)
         }
@@ -244,7 +259,7 @@ class SetupFragment : Fragment() {
 
     private fun rotate() {
         currentRotation = (currentRotation + 1) % Rotation.values().size
-        model.setRotation(Rotation.values()[currentRotation])
+        flowBasedModel.setRotation(Rotation.values()[currentRotation])
     }
 
     private inner class MyGestureListener : GestureDetector.SimpleOnGestureListener() {
@@ -254,12 +269,12 @@ class SetupFragment : Fragment() {
             distanceX: Float,
             distanceY: Float
         ): Boolean {
-            model.postTranslate(-distanceX, -distanceY)
+            flowBasedModel.postTranslate(-distanceX, -distanceY)
             return true
         }
 
         override fun onDoubleTap(e: MotionEvent): Boolean {
-            model.resetTranslate()
+            flowBasedModel.resetTranslate()
             return true
         }
     }

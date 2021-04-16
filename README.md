@@ -28,12 +28,20 @@ Alex Redfish. [Check their art](https://www.artstation.com/artwork/5wm5W), it's 
 - [Poussinou](https://github.com/Poussinou) - F-Droid and Google Play Store links
 - Mister klaid - Russian translations
 
+## Translations
+
+You want to help with translations? You find your language missing and want to help?
+That is awesome!
+I use the website **POEditor** to handle translations. They are free for open source project and easy to use, and provide synchronisation with Github. So follow [this link to join the translations project](https://poeditor.com/join/project?hash=QaDkuFZTp2).
+
 ## Example
+
 #### Actual GIF
 
 [<img src="assets/samples/rocket.gif" alt="a flying rocket" width="480" height="480">](https://github.com/redwarp/gif-wallpaper/blob/main/assets/samples/rocket.gif)
 
 #### Set as Wallpaper
+
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png"
      alt="a flying rocket on your homescreen"
      height="400">](https://github.com/redwarp/gif-wallpaper/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png)

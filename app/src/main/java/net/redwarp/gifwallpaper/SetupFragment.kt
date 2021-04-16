@@ -59,6 +59,7 @@ const val PICK_GIF_FILE = 2
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 @Keep
+@Suppress("unused") // Not actually unused.
 class SetupFragment : Fragment() {
     private var currentScale = 0
     private var currentRotation = 0

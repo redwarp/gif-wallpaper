@@ -1,1 +1,5 @@
-{}
+{
+    "app_name": "GIF Live Wallpaper",
+    "store_full_description": "¿Descargaste un GIF y te gustaría usarlo como el fondo de tu teléfono?\n\n¡GIF Live Wallpaper es lo que necesitas! Probablemente la forma mas fácil de usar un archivo GIF como un Live Wallpaper (un fondo animado).\n\nTodo esto queda listo en unos simples pasos:\n\nPaso 1 - Abre la app.\nPaso 2 - Actívala.\nPaso 3 - Da clic en \"Abrir GIF\".\nPaso 4 - Selecciona el archivo que quieras.\n\nSi todo está bien, ¡eso es todo! ¡Disfruta tu nuevo fondo!\n\nEsta aplicación destaca por:\n-No hay necesidad de rootear, pesa poco (<3MB)\n-Se detiene automáticamente cuando el fondo no es visible o el dispositivo esté bloqueado, de esa forma no consume batería.\n-Y por su puesto, ¡Sin anuncios, y no compartirá sus datos o reunirá información!\n\nEl código esta disponible en https://github.com/redwarp/gif-wallpaper\n\n¿Interesado en usar tu propio lenguaje? ¡Contáctame si te gustaría ayudar con las traducciones!",
+    "store_short_description": "Un Live Wallpaper que mostrará GIFs animados como el fondo de tu teléfono."
+}

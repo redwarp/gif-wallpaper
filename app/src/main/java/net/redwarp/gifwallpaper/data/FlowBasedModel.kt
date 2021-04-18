@@ -28,11 +28,13 @@ import androidx.palette.graphics.Palette
 import app.redwarp.gif.android.GifDrawable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
@@ -53,6 +55,11 @@ internal const val KEY_WALLPAPER_ROTATION = "wallpaper_rotation"
 internal const val KEY_WALLPAPER_TRANSLATE_X = "wallpaper_translate_x"
 internal const val KEY_WALLPAPER_TRANSLATE_Y = "wallpaper_translate_y"
 
+/**
+ * Arbitrary delay to avoid over-requesting colors refresh.
+ */
+private const val REFRESH_DELAY = 200L
+
 class FlowBasedModel private constructor(context: Context) {
     private val _scaleTypeFlow =
         MutableSharedFlow<ScaleType>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
@@ -72,6 +79,9 @@ class FlowBasedModel private constructor(context: Context) {
     )
     private val _postTranslateData =
         MutableSharedFlow<Translation>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val _updateFlow =
+        MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
     private val _colorInfoFlow =
         MutableSharedFlow<ColorInfo>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
@@ -85,21 +95,29 @@ class FlowBasedModel private constructor(context: Context) {
     val wallpaperStatusFlow: SharedFlow<WallpaperStatus> get() = _wallpaperStatusFlow
     val colorInfoFlow: Flow<ColorInfo> get() = _colorInfoFlow.distinctUntilChanged()
 
+    @OptIn(FlowPreview::class)
+    val updateFlow: Flow<Unit>
+        get() = _updateFlow.debounce(REFRESH_DELAY)
+
     init {
         GlobalScope.launch {
             val applicationContext = context.applicationContext
             loadInitialData(applicationContext)
             rotationFlow.drop(1).onEach { rotation ->
                 storeCurrentRotation(applicationContext, rotation)
+                _updateFlow.tryEmit(Unit)
             }.launchIn(this)
             scaleTypeFlow.drop(1).onEach { scaleType ->
                 storeCurrentScaleType(applicationContext, scaleType)
+                _updateFlow.tryEmit(Unit)
             }.launchIn(this)
             translationFlow.drop(1).onEach { translation ->
                 storeTranslation(applicationContext, translation.x, translation.y)
+                _updateFlow.tryEmit(Unit)
             }.launchIn(this)
             backgroundColorFlow.drop(1).onEach { color ->
                 storeBackgroundColor(applicationContext, color)
+                _updateFlow.tryEmit(Unit)
             }.launchIn(this)
             wallpaperStatusFlow.onEach { status ->
                 if (status is WallpaperStatus.NotSet) isColorSet = false
@@ -109,6 +127,7 @@ class FlowBasedModel private constructor(context: Context) {
                 } else {
                     _colorInfoFlow.tryEmit(NotSet)
                 }
+                _updateFlow.tryEmit(Unit)
             }.launchIn(this)
             colorInfoFlow.onEach { colorInfo ->
                 if (!isColorSet && colorInfo is ColorScheme) {
@@ -296,5 +315,3 @@ class FlowBasedModel private constructor(context: Context) {
         }
     }
 }
-
-data class Translation(val x: Float, val y: Float)

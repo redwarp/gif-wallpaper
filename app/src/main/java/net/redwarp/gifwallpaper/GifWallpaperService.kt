@@ -22,7 +22,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
-import android.os.Message
 import android.service.wallpaper.WallpaperService
 import android.util.Log
 import android.view.SurfaceHolder
@@ -31,25 +30,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
+import kotlinx.coroutines.withContext
 import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.createMiniature
 import net.redwarp.gifwallpaper.renderer.drawableFlow
-
-private const val MESSAGE_REFRESH_WALLPAPER_COLORS = 1
-
-/**
- * Arbitrary delay to avoid over-requesting colors refresh.
- */
-private const val REFRESH_DELAY = 200L
 
 class GifWallpaperService : WallpaperService() {
     private var drawableFlow: Flow<Drawable>? = null
@@ -89,19 +79,12 @@ class GifWallpaperService : WallpaperService() {
                     this@GifWallpaperService.drawableFlow = it
                 }.onEach { drawable ->
                     surfaceDrawableRenderer?.drawable = drawable
-                    requestWallpaperColorsComputation()
                 }.launchIn(this)
 
-                modelFlow.backgroundColorFlow.onEach {
-                    requestWallpaperColorsComputation()
-                }.launchIn(this)
-
-                modelFlow.rotationFlow.onEach {
-                    requestWallpaperColorsComputation()
-                }.launchIn(this)
-
-                modelFlow.scaleTypeFlow.onEach {
-                    requestWallpaperColorsComputation()
+                modelFlow.updateFlow.onEach {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                        refreshWallpaperColors()
+                    }
                 }.launchIn(this)
             }
 
@@ -134,26 +117,11 @@ class GifWallpaperService : WallpaperService() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
-        val refreshWallpaperColorsRunnable: Runnable = Runnable {
-            CoroutineScope(Dispatchers.Default).launch {
-                wallpaperColors =
-                    drawableFlow?.first()?.createMiniature()?.let(WallpaperColors::fromBitmap)
-                    ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
-                yield()
-                notifyColorsChanged()
-            }
-        }
-
-        private fun requestWallpaperColorsComputation() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                handler?.let { handler ->
-                    // Delete previous message, they are obsolete.
-                    handler.removeMessages(MESSAGE_REFRESH_WALLPAPER_COLORS)
-                    val message = Message.obtain(null, refreshWallpaperColorsRunnable)
-                    message.what = MESSAGE_REFRESH_WALLPAPER_COLORS
-                    handler.sendMessageDelayed(message, REFRESH_DELAY)
-                }
-            }
+        private suspend fun refreshWallpaperColors() = withContext(Dispatchers.Default) {
+            wallpaperColors =
+                drawableFlow?.first()?.createMiniature()?.let(WallpaperColors::fromBitmap)
+                ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
+            notifyColorsChanged()
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)

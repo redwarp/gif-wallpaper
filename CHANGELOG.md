@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/redwarp/gif-wallpaper/compare/v1.7.4...v1.8.0) (2021-04-18)
+
+
+### Features
+
+* Add spanish support ([452cd08](https://github.com/redwarp/gif-wallpaper/commit/452cd08d6f6fed614f8b560f57000c548a5ed22a))
+* Replace livedata with flows ([#114](https://github.com/redwarp/gif-wallpaper/issues/114)) ([fc8e63c](https://github.com/redwarp/gif-wallpaper/commit/fc8e63cdf7a18cae1d8ac539e2dcc68e86e392ce))
+
+
+### Bug Fixes
+
+* Cleanup wallpaper colors recalculation ([3765384](https://github.com/redwarp/gif-wallpaper/commit/376538441b81d234eadf63cc02e46f13a1811d40))
+* Invalidate drawable on color change ([23b8884](https://github.com/redwarp/gif-wallpaper/commit/23b8884954a5b38deb9b1185e657f22a810e2a3f))
+
 ### [1.7.4](https://github.com/redwarp/gif-wallpaper/compare/v1.7.3...v1.7.4) (2021-04-07)
 
 

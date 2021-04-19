@@ -27,7 +27,7 @@ Alex Redfish. [Check their art](https://www.artstation.com/artwork/5wm5W), it's 
 
 - [Poussinou](https://github.com/Poussinou) - F-Droid and Google Play Store links
 - Mister klaid - Russian translations
-- YesIanYeha - Spanish translations
+- [YesIanYeha](https://github.com/Preyesianyeha) - Spanish translations
 
 ## Translations
 

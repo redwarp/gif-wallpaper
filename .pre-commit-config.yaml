@@ -1,13 +1,17 @@
 repos:
-- repo: https://github.com/jguttman94/pre-commit-gradle
-  rev: v0.2.1
-  hooks:
-  - id: gradle-task
-    name: Apply Spotless
-    args: [':app:spotlessApply', -w, -o]
-    types: [kotlin]
-- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: v1.5.0
-  hooks:
-  - id: pretty-format-kotlin
-    args: [--autofix]
+  - repo: https://github.com/jguttman94/pre-commit-gradle
+    rev: v0.2.1
+    hooks:
+      - id: gradle-task
+        name: Apply Spotless
+        args: [":app:spotlessApply", -w, -o]
+        types: [kotlin]
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v1.5.0
+    hooks:
+      - id: pretty-format-kotlin
+        args: [--autofix]
+  - repo: https://github.com/redwarp/optimize-png-hooks.git
+    rev: main
+    hooks:
+      - id: optimize_png

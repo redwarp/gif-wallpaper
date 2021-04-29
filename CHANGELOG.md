@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.1](https://github.com/redwarp/gif-wallpaper/compare/v1.8.0...v1.8.1) (2021-04-29)
+
+
+### Bug Fixes
+
+* Update russian translations ([5f898a0](https://github.com/redwarp/gif-wallpaper/commit/5f898a0b9940cd94f302b4659d047b6f28753d3d))
+
 ## [1.8.0](https://github.com/redwarp/gif-wallpaper/compare/v1.7.4...v1.8.0) (2021-04-18)
 
 

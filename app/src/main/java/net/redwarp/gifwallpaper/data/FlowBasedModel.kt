@@ -43,10 +43,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.redwarp.gifwallpaper.AppSettings
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
-
-internal const val SHARED_PREF_NAME = "wallpaper_pref"
 
 /**
  * Arbitrary delay to avoid over-requesting colors refresh.
@@ -54,7 +53,8 @@ internal const val SHARED_PREF_NAME = "wallpaper_pref"
 private const val REFRESH_DELAY = 200L
 
 class FlowBasedModel private constructor(context: Context) {
-    private val settings = Settings(context)
+    private val settings = WallpaperSettings.get(context)
+    private val appSettings = AppSettings.get(context)
     private val _wallpaperStatusFlow = MutableSharedFlow<WallpaperStatus>(
         replay = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
@@ -77,10 +77,17 @@ class FlowBasedModel private constructor(context: Context) {
     val backgroundColorFlow: Flow<Int> get() = settings.backgroundColorFlow
     val wallpaperStatusFlow: SharedFlow<WallpaperStatus> get() = _wallpaperStatusFlow
     val colorInfoFlow: Flow<ColorInfo> get() = _colorInfoFlow
-    val shouldPlay: Flow<Boolean> =
-        powerSaveFlow(context).combine(thermalThrottleFlow(context)) { powerSave, thermalThrottle ->
+    val shouldPlay: Flow<Boolean> = combine(
+        appSettings.powerSavingSettingFlow,
+        powerSaveFlow(context),
+        thermalThrottleFlow(context)
+    ) { powerSavingSetting, powerSave, thermalThrottle ->
+        if (powerSavingSetting) {
             !(powerSave || thermalThrottle)
+        } else {
+            true
         }
+    }
 
     @OptIn(FlowPreview::class)
     val updateFlow: Flow<Unit>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
     <SwitchPreferenceCompat
+        app:defaultValue="false"
         app:key="power_saving"
         app:summary="@string/pause_blayback_battery_saver"
         app:title="@string/battery_saver" />

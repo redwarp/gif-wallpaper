@@ -15,6 +15,7 @@
  */
 package net.redwarp.gifwallpaper.data
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.ColorInt
@@ -35,6 +36,7 @@ import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 import java.io.File
 
+private const val SHARED_PREF_NAME = "wallpaper_pref"
 private const val KEY_WALLPAPER_BACKGROUND_COLOR = "wallpaper_background_color"
 private const val KEY_WALLPAPER_ROTATION = "wallpaper_rotation"
 private const val KEY_WALLPAPER_TRANSLATE_X = "wallpaper_translate_x"
@@ -43,7 +45,7 @@ private const val KEY_WALLPAPER_SCALE_TYPE = "wallpaper_scale_type"
 private const val KEY_WALLPAPER_URI = "wallpaper_uri"
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-    name = "settings",
+    name = "wallpaper_settings",
     produceMigrations = { context ->
         listOf(
             SharedPreferencesMigration(
@@ -62,7 +64,8 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     }
 )
 
-class Settings(context: Context) {
+@Suppress("PrivatePropertyName")
+class WallpaperSettings private constructor(context: Context) {
     private val context = context.applicationContext
     private val WALLPAPER_ROTATION = intPreferencesKey(KEY_WALLPAPER_ROTATION)
     private val WALLPAPER_BACKGROUND_COLOR = intPreferencesKey(KEY_WALLPAPER_BACKGROUND_COLOR)
@@ -156,6 +159,20 @@ class Settings(context: Context) {
             } else {
                 preferences.remove(WALLPAPER_URI)
             }
+        }
+    }
+
+    companion object {
+        @SuppressLint("StaticFieldLeak") // Suppressed because it's the application context.
+        private lateinit var instance: WallpaperSettings
+
+        fun get(context: Context): WallpaperSettings {
+            instance = if (Companion::instance.isInitialized) {
+                instance
+            } else {
+                WallpaperSettings(context.applicationContext)
+            }
+            return instance
         }
     }
 }

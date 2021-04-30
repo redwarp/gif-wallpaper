@@ -29,8 +29,8 @@ private const val FILE_SIZE_THRESHOLD = 5 * 1024 * 1024
 
 object GifLoader {
 
-    suspend fun loadInitialValue(settings: Settings): WallpaperStatus {
-        val file: File? = settings.getWallpaperFile()
+    suspend fun loadInitialValue(wallpaperSettings: WallpaperSettings): WallpaperStatus {
+        val file: File? = wallpaperSettings.getWallpaperFile()
         return if (file == null) {
             WallpaperStatus.NotSet
         } else {
@@ -38,7 +38,7 @@ object GifLoader {
         }
     }
 
-    suspend fun loadNewGif(context: Context, settings: Settings, uri: Uri) =
+    suspend fun loadNewGif(context: Context, wallpaperSettings: WallpaperSettings, uri: Uri) =
         withContext(Dispatchers.IO) {
             flow {
                 emit(WallpaperStatus.Loading)
@@ -48,18 +48,18 @@ object GifLoader {
                 } else {
                     emit(loadGifDescriptor(copiedFile))
                 }
-                val localFile: File? = settings.getWallpaperFile()
+                val localFile: File? = wallpaperSettings.getWallpaperFile()
 
                 localFile?.let(this@GifLoader::cleanupOldUri)
 
-                settings.setWallpaperFile(copiedFile)
+                wallpaperSettings.setWallpaperFile(copiedFile)
             }
         }
 
-    suspend fun clearGif(settings: Settings) {
-        val localFile: File? = settings.getWallpaperFile()
+    suspend fun clearGif(wallpaperSettings: WallpaperSettings) {
+        val localFile: File? = wallpaperSettings.getWallpaperFile()
         localFile?.let(this::cleanupOldUri)
-        settings.setWallpaperFile(null)
+        wallpaperSettings.setWallpaperFile(null)
     }
 
     private fun cleanupOldUri(file: File) {

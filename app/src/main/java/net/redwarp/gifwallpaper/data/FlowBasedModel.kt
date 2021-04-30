@@ -33,7 +33,6 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -75,7 +74,7 @@ class FlowBasedModel private constructor(context: Context) {
     val translationFlow: Flow<Translation> get() = settings.translationFlow
     val translationEventFlow: Flow<TranslationEvent> get() = _translationEventFlow.distinctUntilChanged()
     val backgroundColorFlow: Flow<Int> get() = settings.backgroundColorFlow
-    val wallpaperStatusFlow: SharedFlow<WallpaperStatus> get() = _wallpaperStatusFlow
+    val wallpaperStatusFlow: Flow<WallpaperStatus> get() = _wallpaperStatusFlow
     val colorInfoFlow: Flow<ColorInfo> get() = _colorInfoFlow
     val shouldPlay: Flow<Boolean> = combine(
         appSettings.powerSavingSettingFlow,
@@ -97,16 +96,16 @@ class FlowBasedModel private constructor(context: Context) {
         GlobalScope.launch {
             loadInitialData()
             rotationFlow.onEach {
-                _updateFlow.tryEmit(Unit)
+                _updateFlow.emit(Unit)
             }.launchIn(this)
             scaleTypeFlow.onEach {
-                _updateFlow.tryEmit(Unit)
+                _updateFlow.emit(Unit)
             }.launchIn(this)
             translationFlow.onEach {
-                _updateFlow.tryEmit(Unit)
+                _updateFlow.emit(Unit)
             }.launchIn(this)
             backgroundColorFlow.onEach {
-                _updateFlow.tryEmit(Unit)
+                _updateFlow.emit(Unit)
             }.launchIn(this)
             wallpaperStatusFlow.onEach { status ->
                 if (status is WallpaperStatus.NotSet) isColorSet = false
@@ -114,9 +113,9 @@ class FlowBasedModel private constructor(context: Context) {
                 if (status is WallpaperStatus.Wallpaper) {
                     _colorInfoFlow.emitAll(extractColorScheme(status))
                 } else {
-                    _colorInfoFlow.tryEmit(NotSet)
+                    _colorInfoFlow.emit(NotSet)
                 }
-                _updateFlow.tryEmit(Unit)
+                _updateFlow.emit(Unit)
             }.launchIn(this)
             colorInfoFlow.onEach { colorInfo ->
                 if (!isColorSet && colorInfo is ColorScheme) {
@@ -138,12 +137,12 @@ class FlowBasedModel private constructor(context: Context) {
 
     suspend fun resetTranslate() {
         settings.setTranslation(Translation(0f, 0f))
-        _translationEventFlow.tryEmit(TranslationEvent.Reset)
+        _translationEventFlow.emit(TranslationEvent.Reset)
     }
 
     suspend fun postTranslate(translateX: Float, translateY: Float) {
         settings.postTranslation(Translation(translateX, translateY))
-        _translationEventFlow.tryEmit(TranslationEvent.PostTranslate(translateX, translateY))
+        _translationEventFlow.emit(TranslationEvent.PostTranslate(translateX, translateY))
     }
 
     suspend fun setBackgroundColor(@ColorInt color: Int) {
@@ -157,7 +156,7 @@ class FlowBasedModel private constructor(context: Context) {
 
     suspend fun clearGif() {
         isColorSet = false
-        _wallpaperStatusFlow.tryEmit(WallpaperStatus.NotSet)
+        _wallpaperStatusFlow.emit(WallpaperStatus.NotSet)
         GifLoader.clearGif(settings)
         setBackgroundColor(Color.BLACK)
         setScaleType(ScaleType.FIT_CENTER)
@@ -165,7 +164,7 @@ class FlowBasedModel private constructor(context: Context) {
     }
 
     private suspend fun loadInitialData() = withContext(Dispatchers.Default) {
-        _wallpaperStatusFlow.tryEmit(GifLoader.loadInitialValue(settings))
+        _wallpaperStatusFlow.emit(GifLoader.loadInitialValue(settings))
     }
 
     private suspend fun extractColorScheme(wallpaper: WallpaperStatus.Wallpaper) =

@@ -34,6 +34,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -94,6 +95,10 @@ class FlowBasedModel private constructor(context: Context) {
     val backgroundColorFlow: Flow<Int> get() = _backgroundColorFlow.distinctUntilChanged()
     val wallpaperStatusFlow: SharedFlow<WallpaperStatus> get() = _wallpaperStatusFlow
     val colorInfoFlow: Flow<ColorInfo> get() = _colorInfoFlow.distinctUntilChanged()
+    val shouldPlay: Flow<Boolean> =
+        powerSaveFlow(context).combine(thermalThrottleFlow(context)) { powerSave, thermalThrottle ->
+            !(powerSave || thermalThrottle)
+        }
 
     @OptIn(FlowPreview::class)
     val updateFlow: Flow<Unit>

@@ -45,8 +45,12 @@ fun CoroutineScope.drawableFlow(
             WallpaperStatus.Loading ->
                 TextDrawable(context, context.getString(R.string.loading))
             is WallpaperStatus.Wallpaper -> {
-                val gif = GifDrawable(status.gifDescriptor).apply {
-                    start()
+                val gif = GifDrawable(status.gifDescriptor)
+                val shouldPlay = flowBasedModel.shouldPlay.first()
+                if (shouldPlay) {
+                    gif.start()
+                } else {
+                    gif.stop()
                 }
                 val scaleType = flowBasedModel.scaleTypeFlow.first()
                 val rotation = flowBasedModel.rotationFlow.first()
@@ -93,6 +97,15 @@ private fun CoroutineScope.setupWallpaperUpdate(
     flowBasedModel.rotationFlow.onEach { rotation ->
         val value = drawableFlow.first() as? GifWrapperDrawable
         value?.setRotation(rotation, animated)
+    }.launchIn(this)
+    flowBasedModel.shouldPlay.onEach { shouldPlay ->
+        val value: GifWrapperDrawable =
+            (drawableFlow.first() as? GifWrapperDrawable) ?: return@onEach
+        if (shouldPlay) {
+            value.start()
+        } else {
+            value.stop()
+        }
     }.launchIn(this)
 
     if (isService) {

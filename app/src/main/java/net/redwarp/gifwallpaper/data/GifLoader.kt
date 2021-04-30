@@ -26,12 +26,11 @@ import net.redwarp.gifwallpaper.util.FileUtils
 import java.io.File
 
 private const val FILE_SIZE_THRESHOLD = 5 * 1024 * 1024
-internal const val KEY_WALLPAPER_URI = "wallpaper_uri"
 
 object GifLoader {
 
-    suspend fun loadInitialValue(context: Context): WallpaperStatus {
-        val file: File? = loadCurrentWallpaperFile(context)
+    suspend fun loadInitialValue(wallpaperSettings: WallpaperSettings): WallpaperStatus {
+        val file: File? = wallpaperSettings.getWallpaperFile()
         return if (file == null) {
             WallpaperStatus.NotSet
         } else {
@@ -39,7 +38,7 @@ object GifLoader {
         }
     }
 
-    suspend fun loadNewGif(context: Context, uri: Uri) =
+    suspend fun loadNewGif(context: Context, wallpaperSettings: WallpaperSettings, uri: Uri) =
         withContext(Dispatchers.IO) {
             flow {
                 emit(WallpaperStatus.Loading)
@@ -49,37 +48,24 @@ object GifLoader {
                 } else {
                     emit(loadGifDescriptor(copiedFile))
                 }
-                val localFile: File? = loadCurrentWallpaperFile(context)
+                val localFile: File? = wallpaperSettings.getWallpaperFile()
 
                 localFile?.let(this@GifLoader::cleanupOldUri)
 
-                storeCurrentWallpaperFile(context, copiedFile)
+                wallpaperSettings.setWallpaperFile(copiedFile)
             }
         }
 
-    fun clearGif(context: Context) {
-        val localFile: File? = loadCurrentWallpaperFile(context)
+    suspend fun clearGif(wallpaperSettings: WallpaperSettings) {
+        val localFile: File? = wallpaperSettings.getWallpaperFile()
         localFile?.let(this::cleanupOldUri)
-        storeCurrentWallpaperFile(context, null)
+        wallpaperSettings.setWallpaperFile(null)
     }
 
     private fun cleanupOldUri(file: File) {
         runCatching {
             if (file.exists()) {
                 file.delete()
-            }
-        }
-    }
-
-    private fun loadCurrentWallpaperFile(context: Context): File? {
-        val sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
-        val urlString = sharedPreferences.getString(KEY_WALLPAPER_URI, null)
-        return urlString?.let {
-            val path = Uri.parse(it).path
-            if (path != null) {
-                File(path)
-            } else {
-                null
             }
         }
     }
@@ -102,16 +88,4 @@ object GifLoader {
                 }
             }.getOrDefault(WallpaperStatus.NotSet)
         }
-
-    private fun storeCurrentWallpaperFile(context: Context, file: File?) {
-        val sharedPreferences =
-            context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE)
-
-        if (file != null) {
-            val uri = Uri.fromFile(file)
-            sharedPreferences.edit().putString(KEY_WALLPAPER_URI, uri.toString()).apply()
-        } else {
-            sharedPreferences.edit().remove(KEY_WALLPAPER_URI).apply()
-        }
-    }
 }

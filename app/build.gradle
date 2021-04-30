@@ -83,6 +83,8 @@ dependencies {
     implementation "io.noties.markwon:core:4.6.2"
     implementation "app.redwarp.gif:decoder:0.5.1"
     implementation "app.redwarp.gif:android-drawable:0.5.1"
+    implementation "androidx.preference:preference-ktx:1.1.1"
+    implementation "androidx.datastore:datastore-preferences:1.0.0-beta01"
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.5.1'

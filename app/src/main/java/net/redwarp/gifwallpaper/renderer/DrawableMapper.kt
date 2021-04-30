@@ -45,8 +45,12 @@ fun CoroutineScope.drawableFlow(
             WallpaperStatus.Loading ->
                 TextDrawable(context, context.getString(R.string.loading))
             is WallpaperStatus.Wallpaper -> {
-                val gif = GifDrawable(status.gifDescriptor).apply {
-                    start()
+                val gif = GifDrawable(status.gifDescriptor)
+                val shouldPlay = !isService || flowBasedModel.shouldPlay.first()
+                if (shouldPlay) {
+                    gif.start()
+                } else {
+                    gif.stop()
                 }
                 val scaleType = flowBasedModel.scaleTypeFlow.first()
                 val rotation = flowBasedModel.rotationFlow.first()
@@ -96,6 +100,15 @@ private fun CoroutineScope.setupWallpaperUpdate(
     }.launchIn(this)
 
     if (isService) {
+        flowBasedModel.shouldPlay.onEach { shouldPlay ->
+            val value: GifWrapperDrawable =
+                (drawableFlow.first() as? GifWrapperDrawable) ?: return@onEach
+            if (shouldPlay) {
+                value.start()
+            } else {
+                value.stop()
+            }
+        }.launchIn(this)
         flowBasedModel.translationFlow.onEach { translation ->
             val value = drawableFlow.first() as? GifWrapperDrawable
             value?.setTranslate(
@@ -106,16 +119,16 @@ private fun CoroutineScope.setupWallpaperUpdate(
         }.launchIn(this)
     } else {
         flowBasedModel.translationEventFlow.onEach { event ->
-            val value = drawableFlow.first() as? GifWrapperDrawable
+            val drawable = drawableFlow.first() as? GifWrapperDrawable ?: return@onEach
             when (event) {
                 is TranslationEvent.PostTranslate -> {
-                    value?.postTranslate(
+                    drawable.postTranslate(
                         event.translateX,
                         event.translateY
                     )
                 }
                 TranslationEvent.Reset -> {
-                    value?.resetTranslation(animated)
+                    drawable.resetTranslation(animated)
                 }
             }
         }.launchIn(this)

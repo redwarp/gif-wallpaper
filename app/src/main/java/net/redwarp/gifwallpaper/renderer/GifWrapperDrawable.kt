@@ -123,6 +123,14 @@ class GifWrapperDrawable(
         }
     }
 
+    fun start() {
+        state.gifDrawable.start()
+    }
+
+    fun stop() {
+        state.gifDrawable.stop()
+    }
+
     override fun draw(canvas: Canvas) {
         if (state.backgroundColor == Color.TRANSPARENT) {
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)

@@ -23,7 +23,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.service.wallpaper.WallpaperService
-import android.util.Log
 import android.view.SurfaceHolder
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
@@ -68,7 +67,6 @@ class GifWallpaperService : WallpaperService() {
             val modelFlow = FlowBasedModel.get(this@GifWallpaperService)
 
             lifecycleScope.launchWhenStarted {
-                Log.d("GifWallpaper", "Service resumed")
                 drawableFlow(
                     context = this@GifWallpaperService,
                     flowBasedModel = modelFlow,

@@ -21,7 +21,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.Menu
@@ -42,6 +41,7 @@ import androidx.lifecycle.lifecycleScope
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.WallpaperStatus
@@ -140,10 +140,6 @@ class SetupFragment : Fragment() {
                 binding.rotateButton.isEnabled = isWallpaperSet
             }.launchIn(this)
 
-            flowBasedModel.wallpaperStatusFlow.onEach { wallpaperStatus ->
-                Log.d("GifWallpaper", "Wallpaper status: $wallpaperStatus")
-            }.launchIn(this)
-
             drawableFlow(
                 this@SetupFragment.requireContext(),
                 flowBasedModel,
@@ -151,11 +147,8 @@ class SetupFragment : Fragment() {
                 animated = true,
                 isService = false
             ).onEach { drawable ->
-                Log.d("GifWallpaper", "Wallpaper drawable: $drawable")
                 renderer.drawable = drawable
             }.launchIn(this)
-        }.invokeOnCompletion {
-            Log.d("GifWallpaper", "Job in Fragment is finished.")
         }
 
         detector = GestureDetectorCompat(requireContext(), MyGestureListener())
@@ -179,8 +172,10 @@ class SetupFragment : Fragment() {
 
         if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                flowBasedModel.loadNewGif(requireContext(), uri)
-                flowBasedModel.resetTranslate()
+                lifecycleScope.launch {
+                    flowBasedModel.loadNewGif(requireContext(), uri)
+                    flowBasedModel.resetTranslate()
+                }
             }
         }
     }
@@ -192,7 +187,9 @@ class SetupFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.clear_gif -> {
-                flowBasedModel.clearGif(requireContext())
+                lifecycleScope.launch {
+                    flowBasedModel.clearGif(requireContext())
+                }
                 return true
             }
             R.id.settings -> {
@@ -235,7 +232,9 @@ class SetupFragment : Fragment() {
 
     private fun changeScale() {
         currentScale = (currentScale + 1) % ScaleType.values().size
-        flowBasedModel.setScaleType(ScaleType.values()[currentScale])
+        lifecycleScope.launch {
+            flowBasedModel.setScaleType(ScaleType.values()[currentScale])
+        }
     }
 
     private fun changeColor() {
@@ -248,12 +247,14 @@ class SetupFragment : Fragment() {
             ColorSheet().colorPicker(
                 colors, currentColor, noColorOption = true
             ) {
-                if (it == ColorSheet.NO_COLOR) {
-                    currentColor = null
-                    flowBasedModel.setBackgroundColor(colorInfo.defaultColor)
-                } else {
-                    currentColor = it
-                    flowBasedModel.setBackgroundColor(it)
+                lifecycleScope.launch {
+                    if (it == ColorSheet.NO_COLOR) {
+                        currentColor = null
+                        flowBasedModel.setBackgroundColor(colorInfo.defaultColor)
+                    } else {
+                        currentColor = it
+                        flowBasedModel.setBackgroundColor(it)
+                    }
                 }
             }.cornerRadius(0).show(parentFragmentManager)
         }
@@ -261,7 +262,9 @@ class SetupFragment : Fragment() {
 
     private fun rotate() {
         currentRotation = (currentRotation + 1) % Rotation.values().size
-        flowBasedModel.setRotation(Rotation.values()[currentRotation])
+        lifecycleScope.launch {
+            flowBasedModel.setRotation(Rotation.values()[currentRotation])
+        }
     }
 
     private inner class MyGestureListener : GestureDetector.SimpleOnGestureListener() {
@@ -271,12 +274,16 @@ class SetupFragment : Fragment() {
             distanceX: Float,
             distanceY: Float
         ): Boolean {
-            flowBasedModel.postTranslate(-distanceX, -distanceY)
+            lifecycleScope.launch {
+                flowBasedModel.postTranslate(-distanceX, -distanceY)
+            }
             return true
         }
 
         override fun onDoubleTap(e: MotionEvent): Boolean {
-            flowBasedModel.resetTranslate()
+            lifecycleScope.launch {
+                flowBasedModel.resetTranslate()
+            }
             return true
         }
     }

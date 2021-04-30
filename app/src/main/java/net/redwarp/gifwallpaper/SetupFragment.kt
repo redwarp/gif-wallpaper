@@ -195,14 +195,16 @@ class SetupFragment : Fragment() {
                 flowBasedModel.clearGif(requireContext())
                 return true
             }
+            R.id.settings -> {
+                startActivity(Intent(requireContext(), SettingsActivity::class.java))
+                return true
+            }
             R.id.about -> {
                 startActivity(TextActivity.getIntent(requireContext(), "about.md"))
-
                 return true
             }
             R.id.privacy -> {
                 startActivity(TextActivity.getIntent(requireContext(), "privacy.md"))
-
                 return true
             }
         }

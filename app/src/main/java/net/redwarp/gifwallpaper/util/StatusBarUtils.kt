@@ -15,6 +15,8 @@
  */
 package net.redwarp.gifwallpaper.util
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
 import android.view.View
 import android.view.WindowInsetsController
@@ -77,3 +79,13 @@ fun FragmentActivity.setStatusBarColor30(isDark: Boolean) {
         }
     }
 }
+
+val Context.isDarkMode: Boolean
+    get() {
+        val nightModeFlags = resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK
+        return when (nightModeFlags) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            else -> false
+        }
+    }

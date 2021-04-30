@@ -180,6 +180,8 @@ class SetupFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.extras, menu)
+        menu.findItem(R.id.settings).isVisible =
+            android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -88,8 +88,7 @@ class FlowBasedModel private constructor(context: Context) {
 
     init {
         GlobalScope.launch {
-            val applicationContext = context.applicationContext
-            loadInitialData(applicationContext)
+            loadInitialData()
             rotationFlow.onEach {
                 _updateFlow.tryEmit(Unit)
             }.launchIn(this)
@@ -146,20 +145,20 @@ class FlowBasedModel private constructor(context: Context) {
 
     suspend fun loadNewGif(context: Context, uri: Uri) {
         isColorSet = false
-        _wallpaperStatusFlow.emitAll(GifLoader.loadNewGif(context, uri))
+        _wallpaperStatusFlow.emitAll(GifLoader.loadNewGif(context, settings, uri))
     }
 
-    suspend fun clearGif(context: Context) {
+    suspend fun clearGif() {
         isColorSet = false
         _wallpaperStatusFlow.tryEmit(WallpaperStatus.NotSet)
-        GifLoader.clearGif(context)
+        GifLoader.clearGif(settings)
         setBackgroundColor(Color.BLACK)
         setScaleType(ScaleType.FIT_CENTER)
         setRotation(Rotation.NORTH)
     }
 
-    private suspend fun loadInitialData(context: Context) = withContext(Dispatchers.Default) {
-        _wallpaperStatusFlow.tryEmit(GifLoader.loadInitialValue(context))
+    private suspend fun loadInitialData() = withContext(Dispatchers.Default) {
+        _wallpaperStatusFlow.tryEmit(GifLoader.loadInitialValue(settings))
     }
 
     private suspend fun extractColorScheme(wallpaper: WallpaperStatus.Wallpaper) =

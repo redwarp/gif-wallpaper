@@ -16,6 +16,7 @@
 package net.redwarp.gifwallpaper.data
 
 import android.content.Context
+import android.net.Uri
 import androidx.annotation.ColorInt
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.SharedPreferencesMigration
@@ -23,18 +24,23 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
+import java.io.File
 
-internal const val KEY_WALLPAPER_BACKGROUND_COLOR = "wallpaper_background_color"
-internal const val KEY_WALLPAPER_ROTATION = "wallpaper_rotation"
-internal const val KEY_WALLPAPER_TRANSLATE_X = "wallpaper_translate_x"
-internal const val KEY_WALLPAPER_TRANSLATE_Y = "wallpaper_translate_y"
-internal const val KEY_WALLPAPER_SCALE_TYPE = "wallpaper_scale_type"
+private const val KEY_WALLPAPER_BACKGROUND_COLOR = "wallpaper_background_color"
+private const val KEY_WALLPAPER_ROTATION = "wallpaper_rotation"
+private const val KEY_WALLPAPER_TRANSLATE_X = "wallpaper_translate_x"
+private const val KEY_WALLPAPER_TRANSLATE_Y = "wallpaper_translate_y"
+private const val KEY_WALLPAPER_SCALE_TYPE = "wallpaper_scale_type"
+private const val KEY_WALLPAPER_URI = "wallpaper_uri"
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = "settings",
@@ -48,7 +54,8 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
                     KEY_WALLPAPER_BACKGROUND_COLOR,
                     KEY_WALLPAPER_TRANSLATE_X,
                     KEY_WALLPAPER_TRANSLATE_Y,
-                    KEY_WALLPAPER_SCALE_TYPE
+                    KEY_WALLPAPER_SCALE_TYPE,
+                    KEY_WALLPAPER_URI
                 )
             )
         )
@@ -62,6 +69,7 @@ class Settings(context: Context) {
     private val WALLPAPER_TRANSLATE_X = floatPreferencesKey(KEY_WALLPAPER_TRANSLATE_X)
     private val WALLPAPER_TRANSLATE_Y = floatPreferencesKey(KEY_WALLPAPER_TRANSLATE_Y)
     private val WALLPAPER_SCALE_TYPE = intPreferencesKey(KEY_WALLPAPER_SCALE_TYPE)
+    private val WALLPAPER_URI = stringPreferencesKey(KEY_WALLPAPER_URI)
 
     val rotationFlow: Flow<Rotation>
         get() = context.dataStore.data.mapNotNull { preferences ->
@@ -86,12 +94,12 @@ class Settings(context: Context) {
             }
         }.distinctUntilChanged()
 
-    val scaleTypeFlow
+    val scaleTypeFlow: Flow<ScaleType>
         get() = context.dataStore.data.mapNotNull { preferences ->
             preferences[WALLPAPER_SCALE_TYPE]?.let { scaleTypeOrdinal ->
                 ScaleType.values()[scaleTypeOrdinal]
             }
-        }
+        }.distinctUntilChanged()
 
     suspend fun setRotation(rotation: Rotation) {
         context.dataStore.edit { settings ->
@@ -125,6 +133,29 @@ class Settings(context: Context) {
     suspend fun setScaleType(scaleType: ScaleType) {
         context.dataStore.edit { settings ->
             settings[WALLPAPER_SCALE_TYPE] = scaleType.ordinal
+        }
+    }
+
+    suspend fun getWallpaperFile(): File? = context.dataStore.data.map { preferences ->
+        val urlString = preferences[WALLPAPER_URI]
+        urlString?.let {
+            val path = Uri.parse(it).path
+            if (path != null) {
+                File(path)
+            } else {
+                null
+            }
+        }
+    }.firstOrNull()
+
+    suspend fun setWallpaperFile(file: File?) {
+        context.dataStore.edit { preferences ->
+            val string = file?.let { Uri.fromFile(it).toString() }
+            if (string != null) {
+                preferences[WALLPAPER_URI] = string
+            } else {
+                preferences.remove(WALLPAPER_URI)
+            }
         }
     }
 }

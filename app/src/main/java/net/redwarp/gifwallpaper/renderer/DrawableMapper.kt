@@ -119,16 +119,16 @@ private fun CoroutineScope.setupWallpaperUpdate(
         }.launchIn(this)
     } else {
         flowBasedModel.translationEventFlow.onEach { event ->
-            val value = drawableFlow.first() as? GifWrapperDrawable ?: return@onEach
+            val drawable = drawableFlow.first() as? GifWrapperDrawable ?: return@onEach
             when (event) {
                 is TranslationEvent.PostTranslate -> {
-                    value.postTranslate(
+                    drawable.postTranslate(
                         event.translateX,
                         event.translateY
                     )
                 }
                 TranslationEvent.Reset -> {
-                    value.resetTranslation(animated)
+                    drawable.resetTranslation(animated)
                 }
             }
         }.launchIn(this)

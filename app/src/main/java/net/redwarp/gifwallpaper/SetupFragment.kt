@@ -41,7 +41,6 @@ import androidx.lifecycle.lifecycleScope
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.WallpaperStatus
@@ -172,7 +171,7 @@ class SetupFragment : Fragment() {
 
         if (requestCode == PICK_GIF_FILE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                lifecycleScope.launch {
+                lifecycleScope.launchWhenCreated {
                     flowBasedModel.loadNewGif(requireContext(), uri)
                     flowBasedModel.resetTranslate()
                 }
@@ -187,8 +186,8 @@ class SetupFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.clear_gif -> {
-                lifecycleScope.launch {
-                    flowBasedModel.clearGif(requireContext())
+                lifecycleScope.launchWhenCreated {
+                    flowBasedModel.clearGif()
                 }
                 return true
             }
@@ -232,7 +231,7 @@ class SetupFragment : Fragment() {
 
     private fun changeScale() {
         currentScale = (currentScale + 1) % ScaleType.values().size
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenCreated {
             flowBasedModel.setScaleType(ScaleType.values()[currentScale])
         }
     }
@@ -247,7 +246,7 @@ class SetupFragment : Fragment() {
             ColorSheet().colorPicker(
                 colors, currentColor, noColorOption = true
             ) {
-                lifecycleScope.launch {
+                lifecycleScope.launchWhenCreated {
                     if (it == ColorSheet.NO_COLOR) {
                         currentColor = null
                         flowBasedModel.setBackgroundColor(colorInfo.defaultColor)
@@ -262,7 +261,7 @@ class SetupFragment : Fragment() {
 
     private fun rotate() {
         currentRotation = (currentRotation + 1) % Rotation.values().size
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenCreated {
             flowBasedModel.setRotation(Rotation.values()[currentRotation])
         }
     }
@@ -274,14 +273,14 @@ class SetupFragment : Fragment() {
             distanceX: Float,
             distanceY: Float
         ): Boolean {
-            lifecycleScope.launch {
+            lifecycleScope.launchWhenCreated {
                 flowBasedModel.postTranslate(-distanceX, -distanceY)
             }
             return true
         }
 
         override fun onDoubleTap(e: MotionEvent): Boolean {
-            lifecycleScope.launch {
+            lifecycleScope.launchWhenCreated {
                 flowBasedModel.resetTranslate()
             }
             return true

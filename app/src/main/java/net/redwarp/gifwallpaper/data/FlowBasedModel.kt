@@ -67,7 +67,7 @@ class FlowBasedModel private constructor(context: Context) {
 
     private val _colorInfoFlow = MutableStateFlow<ColorInfo>(NotSet)
 
-    private var isColorSet = false
+    private var isColorSet = true
 
     val scaleTypeFlow: Flow<ScaleType> get() = settings.scaleTypeFlow
     val rotationFlow: Flow<Rotation> get() = settings.rotationFlow

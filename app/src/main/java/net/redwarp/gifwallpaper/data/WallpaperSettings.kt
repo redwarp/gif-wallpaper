@@ -17,6 +17,7 @@ package net.redwarp.gifwallpaper.data
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.net.Uri
 import androidx.annotation.ColorInt
 import androidx.datastore.core.DataStore
@@ -31,7 +32,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 import java.io.File
@@ -75,33 +75,28 @@ class WallpaperSettings private constructor(context: Context) {
     private val WALLPAPER_URI = stringPreferencesKey(KEY_WALLPAPER_URI)
 
     val rotationFlow: Flow<Rotation>
-        get() = context.dataStore.data.mapNotNull { preferences ->
-            preferences[WALLPAPER_ROTATION]?.let { rotationOrdinal ->
-                Rotation.values()[rotationOrdinal]
-            }
+        get() = context.dataStore.data.map { preferences ->
+            val rotationOrdinal = preferences[WALLPAPER_ROTATION] ?: 0
+            Rotation.values()[rotationOrdinal]
         }.distinctUntilChanged()
 
     val backgroundColorFlow
-        get() = context.dataStore.data.mapNotNull { preferences ->
-            preferences[WALLPAPER_BACKGROUND_COLOR]
+        get() = context.dataStore.data.map { preferences ->
+            preferences[WALLPAPER_BACKGROUND_COLOR] ?: Color.BLACK
         }.distinctUntilChanged()
 
     val translationFlow: Flow<Translation>
-        get() = context.dataStore.data.mapNotNull { preferences ->
-            val x = preferences[WALLPAPER_TRANSLATE_X]
-            val y = preferences[WALLPAPER_TRANSLATE_Y]
+        get() = context.dataStore.data.map { preferences ->
+            val x = preferences[WALLPAPER_TRANSLATE_X] ?: 0f
+            val y = preferences[WALLPAPER_TRANSLATE_Y] ?: 0f
 
-            when {
-                x != null && y != null -> Translation(x, y)
-                else -> null
-            }
+            Translation(x, y)
         }.distinctUntilChanged()
 
     val scaleTypeFlow: Flow<ScaleType>
-        get() = context.dataStore.data.mapNotNull { preferences ->
-            preferences[WALLPAPER_SCALE_TYPE]?.let { scaleTypeOrdinal ->
-                ScaleType.values()[scaleTypeOrdinal]
-            }
+        get() = context.dataStore.data.map { preferences ->
+            val scaleTypeOrdinal = preferences[WALLPAPER_SCALE_TYPE] ?: 0
+            ScaleType.values()[scaleTypeOrdinal]
         }.distinctUntilChanged()
 
     suspend fun setRotation(rotation: Rotation) {

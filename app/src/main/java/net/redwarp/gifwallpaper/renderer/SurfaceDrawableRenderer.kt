@@ -19,6 +19,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.SurfaceHolder
@@ -114,7 +115,7 @@ class SurfaceDrawableRenderer(
         val drawable = drawable
         if (isCreated && drawable != null && hasDimension) {
             val canvas: Canvas? =
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     holder.lockHardwareCanvas()
                 } else {
                     holder.lockCanvas()

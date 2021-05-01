@@ -19,6 +19,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.PowerManager
 import androidx.core.content.getSystemService
 import kotlinx.coroutines.CancellationException
@@ -29,7 +30,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOf
 
 fun powerSaveFlow(context: Context) =
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         callbackFlow {
             send(context.getSystemService<PowerManager>()?.isPowerSaveMode ?: false)
 
@@ -60,7 +61,7 @@ fun powerSaveFlow(context: Context) =
     }
 
 fun thermalThrottleFlow(context: Context) =
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         callbackFlow {
             val pm = context.getSystemService<PowerManager>()
             if (pm == null) {

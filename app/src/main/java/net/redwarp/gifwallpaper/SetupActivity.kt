@@ -15,12 +15,10 @@
  */
 package net.redwarp.gifwallpaper
 
-import android.os.Build
 import android.os.Bundle
-import android.view.WindowInsets
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import net.redwarp.gifwallpaper.util.systemWindowInsetCompatTop
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -40,26 +38,11 @@ class SetupActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.setOnApplyWindowInsetsListener { _, insets ->
-            toolbar.y = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                getSystemTopInset30(insets)
-            } else {
-                getSystemTopInset21(insets)
-            }.toFloat()
+            toolbar.y = insets.systemWindowInsetCompatTop.toFloat()
 
             insets
         }
 
         supportActionBar?.title = null
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun getSystemTopInset30(insets: WindowInsets): Int {
-        return insets.getInsets(WindowInsets.Type.systemBars()).top
-    }
-
-    @Suppress("DEPRECATION")
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun getSystemTopInset21(insets: WindowInsets): Int {
-        return insets.systemWindowInsetTop
     }
 }

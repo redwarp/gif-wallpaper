@@ -19,6 +19,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.view.GestureDetector
@@ -51,6 +52,7 @@ import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.drawableFlow
 import net.redwarp.gifwallpaper.util.isDark
 import net.redwarp.gifwallpaper.util.setStatusBarColor
+import net.redwarp.gifwallpaper.util.systemWindowInsetCompatBottom
 
 const val PICK_GIF_FILE = 2
 
@@ -110,7 +112,7 @@ class SetupFragment : Fragment() {
             rotate()
         }
         binding.buttonContainer.setOnApplyWindowInsetsListener { _, insets ->
-            binding.buttonContainer.updatePadding(bottom = insets.systemWindowInsetBottom)
+            binding.buttonContainer.updatePadding(bottom = insets.systemWindowInsetCompatBottom)
             insets
         }
 
@@ -181,7 +183,7 @@ class SetupFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.extras, menu)
         menu.findItem(R.id.settings).isVisible =
-            android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

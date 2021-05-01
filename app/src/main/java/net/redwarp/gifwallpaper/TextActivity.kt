@@ -18,15 +18,12 @@ package net.redwarp.gifwallpaper
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import io.noties.markwon.Markwon
 import net.redwarp.gifwallpaper.databinding.ActivityTextBinding
 import net.redwarp.gifwallpaper.util.setStatusBarColor
+import net.redwarp.gifwallpaper.util.systemWindowInsetCompatTop
 import java.io.InputStream
 
 private const val KEY_MARKDOWN_FILENAME = "markdown_filename"
@@ -39,20 +36,8 @@ class TextActivity : AppCompatActivity() {
         binding = ActivityTextBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.textView.setOnApplyWindowInsetsListener { _, insets ->
-            binding.textView.y = insets.systemWindowInsetTop.toFloat()
+            binding.textView.y = insets.systemWindowInsetCompatTop.toFloat()
             insets
-        }
-        window.apply {
-
-            statusBarColor = Color.TRANSPARENT
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                setDecorFitsSystemWindows(false)
-            } else {
-                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-                decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            }
         }
 
         val nightModeFlags = resources.configuration.uiMode and

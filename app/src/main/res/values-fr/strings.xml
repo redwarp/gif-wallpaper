@@ -3,6 +3,7 @@
     <string name="about">"A propos"</string>
     <string name="activate">"Activer"</string>
     <string name="app_name">"GIF Live Wallpaper"</string>
+    <string name="battery_saver">"Économiseur de batterie"</string>
     <string name="change_color">"Couleur"</string>
     <string name="change_scale">"Ratio"</string>
     <string name="clear_gif">"Supprimer le GIF"</string>
@@ -14,7 +15,9 @@
     <string name="loading">"Chargement…"</string>
     <string name="open_app">"Ouvrez l'application GIF Live Wallpaper et choisissez votre GIF favori."</string>
     <string name="open_gif">"Choisir un GIF"</string>
+    <string name="pause_blayback_battery_saver">"Mettre en pause le GIF lorsque l'économiseur de batterie est activé"</string>
     <string name="pick_a_color">"Choisissez une couleur"</string>
     <string name="privacy">"Confidentialité"</string>
     <string name="rotate">"Rotation"</string>
+    <string name="settings">"Paramètres"</string>
 </resources>

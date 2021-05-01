@@ -3,6 +3,7 @@
     <string name="about">"Über die App"</string>
     <string name="activate">"Starten"</string>
     <string name="app_name">"GIF Live Wallpaper"</string>
+    <string name="battery_saver">"Energiesparmodus"</string>
     <string name="change_color">"Farbe ändern"</string>
     <string name="change_scale">"Skalieren"</string>
     <string name="clear_gif">"GIF löschen"</string>
@@ -11,7 +12,9 @@
     <string name="loading">"Lädt..."</string>
     <string name="open_app">"Öffne die GIF Live Wallpaper App und lade dein Lieblings-GIF um zu starten."</string>
     <string name="open_gif">"GIF öffnen"</string>
+    <string name="pause_blayback_battery_saver">"GIF pausieren im Energiesparmodus"</string>
     <string name="pick_a_color">"Farbe auswählen"</string>
     <string name="privacy">"Datenschutz"</string>
     <string name="rotate">"Drehen"</string>
+    <string name="settings">"Einstellungen"</string>
 </resources>

@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/redwarp/gif-wallpaper/compare/v1.8.1...v1.9.0) (2021-05-01)
+
+
+### Features
+
+* Add power management option ([#121](https://github.com/redwarp/gif-wallpaper/issues/121)) ([79137ac](https://github.com/redwarp/gif-wallpaper/commit/79137ace3714ffa349dead4e49e0a993f0e0a46c))
+
+
+### Bug Fixes
+
+* Bigger activate button ([cd0fd47](https://github.com/redwarp/gif-wallpaper/commit/cd0fd471ec3d573605966f84a221c3a555e3179b))
+* Bump navigation libraries ([7170a7c](https://github.com/redwarp/gif-wallpaper/commit/7170a7ce7d144bfdbd77418b0e3d70821323b123))
+* Cleanup deprecated code ([91765cb](https://github.com/redwarp/gif-wallpaper/commit/91765cb41a5b4dc773599da19720d6d777635ec9))
+* Update translations from POEditor ([907fadb](https://github.com/redwarp/gif-wallpaper/commit/907fadb960836525e3688703ff1da280d846c5f5))
+
 ### [1.8.1](https://github.com/redwarp/gif-wallpaper/compare/v1.8.0...v1.8.1) (2021-04-29)
 
 

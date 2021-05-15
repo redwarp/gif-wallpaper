@@ -1,4 +1,4 @@
-/* Copyright 2020 Redwarp
+/* Copyright 2020 Benoit Vermont
  * Copyright 2020 GifWallpaper Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

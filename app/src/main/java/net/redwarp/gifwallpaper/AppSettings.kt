@@ -33,7 +33,7 @@ class AppSettings(context: Context) {
     private val powerSavingKey = booleanPreferencesKey("power_saving")
 
     val powerSavingSettingFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[powerSavingKey] ?: false
+        preferences[powerSavingKey] ?: true
     }
 
     suspend fun getBoolean(key: String, defValue: Boolean): Boolean {

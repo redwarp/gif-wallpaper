@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.1](https://github.com/redwarp/gif-wallpaper/compare/v1.9.0...v1.9.1) (2021-05-15)
+
+
+### Bug Fixes
+
+* Set power save mode enabled by default ([e5bd544](https://github.com/redwarp/gif-wallpaper/commit/e5bd544d5bc590f1eeda3306112824c6f412e603))
+* Update to kotlin 1.5.0 ([0245e68](https://github.com/redwarp/gif-wallpaper/commit/0245e68a0a06ed65d4952b4e94444d9978cea3a7))
+
 ## [1.9.0](https://github.com/redwarp/gif-wallpaper/compare/v1.8.1...v1.9.0) (2021-05-01)
 
 

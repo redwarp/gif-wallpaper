@@ -15,7 +15,6 @@
  */
 package net.redwarp.gifwallpaper.util
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import androidx.annotation.AttrRes
@@ -27,7 +26,6 @@ fun Int.isDark(): Boolean {
     return ColorUtils.calculateLuminance(this) < 0.5
 }
 
-@SuppressLint("Recycle")
 @ColorInt
 fun Context.themeColor(
     @AttrRes themeAttrId: Int

@@ -17,8 +17,8 @@ package net.redwarp.gifwallpaper.data
 
 import app.redwarp.gif.decoder.descriptors.GifDescriptor
 
-sealed class WallpaperStatus {
-    object NotSet : WallpaperStatus()
-    object Loading : WallpaperStatus()
-    data class Wallpaper(val gifDescriptor: GifDescriptor) : WallpaperStatus()
+sealed interface WallpaperStatus {
+    object NotSet : WallpaperStatus
+    object Loading : WallpaperStatus
+    data class Wallpaper(val gifDescriptor: GifDescriptor) : WallpaperStatus
 }

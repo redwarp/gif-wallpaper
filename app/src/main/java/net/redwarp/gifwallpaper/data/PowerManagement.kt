@@ -25,7 +25,8 @@ import androidx.core.content.getSystemService
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.onFailure
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOf
 
@@ -33,17 +34,12 @@ fun powerSaveFlow(context: Context) =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         callbackFlow {
             send(context.getSystemService<PowerManager>()?.isPowerSaveMode ?: false)
-
             val receiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
-
-                    try {
-                        sendBlocking(
-                            context.getSystemService<PowerManager>()?.isPowerSaveMode ?: false
-                        )
-                    } catch (e: Exception) {
-                        @Suppress("ThrowableNotThrown")
-                        cancel(CancellationException(e.message, e))
+                    trySendBlocking(
+                        context.getSystemService<PowerManager>()?.isPowerSaveMode ?: false
+                    ).onFailure { throwable ->
+                        cancel(CancellationException(throwable?.message, throwable))
                     }
                 }
             }
@@ -70,11 +66,8 @@ fun thermalThrottleFlow(context: Context) =
             }
 
             val listener = PowerManager.OnThermalStatusChangedListener { thermalStatus ->
-                try {
-                    sendBlocking(thermalStatus >= PowerManager.THERMAL_STATUS_SEVERE)
-                } catch (e: Exception) {
-                    @Suppress("ThrowableNotThrown")
-                    cancel(CancellationException(e.message, e))
+                trySendBlocking(thermalStatus >= PowerManager.THERMAL_STATUS_SEVERE).onFailure { throwable ->
+                    cancel(CancellationException(throwable?.message, throwable))
                 }
             }
             pm.addThermalStatusListener(listener)

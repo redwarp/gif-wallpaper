@@ -19,7 +19,7 @@ import android.animation.FloatArrayEvaluator
 import android.animation.TypeEvaluator
 import android.graphics.Matrix
 
-class MatrixEvaluator(reuseMatrix: Matrix?) : TypeEvaluator<Matrix> {
+class MatrixEvaluator(reuseMatrix: Matrix) : TypeEvaluator<Matrix> {
     private val startData = FloatArray(9)
     private val endData = FloatArray(9)
     private val workMatrix = reuseMatrix
@@ -29,11 +29,10 @@ class MatrixEvaluator(reuseMatrix: Matrix?) : TypeEvaluator<Matrix> {
         startValue.getValues(startData)
         endValue.getValues(endData)
 
-        val matrix = workMatrix ?: Matrix()
-        matrix.setValues(
+        workMatrix.setValues(
             floatArrayEvaluator.evaluate(fraction, startData, endData)
         )
 
-        return matrix
+        return workMatrix
     }
 }

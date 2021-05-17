@@ -2,7 +2,6 @@
 
 ## Made with
 
-- [Glide](https://github.com/bumptech/glide) (For devices pre Android 28)
 - [Colorsheet](https://github.com/msasikanth/ColorSheet)
 - [Android X](https://developer.android.com/jetpack/androidx)
 - [Markwon](https://github.com/noties/Markwon) (To display this page)

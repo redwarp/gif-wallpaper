@@ -14,3 +14,4 @@
 /app/release
 .externalNativeBuild
 .cxx
+/fetch_translations/target

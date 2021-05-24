@@ -21,6 +21,11 @@ jobs:
           alias: ${{ secrets.SIGNING_ALIAS }}
           keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
           keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      - name: Archive signed artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: signed-android-app
+          path: app/build/outputs/bundle/release/app-release.aab
       - name: Publish
         uses: r0adkll/upload-google-play@v1
         with:

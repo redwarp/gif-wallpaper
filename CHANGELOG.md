@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.2](https://github.com/redwarp/gif-wallpaper/compare/v1.9.1...v1.9.2) (2021-05-24)
+
+
+### Bug Fixes
+
+* Better TextActivity layout for long text ([7817dbf](https://github.com/redwarp/gif-wallpaper/commit/7817dbf7914a6090603bdae2b189a73d979deefb))
+* Crash for Android 12 ([c70275d](https://github.com/redwarp/gif-wallpaper/commit/c70275dd3c87b4f2224b8947aa16d2f702a0cab1))
+* Update privacy policy and about doc ([ca6e510](https://github.com/redwarp/gif-wallpaper/commit/ca6e5100f189380be8b1bed12376e44a8585ab24))
+
 ### [1.9.1](https://github.com/redwarp/gif-wallpaper/compare/v1.9.0...v1.9.1) (2021-05-15)
 
 

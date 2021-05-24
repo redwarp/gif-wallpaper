@@ -31,7 +31,6 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
@@ -53,7 +52,6 @@ class GifWallpaperService : WallpaperService() {
         private val handlerThread = HandlerThread("WallpaperLooper")
         private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
         private var handler: Handler? = null
-        private var wallpaperColors: WallpaperColors? = null
 
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
@@ -106,8 +104,10 @@ class GifWallpaperService : WallpaperService() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
-        override fun onComputeColors(): WallpaperColors? {
-            return wallpaperColors
+        override fun onComputeColors(): WallpaperColors {
+            return surfaceDrawableRenderer?.drawable?.createMiniature()
+                ?.let(WallpaperColors::fromBitmap)
+                ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
         }
 
         override fun getLifecycle(): Lifecycle {
@@ -115,10 +115,7 @@ class GifWallpaperService : WallpaperService() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
-        private suspend fun refreshWallpaperColors() = withContext(Dispatchers.Default) {
-            wallpaperColors =
-                drawableFlow?.first()?.createMiniature()?.let(WallpaperColors::fromBitmap)
-                ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
+        private suspend fun refreshWallpaperColors() = withContext(Dispatchers.Main) {
             notifyColorsChanged()
         }
 

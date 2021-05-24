@@ -20,9 +20,11 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.updatePadding
 import io.noties.markwon.Markwon
 import net.redwarp.gifwallpaper.databinding.ActivityTextBinding
 import net.redwarp.gifwallpaper.util.setStatusBarColor
+import net.redwarp.gifwallpaper.util.systemWindowInsetCompatBottom
 import net.redwarp.gifwallpaper.util.systemWindowInsetCompatTop
 import java.io.InputStream
 
@@ -35,8 +37,13 @@ class TextActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityTextBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.textView.setOnApplyWindowInsetsListener { _, insets ->
-            binding.textView.y = insets.systemWindowInsetCompatTop.toFloat()
+
+        val topPadding = binding.textView.paddingTop
+        binding.textView.setOnApplyWindowInsetsListener { textView, insets ->
+            textView.updatePadding(
+                top = insets.systemWindowInsetCompatTop + topPadding,
+                bottom = insets.systemWindowInsetCompatBottom + topPadding
+            )
             insets
         }
 

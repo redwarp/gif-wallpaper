@@ -28,7 +28,7 @@ async fn main() -> Result<()> {
     for language in &content {
         let terms = fetch_terms(&client, &language.code).await?;
 
-        println!("Terms for {}: {}", &language.name, &terms);
+        println!("Terms for {}: {:?}", &language.name, &terms);
     }
 
     Ok(())
@@ -38,7 +38,7 @@ async fn fetch_languages(client: &Client) -> Result<Vec<Language>> {
     let response = client
         .post("https://api.poeditor.com/v2/languages/list")
         .form(&[
-            ("api_token", "x"),
+            ("api_token", "259aa66dfbdccf0ed87bf09855e3a861"),
             ("id", "435211"),
         ])
         .send()
@@ -49,7 +49,28 @@ async fn fetch_languages(client: &Client) -> Result<Vec<Language>> {
     Ok(response.result.languages)
 }
 
-async fn fetch_terms(client: &Client, language_code: &String) -> Result<String> {
+#[derive(Deserialize, Debug)]
+struct Translation {
+    content: String,
+}
+
+#[derive(Deserialize, Debug)]
+struct Term {
+    term: String,
+    translation: Translation,
+    tags: Vec<String>,
+}
+
+#[derive(Deserialize, Debug)]
+struct TermResult {
+    terms: Vec<Term>,
+}
+#[derive(Deserialize, Debug)]
+struct TermResponse {
+    result: TermResult,
+}
+
+async fn fetch_terms(client: &Client, language_code: &String) -> Result<TermResponse> {
     // Must use untagged for the plural stuff: https://github.com/serde-rs/json/issues/473
     // as the content can be either string, or plural.
 
@@ -62,7 +83,7 @@ async fn fetch_terms(client: &Client, language_code: &String) -> Result<String> 
         ])
         .send()
         .await?
-        .text()
+        .json::<TermResponse>()
         .await?;
 
     Ok(response)

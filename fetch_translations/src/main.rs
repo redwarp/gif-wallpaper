@@ -1,6 +1,14 @@
+mod poe;
+mod xml;
+
+use anyhow::Context;
+use anyhow::Error;
 use anyhow::Result;
+use poe::TermResponse;
 use reqwest::Client;
 use serde::Deserialize;
+use xml::Language as SupportedLanguage;
+use xml::Strings;
 
 #[derive(Deserialize, Debug)]
 struct Language {
@@ -26,9 +34,15 @@ async fn main() -> Result<()> {
     println!("Printing fetched content: {:?}", content);
 
     for language in &content {
+        let supported_language = SupportedLanguage::from(&language.code).ok_or(Error::msg(
+            format!("Unsupported language {}", language.code),
+        ))?;
+
         let terms = fetch_terms(&client, &language.code).await?;
 
-        println!("Terms for {}: {:?}", &language.name, &terms);
+        let strings = Strings::from(supported_language, terms);
+
+        println!("{:?}", strings)
     }
 
     Ok(())
@@ -47,27 +61,6 @@ async fn fetch_languages(client: &Client) -> Result<Vec<Language>> {
         .await?;
 
     Ok(response.result.languages)
-}
-
-#[derive(Deserialize, Debug)]
-struct Translation {
-    content: String,
-}
-
-#[derive(Deserialize, Debug)]
-struct Term {
-    term: String,
-    translation: Translation,
-    tags: Vec<String>,
-}
-
-#[derive(Deserialize, Debug)]
-struct TermResult {
-    terms: Vec<Term>,
-}
-#[derive(Deserialize, Debug)]
-struct TermResponse {
-    result: TermResult,
 }
 
 async fn fetch_terms(client: &Client, language_code: &String) -> Result<TermResponse> {

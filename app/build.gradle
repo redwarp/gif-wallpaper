@@ -87,7 +87,7 @@ dependencies {
     implementation "androidx.datastore:datastore-preferences:1.0.0-beta01"
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.robolectric:robolectric:4.5.1'
+    testImplementation 'org.robolectric:robolectric:4.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

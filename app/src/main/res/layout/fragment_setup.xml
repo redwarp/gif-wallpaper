@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -27,64 +27,21 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="KeyboardInaccessibleWidget" />
 
-    <LinearLayout
-        android:id="@+id/button_container"
-        style="?android:attr/buttonBarStyle"
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:elevation="4dp"
-        android:gravity="top"
-        android:orientation="horizontal">
+        app:fabAlignmentMode="end"
+        app:menu="@menu/setup_options" />
 
-        <Button
-            android:id="@+id/open_gif_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_collections"
-            android:text="@string/open_gif" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/open_gif_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/open_gif"
+        app:layout_anchor="@id/bottom_app_bar"
+        app:srcCompat="@drawable/ic_collections"
 
-        <Button
-            android:id="@+id/change_scale_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_transform"
-            android:enabled="false"
-            android:text="@string/change_scale" />
-
-        <Button
-            android:id="@+id/rotate_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_rotate_90_degrees_cw"
-            android:enabled="false"
-            android:text="@string/rotate" />
-
-        <Button
-            android:id="@+id/change_color_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_color_lens"
-            android:enabled="false"
-            android:text="@string/change_color" />
-
-
-        <Button
-            android:id="@+id/clear_gif_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_baseline_clear_24"
-            android:enabled="false"
-            android:text="@string/clear_gif" />
-    </LinearLayout>
-</FrameLayout>
+        />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

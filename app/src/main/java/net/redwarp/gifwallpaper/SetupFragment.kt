@@ -15,13 +15,18 @@
  */
 package net.redwarp.gifwallpaper
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.Menu
@@ -29,16 +34,26 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.MeasureSpec
+import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.ViewPropertyAnimator
+import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import androidx.annotation.Keep
+import androidx.core.animation.doOnEnd
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.updatePadding
+import androidx.core.view.drawToBitmap
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.interpolator.view.animation.FastOutLinearInInterpolator
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.MaterialToolbar
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -50,9 +65,6 @@ import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.drawableFlow
-import net.redwarp.gifwallpaper.util.ToolbarPosition
-import net.redwarp.gifwallpaper.util.setToolbarPosition
-import net.redwarp.gifwallpaper.util.systemWindowInsetCompatBottom
 
 const val PICK_GIF_FILE = 2
 
@@ -67,11 +79,12 @@ class SetupFragment : Fragment() {
 
     private var _binding: FragmentSetupBinding? = null
     private val binding get() = _binding!!
+    private lateinit var changeColorButton: MenuItem
 
     private var colorInfo: ColorScheme? = null
         set(value) {
             field = value
-            binding.changeColorButton.isEnabled = value != null
+            changeColorButton.isEnabled = value != null
         }
     private var currentColor: Int? = null
     private lateinit var detector: GestureDetectorCompat
@@ -99,24 +112,35 @@ class SetupFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val clearGifButton = binding.bottomAppBar.menu.findItem(R.id.clear_gif)
+        val rotateButton = binding.bottomAppBar.menu.findItem(R.id.rotate)
+        val changeScaleButton = binding.bottomAppBar.menu.findItem(R.id.change_scale)
+        changeColorButton = binding.bottomAppBar.menu.findItem(R.id.change_color)
+
+        binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.change_scale -> {
+                    changeScale()
+                    true
+                }
+                R.id.change_color -> {
+                    changeColor()
+                    true
+                }
+                R.id.rotate -> {
+                    rotate()
+                    true
+                }
+                R.id.clear_gif -> {
+                    clearGif()
+                    true
+                }
+
+                else -> false
+            }
+        }
         binding.openGifButton.setOnClickListener {
-            pickDocument()
-        }
-        binding.changeScaleButton.setOnClickListener {
-            changeScale()
-        }
-        binding.changeColorButton.setOnClickListener {
-            changeColor()
-        }
-        binding.rotateButton.setOnClickListener {
-            rotate()
-        }
-        binding.clearGifButton.setOnClickListener {
-            clearGif()
-        }
-        binding.buttonContainer.setOnApplyWindowInsetsListener { _, insets ->
-            binding.buttonContainer.updatePadding(bottom = insets.systemWindowInsetCompatBottom)
-            insets
+            openGif()
         }
 
         val renderer = SurfaceDrawableRenderer(binding.surfaceView.holder, Looper.getMainLooper())
@@ -139,9 +163,9 @@ class SetupFragment : Fragment() {
             }.launchIn(this)
             flowBasedModel.wallpaperStatusFlow.onEach {
                 val isWallpaperSet = it is WallpaperStatus.Wallpaper
-                binding.changeScaleButton.isEnabled = isWallpaperSet
-                binding.rotateButton.isEnabled = isWallpaperSet
-                binding.clearGifButton.isEnabled = isWallpaperSet
+                changeScaleButton.isEnabled = isWallpaperSet
+                rotateButton.isEnabled = isWallpaperSet
+                clearGifButton.isEnabled = isWallpaperSet
             }.launchIn(this)
 
             drawableFlow(
@@ -169,11 +193,6 @@ class SetupFragment : Fragment() {
 
             inset
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        setToolbarPosition(ToolbarPosition.Overlay)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -247,7 +266,7 @@ class SetupFragment : Fragment() {
         // toolbar?.overflowIcon = icon
     }
 
-    private fun pickDocument() {
+    private fun openGif() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "image/gif"
@@ -312,5 +331,131 @@ class SetupFragment : Fragment() {
             }
             return true
         }
+
+        override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+            val appBarLayout =
+                activity?.findViewById<AppBarLayout>(R.id.app_bar_layout) ?: return false
+
+            val toolbar =
+                activity?.findViewById<MaterialToolbar>(R.id.toolbar) ?: return false
+
+            if (appBarLayout.isVisible) {
+                appBarLayout.hide()
+                binding.bottomAppBar.performHide()
+            } else {
+                appBarLayout.show()
+                binding.bottomAppBar.performShow()
+            }
+
+            return true
+        }
+    }
+}
+
+fun AppBarLayout.show() {
+    if (visibility == VISIBLE) return
+
+    val parent = parent as ViewGroup
+    // View needs to be laid out to create a snapshot & know position to animate. If view isn't
+    // laid out yet, need to do this manually.
+    if (!isLaidOut) {
+        measure(
+            MeasureSpec.makeMeasureSpec(parent.width, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(parent.height, MeasureSpec.AT_MOST)
+        )
+        layout(parent.left, 0, parent.right, measuredHeight)
+    }
+
+    val drawable = BitmapDrawable(context.resources, drawToBitmap())
+    drawable.setBounds(left, -height, right, 0)
+    parent.overlay.add(drawable)
+    ValueAnimator.ofInt(-height, top).apply {
+        startDelay = 100L
+        duration = 300L
+        interpolator = AnimationUtils.loadInterpolator(
+            context,
+            android.R.interpolator.linear_out_slow_in
+        )
+        addUpdateListener {
+            val newTop = it.animatedValue as Int
+            drawable.setBounds(left, newTop, right, newTop + height)
+        }
+        doOnEnd {
+            parent.overlay.remove(drawable)
+            visibility = VISIBLE
+        }
+        start()
+    }
+}
+
+private val KEY_ANIMATOR_TAG = 459845415
+private val KEY_CURRENT_STATE = 459845416
+
+fun AppBarLayout.isShownState() = getTag(KEY_CURRENT_STATE) ?: 0 == 0
+
+fun AppBarLayout.hide2() {
+    if (getTag(KEY_CURRENT_STATE) == 1) return
+
+    var currentAnimator: ViewPropertyAnimator? = getTag(KEY_ANIMATOR_TAG) as? ViewPropertyAnimator
+    if (currentAnimator != null) {
+        currentAnimator.cancel()
+        clearAnimation()
+    }
+    setTag(KEY_CURRENT_STATE, 1)
+
+    currentAnimator = animate().translationY(-height.toFloat()).setDuration(175L)
+        .setInterpolator(FastOutLinearInInterpolator())
+        .setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                setTag(KEY_ANIMATOR_TAG, null)
+            }
+        })
+    setTag(KEY_ANIMATOR_TAG, currentAnimator)
+}
+
+fun AppBarLayout.show2() {
+    if (getTag(KEY_CURRENT_STATE) ?: 0 == 0) return
+
+    var currentAnimator: ViewPropertyAnimator? = getTag(KEY_ANIMATOR_TAG) as? ViewPropertyAnimator
+    if (currentAnimator != null) {
+        currentAnimator.cancel()
+        clearAnimation()
+    }
+    setTag(KEY_CURRENT_STATE, 0)
+
+    currentAnimator = animate().translationY(0f).setDuration(225L)
+        .setInterpolator(LinearOutSlowInInterpolator())
+        .setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                setTag(KEY_ANIMATOR_TAG, null)
+            }
+        })
+    setTag(KEY_ANIMATOR_TAG, currentAnimator)
+}
+
+fun AppBarLayout.hide() {
+    if (visibility == GONE) return
+
+    val drawable = BitmapDrawable(context.resources, drawToBitmap())
+    val parent = parent as ViewGroup
+    drawable.setBounds(left, top, right, bottom)
+    parent.overlay.add(drawable)
+    visibility = GONE
+    ValueAnimator.ofInt(top, -height).apply {
+        startDelay = 100L
+        duration = 200L
+        interpolator = AnimationUtils.loadInterpolator(
+            context,
+            android.R.interpolator.fast_out_linear_in
+        )
+        addUpdateListener {
+            val newTop = it.animatedValue as Int
+            drawable.setBounds(left, newTop, right, newTop + height)
+            Log.d("SetupFragment", "New top $newTop")
+        }
+        doOnEnd {
+            parent.overlay.remove(drawable)
+        }
+        start()
     }
 }

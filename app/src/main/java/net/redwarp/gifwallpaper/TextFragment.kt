@@ -15,7 +15,6 @@
  */
 package net.redwarp.gifwallpaper
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,9 +22,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.noties.markwon.Markwon
 import net.redwarp.gifwallpaper.databinding.FragmentTextBinding
-import net.redwarp.gifwallpaper.util.ToolbarPosition
-import net.redwarp.gifwallpaper.util.setStatusBarColor
-import net.redwarp.gifwallpaper.util.setToolbarPosition
 import java.io.InputStream
 
 private const val KEY_MARKDOWN_FILENAME = "markdown_filename"
@@ -35,7 +31,7 @@ class TextFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setToolbarPosition(ToolbarPosition.TopOf)
+        // setToolbarPosition(ToolbarPosition.TopOf)
     }
 
     override fun onCreateView(
@@ -59,12 +55,12 @@ class TextFragment : Fragment() {
         //     insets
         // }
 
-        val nightModeFlags = resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK
-        when (nightModeFlags) {
-            Configuration.UI_MODE_NIGHT_YES -> setStatusBarColor(true)
-            else -> setStatusBarColor(false)
-        }
+        // val nightModeFlags = resources.configuration.uiMode and
+        //     Configuration.UI_MODE_NIGHT_MASK
+        // when (nightModeFlags) {
+        //     Configuration.UI_MODE_NIGHT_YES -> setStatusBarColor(true)
+        //     else -> setStatusBarColor(false)
+        // }
 
         arguments?.getString(KEY_MARKDOWN_FILENAME)?.let {
             val content = loadMarkdownFile(it) ?: return@let

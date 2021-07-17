@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/change_scale"
+        android:icon="@drawable/ic_transform"
+        android:title="@string/open_gif"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/rotate"
+        android:icon="@drawable/ic_rotate_90_degrees_cw"
+        android:title="@string/rotate"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/change_color"
+        android:icon="@drawable/ic_color_lens"
+        android:title="@string/change_color"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/clear_gif"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:title="@string/clear_gif"
+        app:showAsAction="always" />
+</menu>

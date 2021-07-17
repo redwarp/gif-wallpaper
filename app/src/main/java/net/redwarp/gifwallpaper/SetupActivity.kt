@@ -15,7 +15,6 @@
  */
 package net.redwarp.gifwallpaper
 
-import android.app.WallpaperManager
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +28,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
 import net.redwarp.gifwallpaper.databinding.ActivitySetupBinding
+import net.redwarp.gifwallpaper.util.isDarkMode
+import net.redwarp.gifwallpaper.util.setStatusBarColor
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -67,6 +68,9 @@ class SetupActivity : AppCompatActivity() {
                 bindings.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             }
         }
+        bindings.appBarLayout.outlineProvider = null
+
+        setStatusBarColor(isDarkMode)
     }
 
     override fun onResume() {
@@ -106,11 +110,11 @@ class SetupActivity : AppCompatActivity() {
     }
 
     private fun isWallpaperSet(context: Context): Boolean {
-        // return true
+        return true
 
-        val wallpaperManager = WallpaperManager.getInstance(context)
-        return wallpaperManager.wallpaperInfo?.let {
-            it.packageName == context.packageName
-        } ?: false
+        // val wallpaperManager = WallpaperManager.getInstance(context)
+        // return wallpaperManager.wallpaperInfo?.let {
+        //     it.packageName == context.packageName
+        // } ?: false
     }
 }

@@ -21,8 +21,6 @@ import androidx.annotation.Keep
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import kotlinx.coroutines.runBlocking
-import net.redwarp.gifwallpaper.util.ToolbarPosition
-import net.redwarp.gifwallpaper.util.setToolbarPosition
 
 @Keep
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -35,7 +33,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onResume() {
         super.onResume()
-        setToolbarPosition(ToolbarPosition.TopOf)
+        // setToolbarPosition(ToolbarPosition.TopOf)
     }
 }
 

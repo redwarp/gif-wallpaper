@@ -21,8 +21,11 @@ import android.os.Build
 import android.view.View
 import android.view.WindowInsetsController
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentContainerView
 import net.redwarp.gifwallpaper.R
 
 fun FragmentActivity.setStatusBarColor(isDark: Boolean) {
@@ -91,15 +94,15 @@ val Context.isDarkMode: Boolean
     }
 
 fun Fragment.setToolbarPosition(toolbarPosition: ToolbarPosition) {
-    // val activity = requireActivity()
-    // val containerView = activity.findViewById<FragmentContainerView>(R.id.nav_host_fragment)
-    // val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
-    // when (toolbarPosition) {
-    //     ToolbarPosition.Overlay -> containerView.updatePadding(top = 0)
-    //     ToolbarPosition.TopOf -> containerView.updatePadding(top = toolbar.bottom)
-    //     ToolbarPosition.Invisible -> containerView.updatePadding(top = 0)
-    // }
-    // containerView.updatePadding(top = toolbar.bottom)
+    val activity = requireActivity()
+    val containerView = activity.findViewById<FragmentContainerView>(R.id.nav_host_fragment)
+    val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
+    when (toolbarPosition) {
+        ToolbarPosition.Overlay -> containerView.updatePadding(top = 0)
+        ToolbarPosition.TopOf -> containerView.updatePadding(top = toolbar.bottom)
+        ToolbarPosition.Invisible -> containerView.updatePadding(top = 0)
+    }
+    containerView.updatePadding(top = toolbar.bottom)
 }
 
 enum class ToolbarPosition {

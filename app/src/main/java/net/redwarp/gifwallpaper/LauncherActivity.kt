@@ -15,7 +15,6 @@
  */
 package net.redwarp.gifwallpaper
 
-import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -43,9 +42,11 @@ class LauncherActivity : AppCompatActivity() {
     }
 
     private fun isWallpaperSet(context: Context): Boolean {
-        val wallpaperManager = WallpaperManager.getInstance(context)
-        return wallpaperManager.wallpaperInfo?.let {
-            it.packageName == context.packageName
-        } ?: false
+        return true
+
+        // val wallpaperManager = WallpaperManager.getInstance(context)
+        // return wallpaperManager.wallpaperInfo?.let {
+        //     it.packageName == context.packageName
+        // } ?: false
     }
 }

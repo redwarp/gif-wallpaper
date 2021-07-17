@@ -75,5 +75,16 @@
             android:drawableTop="@drawable/ic_color_lens"
             android:enabled="false"
             android:text="@string/change_color" />
+
+
+        <Button
+            android:id="@+id/clear_gif_button"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_baseline_clear_24"
+            android:enabled="false"
+            android:text="@string/clear_gif" />
     </LinearLayout>
 </FrameLayout>

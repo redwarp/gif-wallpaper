@@ -15,34 +15,102 @@
  */
 package net.redwarp.gifwallpaper
 
+import android.app.WallpaperManager
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import net.redwarp.gifwallpaper.util.systemWindowInsetCompatTop
+import androidx.core.view.isVisible
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupWithNavController
+import net.redwarp.gifwallpaper.databinding.ActivitySetupBinding
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 class SetupActivity : AppCompatActivity() {
-    lateinit var toolbar: Toolbar
+    lateinit var appBarConfiguration: AppBarConfiguration
+    lateinit var navController: NavController
+    lateinit var bindings: ActivitySetupBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_setup)
-        setupActionBar()
+        bindings = ActivitySetupBinding.inflate(layoutInflater)
+        setContentView(bindings.root)
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+
+        appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.launcher, R.id.setup),
+            bindings.drawerLayout
+        )
+        bindings.toolbar.setupWithNavController(
+            navController,
+            appBarConfiguration
+        )
+        bindings.navigationView.setupWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.launcher) {
+                bindings.toolbar.isVisible = false
+                bindings.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            } else {
+                bindings.toolbar.isVisible = true
+                bindings.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (isWallpaperSet(this) && navController.currentDestination?.id == R.id.launcher) {
+            navController.navigate(
+                R.id.setup,
+                null,
+                NavOptions.Builder().setPopUpTo(R.id.launcher, true)
+                    .build()
+            )
+        } else if (!isWallpaperSet(this) && navController.currentDestination?.id != R.id.launcher) {
+            navController.navigate(
+                R.id.launcher,
+                null,
+                NavOptions.Builder().setPopUpTo(R.id.setup, true)
+                    .build()
+            )
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
     private fun setupActionBar() {
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        toolbar.setOnApplyWindowInsetsListener { _, insets ->
-            toolbar.y = insets.systemWindowInsetCompatTop.toFloat()
+        // setSupportActionBar(toolbar)
+        // toolbar.setOnApplyWindowInsetsListener { _, insets ->
+        //     toolbar.y = insets.systemWindowInsetCompatTop.toFloat()
+        //
+        //     insets
+        // }
 
-            insets
-        }
+        // supportActionBar?.title = null
+    }
 
-        supportActionBar?.title = null
+    private fun isWallpaperSet(context: Context): Boolean {
+        // return true
+
+        val wallpaperManager = WallpaperManager.getInstance(context)
+        return wallpaperManager.wallpaperInfo?.let {
+            it.packageName == context.packageName
+        } ?: false
     }
 }

@@ -89,3 +89,19 @@ val Context.isDarkMode: Boolean
             else -> false
         }
     }
+
+fun Fragment.setToolbarPosition(toolbarPosition: ToolbarPosition) {
+    // val activity = requireActivity()
+    // val containerView = activity.findViewById<FragmentContainerView>(R.id.nav_host_fragment)
+    // val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
+    // when (toolbarPosition) {
+    //     ToolbarPosition.Overlay -> containerView.updatePadding(top = 0)
+    //     ToolbarPosition.TopOf -> containerView.updatePadding(top = toolbar.bottom)
+    //     ToolbarPosition.Invisible -> containerView.updatePadding(top = 0)
+    // }
+    // containerView.updatePadding(top = toolbar.bottom)
+}
+
+enum class ToolbarPosition {
+    Overlay, TopOf, Invisible
+}

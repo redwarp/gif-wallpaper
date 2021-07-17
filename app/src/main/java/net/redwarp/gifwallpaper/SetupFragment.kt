@@ -32,12 +32,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.Keep
-import androidx.appcompat.widget.Toolbar
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.lifecycle.lifecycleScope
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.coroutines.flow.launchIn
@@ -50,8 +50,8 @@ import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.drawableFlow
-import net.redwarp.gifwallpaper.util.isDark
-import net.redwarp.gifwallpaper.util.setStatusBarColor
+import net.redwarp.gifwallpaper.util.ToolbarPosition
+import net.redwarp.gifwallpaper.util.setToolbarPosition
 import net.redwarp.gifwallpaper.util.systemWindowInsetCompatBottom
 
 const val PICK_GIF_FILE = 2
@@ -111,6 +111,9 @@ class SetupFragment : Fragment() {
         binding.rotateButton.setOnClickListener {
             rotate()
         }
+        binding.clearGifButton.setOnClickListener {
+            clearGif()
+        }
         binding.buttonContainer.setOnApplyWindowInsetsListener { _, insets ->
             binding.buttonContainer.updatePadding(bottom = insets.systemWindowInsetCompatBottom)
             insets
@@ -138,6 +141,7 @@ class SetupFragment : Fragment() {
                 val isWallpaperSet = it is WallpaperStatus.Wallpaper
                 binding.changeScaleButton.isEnabled = isWallpaperSet
                 binding.rotateButton.isEnabled = isWallpaperSet
+                binding.clearGifButton.isEnabled = isWallpaperSet
             }.launchIn(this)
 
             drawableFlow(
@@ -167,6 +171,11 @@ class SetupFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        setToolbarPosition(ToolbarPosition.Overlay)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -188,22 +197,21 @@ class SetupFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.clear_gif -> {
-                lifecycleScope.launchWhenCreated {
-                    flowBasedModel.clearGif()
+            R.id.settings -> {
+                // startActivity(Intent(requireContext(), SettingsActivity::class.java))
+                parentFragmentManager.commit {
+                    replace<SettingsFragment>(R.id.nav_host_fragment)
+                    setReorderingAllowed(true)
+                    addToBackStack(null)
                 }
                 return true
             }
-            R.id.settings -> {
-                startActivity(Intent(requireContext(), SettingsActivity::class.java))
-                return true
-            }
             R.id.about -> {
-                startActivity(TextActivity.getIntent(requireContext(), "about.md"))
+                showTextFragment("about.md")
                 return true
             }
             R.id.privacy -> {
-                startActivity(TextActivity.getIntent(requireContext(), "privacy.md"))
+                showTextFragment("privacy.md")
                 return true
             }
         }
@@ -211,16 +219,32 @@ class SetupFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun adjustTheme(backgroundColor: Int) {
-        setStatusBarColor(backgroundColor.isDark())
-        val overflowColor = if (backgroundColor.isDark()) Color.WHITE else Color.BLACK
-
-        val toolbar: Toolbar? = (activity as? SetupActivity)?.toolbar
-        val icon = toolbar?.overflowIcon?.let {
-            DrawableCompat.wrap(it).also { wrapped -> wrapped.setTint(overflowColor) }
+    private fun clearGif() {
+        lifecycleScope.launchWhenCreated {
+            flowBasedModel.clearGif()
         }
+    }
 
-        toolbar?.overflowIcon = icon
+    private fun showTextFragment(markdownFileName: String) {
+        // startActivity(TextActivity.getIntent(requireContext(), markdownFileName))
+        val fragment = TextFragment.newInstance(markdownFileName)
+        parentFragmentManager.commit {
+            replace(R.id.nav_host_fragment, fragment)
+            setReorderingAllowed(true)
+            addToBackStack(null)
+        }
+    }
+
+    private fun adjustTheme(backgroundColor: Int) {
+        // setStatusBarColor(backgroundColor.isDark())
+        // val overflowColor = if (backgroundColor.isDark()) Color.WHITE else Color.BLACK
+        //
+        // val toolbar: Toolbar? = (activity as? SetupActivity)?.toolbar
+        // val icon = toolbar?.overflowIcon?.let {
+        //     DrawableCompat.wrap(it).also { wrapped -> wrapped.setTint(overflowColor) }
+        // }
+        //
+        // toolbar?.overflowIcon = icon
     }
 
     private fun pickDocument() {

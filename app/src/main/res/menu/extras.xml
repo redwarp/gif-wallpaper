@@ -2,12 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/clear_gif"
-        android:title="@string/clear_gif"
-        app:showAsAction="never" />
+        android:id="@+id/setup"
+        android:title="@string/setup" />
     <item
         android:id="@+id/settings"
-        android:title="Settings"
+        android:title="@string/settings"
         app:showAsAction="never" />
     <item
         android:id="@+id/about"

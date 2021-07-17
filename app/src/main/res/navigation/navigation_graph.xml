@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/launcher">
+    <fragment
+        android:id="@+id/launcher"
+        android:name="net.redwarp.gifwallpaper.LauncherFragment"
+        android:label="fragment_launcher"
+        tools:layout="@layout/fragment_launcher" />
+
+    <fragment
+        android:id="@+id/setup"
+        android:name="net.redwarp.gifwallpaper.SetupFragment"
+        android:label="SetupFragment"
+        tools:layout="@layout/fragment_setup">
+    </fragment>
+    <fragment
+        android:id="@+id/about"
+        android:name="net.redwarp.gifwallpaper.TextFragment"
+        android:label="TextFragment"
+        tools:layout="@layout/fragment_text">
+        <argument
+            android:name="markdown_filename"
+            android:defaultValue="about.md"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/privacy"
+        android:name="net.redwarp.gifwallpaper.TextFragment"
+        android:label="TextFragment"
+        tools:layout="@layout/fragment_text">
+        <argument
+            android:name="markdown_filename"
+            android:defaultValue="privacy.md"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/settings"
+        android:name="net.redwarp.gifwallpaper.SettingsFragment"
+        android:label="SettingsFragment" />
+</navigation>

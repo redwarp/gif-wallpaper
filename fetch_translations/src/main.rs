@@ -1,14 +1,13 @@
 mod poe;
 mod xml;
 
-use anyhow::Context;
+use crate::xml::Language as SupportedLanguage;
+use crate::xml::Strings;
 use anyhow::Error;
 use anyhow::Result;
 use poe::TermResponse;
 use reqwest::Client;
 use serde::Deserialize;
-use xml::Language as SupportedLanguage;
-use xml::Strings;
 
 #[derive(Deserialize, Debug)]
 struct Language {
@@ -24,6 +23,10 @@ struct LanguageResult {
 struct LanguageResponse {
     result: LanguageResult,
 }
+
+// Should probably be passed as an arg, but it's read only so I don't care enough.
+static API_TOKEN: &str = "259aa66dfbdccf0ed87bf09855e3a861";
+static PROJECT_ID: &str = "362629";
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -41,8 +44,7 @@ async fn main() -> Result<()> {
         let terms = fetch_terms(&client, &language.code).await?;
 
         let strings = Strings::from(supported_language, terms);
-
-        println!("{:?}", strings)
+        strings.write()?;
     }
 
     Ok(())
@@ -51,10 +53,7 @@ async fn main() -> Result<()> {
 async fn fetch_languages(client: &Client) -> Result<Vec<Language>> {
     let response = client
         .post("https://api.poeditor.com/v2/languages/list")
-        .form(&[
-            ("api_token", "259aa66dfbdccf0ed87bf09855e3a861"),
-            ("id", "435211"),
-        ])
+        .form(&[("api_token", API_TOKEN), ("id", PROJECT_ID)])
         .send()
         .await?
         .json::<LanguageResponse>()
@@ -65,13 +64,12 @@ async fn fetch_languages(client: &Client) -> Result<Vec<Language>> {
 
 async fn fetch_terms(client: &Client, language_code: &String) -> Result<TermResponse> {
     // Must use untagged for the plural stuff: https://github.com/serde-rs/json/issues/473
-    // as the content can be either string, or plural.
-
+    // as the content can be either string, or plural. We don't have plurals for now, so... ignore.
     let response = client
         .post("https://api.poeditor.com/v2/terms/list")
         .form(&[
-            ("api_token", "259aa66dfbdccf0ed87bf09855e3a861"),
-            ("id", "435211"),
+            ("api_token", API_TOKEN),
+            ("id", PROJECT_ID),
             ("language", language_code.as_str()),
         ])
         .send()

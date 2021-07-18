@@ -15,8 +15,6 @@
  */
 package net.redwarp.gifwallpaper.ui
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -37,8 +35,6 @@ import android.view.View.GONE
 import android.view.View.MeasureSpec
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.view.ViewPropertyAnimator
-import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import androidx.annotation.Keep
 import androidx.core.animation.doOnEnd
@@ -46,14 +42,12 @@ import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
-import androidx.interpolator.view.animation.FastOutLinearInInterpolator
-import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.appbar.MaterialToolbar
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -66,6 +60,7 @@ import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.drawableFlow
+import net.redwarp.gifwallpaper.util.AnimUtils
 
 const val PICK_GIF_FILE = 2
 
@@ -184,7 +179,7 @@ class SetupFragment : Fragment() {
         binding.touchArea.setOnTouchListener { _, event ->
             detector.onTouchEvent(event)
         }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.surfaceView) { _, inset ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.touchArea) { _, inset ->
             (binding.touchArea.layoutParams as? FrameLayout.LayoutParams)?.setMargins(
                 inset.systemGestureInsets.left,
                 inset.systemGestureInsets.top,
@@ -246,7 +241,6 @@ class SetupFragment : Fragment() {
     }
 
     private fun showTextFragment(markdownFileName: String) {
-        // startActivity(TextActivity.getIntent(requireContext(), markdownFileName))
         val fragment = TextFragment.newInstance(markdownFileName)
         parentFragmentManager.commit {
             replace(R.id.nav_host_fragment, fragment)
@@ -334,18 +328,16 @@ class SetupFragment : Fragment() {
         }
 
         override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-            val appBarLayout =
-                activity?.findViewById<AppBarLayout>(R.id.app_bar_layout) ?: return false
+            val bindings = (activity as? SetupActivity)?.bindings ?: return false
 
-            val toolbar =
-                activity?.findViewById<MaterialToolbar>(R.id.toolbar) ?: return false
-
-            if (appBarLayout.isVisible) {
-                appBarLayout.hide()
+            if (bindings.appBarLayout.isVisible) {
+                bindings.appBarLayout.hide()
                 binding.bottomAppBar.performHide()
+                bindings.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             } else {
-                appBarLayout.show()
+                bindings.appBarLayout.show()
                 binding.bottomAppBar.performShow()
+                bindings.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             }
 
             return true
@@ -366,72 +358,26 @@ fun AppBarLayout.show() {
         )
         layout(parent.left, 0, parent.right, measuredHeight)
     }
+    setExpanded(true, false)
 
     val drawable = BitmapDrawable(context.resources, drawToBitmap())
     drawable.setBounds(left, -height, right, 0)
     parent.overlay.add(drawable)
     ValueAnimator.ofInt(-height, top).apply {
-        startDelay = 100L
-        duration = 300L
-        interpolator = AnimationUtils.loadInterpolator(
-            context,
-            android.R.interpolator.linear_out_slow_in
-        )
+        startDelay = 0L
+        duration = 225L
+        interpolator = AnimUtils.getLinearOutSlowInInterpolator(context)
         addUpdateListener {
             val newTop = it.animatedValue as Int
             drawable.setBounds(left, newTop, right, newTop + height)
         }
         doOnEnd {
             parent.overlay.remove(drawable)
+
             visibility = VISIBLE
         }
         start()
     }
-}
-
-private val KEY_ANIMATOR_TAG = 459845415
-private val KEY_CURRENT_STATE = 459845416
-
-fun AppBarLayout.isShownState() = getTag(KEY_CURRENT_STATE) ?: 0 == 0
-
-fun AppBarLayout.hide2() {
-    if (getTag(KEY_CURRENT_STATE) == 1) return
-
-    var currentAnimator: ViewPropertyAnimator? = getTag(KEY_ANIMATOR_TAG) as? ViewPropertyAnimator
-    if (currentAnimator != null) {
-        currentAnimator.cancel()
-        clearAnimation()
-    }
-    setTag(KEY_CURRENT_STATE, 1)
-
-    currentAnimator = animate().translationY(-height.toFloat()).setDuration(175L)
-        .setInterpolator(FastOutLinearInInterpolator())
-        .setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                setTag(KEY_ANIMATOR_TAG, null)
-            }
-        })
-    setTag(KEY_ANIMATOR_TAG, currentAnimator)
-}
-
-fun AppBarLayout.show2() {
-    if (getTag(KEY_CURRENT_STATE) ?: 0 == 0) return
-
-    var currentAnimator: ViewPropertyAnimator? = getTag(KEY_ANIMATOR_TAG) as? ViewPropertyAnimator
-    if (currentAnimator != null) {
-        currentAnimator.cancel()
-        clearAnimation()
-    }
-    setTag(KEY_CURRENT_STATE, 0)
-
-    currentAnimator = animate().translationY(0f).setDuration(225L)
-        .setInterpolator(LinearOutSlowInInterpolator())
-        .setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                setTag(KEY_ANIMATOR_TAG, null)
-            }
-        })
-    setTag(KEY_ANIMATOR_TAG, currentAnimator)
 }
 
 fun AppBarLayout.hide() {
@@ -443,12 +389,9 @@ fun AppBarLayout.hide() {
     parent.overlay.add(drawable)
     visibility = GONE
     ValueAnimator.ofInt(top, -height).apply {
-        startDelay = 100L
-        duration = 200L
-        interpolator = AnimationUtils.loadInterpolator(
-            context,
-            android.R.interpolator.fast_out_linear_in
-        )
+        startDelay = 0L
+        duration = 175L
+        interpolator = AnimUtils.getFastOutLinearInInterpolator(context)
         addUpdateListener {
             val newTop = it.animatedValue as Int
             drawable.setBounds(left, newTop, right, newTop + height)
@@ -458,4 +401,5 @@ fun AppBarLayout.hide() {
         }
         start()
     }
+    setExpanded(false, false)
 }

@@ -15,6 +15,7 @@
  */
 package net.redwarp.gifwallpaper.ui
 
+import android.app.WallpaperManager
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -68,6 +69,14 @@ class SetupActivity : AppCompatActivity() {
                 bindings.toolbar.isVisible = true
                 bindings.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             }
+
+            // val layoutParams =
+            //     bindings.navHostFragment.layoutParams as CoordinatorLayout.LayoutParams
+            // if (destination.id == R.id.setup) {
+            //     layoutParams.behavior = null
+            // } else {
+            //     layoutParams.behavior = AppBarLayout.ScrollingViewBehavior()
+            // }
         }
         bindings.appBarLayout.outlineProvider = null
 
@@ -99,23 +108,12 @@ class SetupActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    private fun setupActionBar() {
-        // setSupportActionBar(toolbar)
-        // toolbar.setOnApplyWindowInsetsListener { _, insets ->
-        //     toolbar.y = insets.systemWindowInsetCompatTop.toFloat()
-        //
-        //     insets
-        // }
-
-        // supportActionBar?.title = null
-    }
-
     private fun isWallpaperSet(context: Context): Boolean {
         return true
 
-        // val wallpaperManager = WallpaperManager.getInstance(context)
-        // return wallpaperManager.wallpaperInfo?.let {
-        //     it.packageName == context.packageName
-        // } ?: false
+        val wallpaperManager = WallpaperManager.getInstance(context)
+        return wallpaperManager.wallpaperInfo?.let {
+            it.packageName == context.packageName
+        } ?: false
     }
 }

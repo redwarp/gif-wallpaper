@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -21,6 +21,8 @@ import androidx.annotation.Keep
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import kotlinx.coroutines.runBlocking
+import net.redwarp.gifwallpaper.AppSettings
+import net.redwarp.gifwallpaper.R
 
 @Keep
 class SettingsFragment : PreferenceFragmentCompat() {

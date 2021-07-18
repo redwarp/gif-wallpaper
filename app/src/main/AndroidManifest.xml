@@ -15,22 +15,16 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".SetupActivity"
+            android:name=".ui.SetupActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
-            android:label="@string/app_name" />
-        <activity
-            android:name=".LauncherActivity"
             android:label="@string/app_name">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TextActivity" />
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/settings" />
 
         <service
             android:name=".GifWallpaperService"

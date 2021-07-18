@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.ui
 
 import android.app.WallpaperManager
 import android.content.ActivityNotFoundException
@@ -28,6 +28,8 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
+import net.redwarp.gifwallpaper.GifWallpaperService
+import net.redwarp.gifwallpaper.R
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.

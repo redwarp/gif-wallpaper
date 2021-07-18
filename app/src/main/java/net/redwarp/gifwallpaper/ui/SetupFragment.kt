@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.ui
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -26,7 +26,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.Menu
@@ -34,6 +33,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.GONE
 import android.view.View.MeasureSpec
 import android.view.View.VISIBLE
 import android.view.ViewGroup
@@ -57,6 +57,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.WallpaperStatus
@@ -451,7 +452,6 @@ fun AppBarLayout.hide() {
         addUpdateListener {
             val newTop = it.animatedValue as Int
             drawable.setBounds(left, newTop, right, newTop + height)
-            Log.d("SetupFragment", "New top $newTop")
         }
         doOnEnd {
             parent.overlay.remove(drawable)

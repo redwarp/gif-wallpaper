@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -27,6 +27,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
+import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.databinding.ActivitySetupBinding
 import net.redwarp.gifwallpaper.util.isDarkMode
 import net.redwarp.gifwallpaper.util.setStatusBarColor

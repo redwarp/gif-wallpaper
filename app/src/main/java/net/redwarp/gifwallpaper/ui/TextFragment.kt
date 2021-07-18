@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,11 +28,6 @@ private const val KEY_MARKDOWN_FILENAME = "markdown_filename"
 
 class TextFragment : Fragment() {
     private lateinit var binding: FragmentTextBinding
-
-    override fun onResume() {
-        super.onResume()
-        // setToolbarPosition(ToolbarPosition.TopOf)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

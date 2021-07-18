@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".SettingsActivity">
+    android:fitsSystemWindows="true">
 
     <FrameLayout
         android:id="@+id/preference_container"
@@ -16,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_layout"
-        tools:context=".SettingsFragment" />
+        tools:context=".ui.SettingsFragment" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/toolbar_layout"

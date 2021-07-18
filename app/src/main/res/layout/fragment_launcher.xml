@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
-    tools:context=".LauncherFragment">
+    tools:context=".ui.LauncherFragment">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_first"

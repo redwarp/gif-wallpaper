@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about">"A propos"</string>
-    <string name="activate">"Activer"</string>
-    <string name="app_name">"GIF Live Wallpaper"</string>
-    <string name="battery_saver">"Économiseur de batterie"</string>
-    <string name="change_color">"Couleur"</string>
-    <string name="change_scale">"Ratio"</string>
-    <string name="clear_gif">"Supprimer le GIF"</string>
-    <string name="click_the_open_gif_button">"Clickez sur le boutton \"Choisir un GIF\"."</string>
-    <string name="error_wallpaper_chooser">"
-        Impossible de lancer le menu des fonds d'écrans.
+  <string name="about">"A propos"</string>
+  <string name="activate">"Activer"</string>
+  <string name="app_name">"GIF Live Wallpaper"</string>
+  <string name="battery_saver">"Économiseur de batterie"</string>
+  <string name="change_color">"Couleur"</string>
+  <string name="change_scale">"Ratio"</string>
+  <string name="clear_gif">"Supprimer le GIF"</string>
+  <string name="click_the_open_gif_button">"Clickez sur le boutton \"Choisir un GIF\"."</string>
+  <string name="error_wallpaper_chooser">"Impossible de lancer le menu des fonds d'écrans.
         Pour activer le \"GIF Live Wallpaper\", sélectionnez le directement
         depuis votre écran d'accueil."</string>
-    <string name="loading">"Chargement…"</string>
-    <string name="open_app">"Ouvrez l'application GIF Live Wallpaper et choisissez votre GIF favori."</string>
-    <string name="open_gif">"Choisir un GIF"</string>
-    <string name="pause_blayback_battery_saver">"Mettre en pause le GIF lorsque l'économiseur de batterie est activé"</string>
-    <string name="pick_a_color">"Choisissez une couleur"</string>
-    <string name="privacy">"Confidentialité"</string>
-    <string name="rotate">"Rotation"</string>
-    <string name="settings">"Paramètres"</string>
+  <string name="loading">"Chargement…"</string>
+  <string name="open_app">"Ouvrez l'application GIF Live Wallpaper et choisissez votre GIF favori."</string>
+  <string name="open_gif">"Choisir un GIF"</string>
+  <string name="pause_blayback_battery_saver">"Mettre en pause le GIF lorsque l'économiseur de batterie est activé"</string>
+  <string name="pick_a_color">"Choisissez une couleur"</string>
+  <string name="privacy">"Confidentialité"</string>
+  <string name="rotate">"Rotation"</string>
+  <string name="settings">"Paramètres"</string>
 </resources>

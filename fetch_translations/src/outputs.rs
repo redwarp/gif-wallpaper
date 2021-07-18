@@ -40,7 +40,7 @@ impl Strings {
                     .collect();
                 Term {
                     key: term.term,
-                    value: term.translation.content,
+                    value: term.translation.content.trim().to_string(),
                     string_types: string_types,
                 }
             })

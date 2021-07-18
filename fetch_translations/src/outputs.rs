@@ -1,7 +1,12 @@
 use crate::poe::TermResponse;
 use anyhow::Result;
 use convert_case::{Case, Casing};
-use std::{fs::File, path::PathBuf};
+use serde_json::json;
+use std::{
+    collections::HashMap,
+    fs::{self, File},
+    path::PathBuf,
+};
 use xml::writer::{EmitterConfig, XmlEvent};
 
 #[derive(Debug)]
@@ -10,17 +15,34 @@ pub struct Strings {
     pub terms: Vec<Term>,
 }
 
+#[derive(Debug, PartialEq)]
+pub enum StringType {
+    APP,
+    STORE,
+    OTHER,
+}
+
 impl Strings {
     pub fn from(language: Language, response: TermResponse) -> Self {
-        let app = "app".to_string();
         let mut res: Vec<Term> = response
             .result
             .terms
             .into_iter()
-            .filter(|term| term.tags.contains(&app))
-            .map(|term| Term {
-                key: term.term,
-                value: term.translation.content,
+            .map(|term| {
+                let string_types: Vec<_> = term
+                    .tags
+                    .iter()
+                    .map(|tag| match tag.as_str() {
+                        "app" => StringType::APP,
+                        "store" => StringType::STORE,
+                        _ => StringType::OTHER,
+                    })
+                    .collect();
+                Term {
+                    key: term.term,
+                    value: term.translation.content,
+                    string_types: string_types,
+                }
             })
             .collect();
         res.sort_by(|a, b| a.key.cmp(&b.key));
@@ -31,7 +53,23 @@ impl Strings {
         }
     }
 
-    pub fn write(&self) -> Result<()> {
+    pub fn write_json(&self) -> Result<()> {
+        let file_path = PathBuf::from("../store-listing").join(self.language.store_listing_file());
+
+        let map: HashMap<_, _> = self
+            .terms
+            .iter()
+            .filter(|term| term.string_types.contains(&StringType::STORE))
+            .map(|term| (term.key.clone(), term.value.clone()))
+            .collect();
+
+        let json = json!(map);
+        fs::write(file_path, serde_json::to_string_pretty(&json)?)?;
+
+        Ok(())
+    }
+
+    pub fn write_xml(&self) -> Result<()> {
         let file_path = PathBuf::from("../app/src/main/res")
             .join(self.language.values_folder())
             .join("strings.xml");
@@ -42,7 +80,11 @@ impl Strings {
             .create_writer(&mut file);
 
         writer.write(XmlEvent::start_element("resources"))?;
-        for term in self.terms.iter().filter(|term| term.value.len() > 0) {
+        for term in self
+            .terms
+            .iter()
+            .filter(|term| term.string_types.contains(&StringType::APP) && term.value.len() > 0)
+        {
             let key = term.key.to_case(Case::Snake);
             let value = format!("\"{}\"", term.value.replace("\"", "\\\""));
             let start = XmlEvent::start_element("string").attr("name", key.as_str());
@@ -60,6 +102,7 @@ impl Strings {
 pub struct Term {
     key: String,
     value: String,
+    string_types: Vec<StringType>,
 }
 
 #[derive(Debug)]
@@ -93,6 +136,16 @@ impl Language {
             Self::German => ("values-de".to_string()),
             Self::Russian => ("values-ru".to_string()),
             Self::Spanish => ("values-es".to_string()),
+        }
+    }
+
+    fn store_listing_file(&self) -> String {
+        match self {
+            Self::English => ("en-US.json".to_string()),
+            Self::French => ("fr-FR.json".to_string()),
+            Self::German => ("de-DE.json".to_string()),
+            Self::Russian => ("ru-RU.json".to_string()),
+            Self::Spanish => ("es-ES.json".to_string()),
         }
     }
 }

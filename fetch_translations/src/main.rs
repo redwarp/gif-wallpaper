@@ -1,8 +1,8 @@
+mod outputs;
 mod poe;
-mod xml;
 
-use crate::xml::Language as SupportedLanguage;
-use crate::xml::Strings;
+use crate::outputs::Language as SupportedLanguage;
+use crate::outputs::Strings;
 use anyhow::Error;
 use anyhow::Result;
 use poe::TermResponse;
@@ -44,7 +44,8 @@ async fn main() -> Result<()> {
         let terms = fetch_terms(&client, &language.code).await?;
 
         let strings = Strings::from(supported_language, terms);
-        strings.write()?;
+        strings.write_xml()?;
+        strings.write_json()?;
     }
 
     Ok(())

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/redwarp/gif-wallpaper/compare/v1.9.2...v1.10.0) (2021-08-07)
+
+
+### Features
+
+* Split battery saving and thermal throttling ([88a57e2](https://github.com/redwarp/gif-wallpaper/commit/88a57e208f732f8cb4512d3c14ef4042f79884cb))
+
+
+### Bug Fixes
+
+* Bump gif decoder lib and make sure gifs will loop ([f466c3e](https://github.com/redwarp/gif-wallpaper/commit/f466c3ec9de77290f49304f6fe7378884e7a3bbc))
+
 ### [1.9.2](https://github.com/redwarp/gif-wallpaper/compare/v1.9.1...v1.9.2) (2021-05-24)
 
 

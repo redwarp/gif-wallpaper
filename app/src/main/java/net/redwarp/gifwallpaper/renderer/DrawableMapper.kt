@@ -18,6 +18,7 @@ package net.redwarp.gifwallpaper.renderer
 import android.content.Context
 import android.graphics.drawable.Drawable
 import app.redwarp.gif.android.GifDrawable
+import app.redwarp.gif.decoder.descriptors.params.LoopCount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -46,6 +47,7 @@ fun CoroutineScope.drawableFlow(
                 TextDrawable(context, context.getString(R.string.loading))
             is WallpaperStatus.Wallpaper -> {
                 val gif = GifDrawable(status.gifDescriptor)
+                gif.loopCount = LoopCount.Infinite
                 val shouldPlay = !isService || flowBasedModel.shouldPlay.first()
                 if (shouldPlay) {
                     gif.start()

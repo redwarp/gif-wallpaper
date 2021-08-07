@@ -12,9 +12,11 @@
   <string name="loading">"Загрузка…"</string>
   <string name="open_app">"Откройте приложение"</string>
   <string name="open_gif">"Открыть GIF"</string>
-  <string name="pause_blayback_battery_saver">"Остановить GIF в режиме энергосбережения"</string>
+  <string name="pause_blayback_battery_saver">"Остановить GIF в режиме энергосбережения."</string>
+  <string name="pause_playback_running_hot">"Остановить GIF, когда телефон сильно нагревается."</string>
   <string name="pick_a_color">"Выбор цвета"</string>
   <string name="privacy">"Конфиденциальность"</string>
   <string name="rotate">"Вращать"</string>
   <string name="settings">"Настройки"</string>
+  <string name="thermal_throttle">"Тепловое смягчение"</string>
 </resources>

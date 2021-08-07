@@ -12,9 +12,11 @@
   <string name="loading">"Lädt…"</string>
   <string name="open_app">"Öffne die GIF Live Wallpaper App und lade dein Lieblings-GIF um zu starten."</string>
   <string name="open_gif">"GIF öffnen"</string>
-  <string name="pause_blayback_battery_saver">"GIF pausieren im Energiesparmodus"</string>
+  <string name="pause_blayback_battery_saver">"GIF pausieren im Energiesparmodus."</string>
+  <string name="pause_playback_running_hot">"GIF pausieren, wenn das Telefon heiß wird."</string>
   <string name="pick_a_color">"Farbe auswählen"</string>
   <string name="privacy">"Datenschutz"</string>
   <string name="rotate">"Drehen"</string>
   <string name="settings">"Einstellungen"</string>
+  <string name="thermal_throttle">"Thermische Minderung"</string>
 </resources>

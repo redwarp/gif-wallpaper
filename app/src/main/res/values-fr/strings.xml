@@ -14,9 +14,11 @@
   <string name="loading">"Chargement…"</string>
   <string name="open_app">"Ouvrez l'application GIF Live Wallpaper et choisissez votre GIF favori."</string>
   <string name="open_gif">"Choisir un GIF"</string>
-  <string name="pause_blayback_battery_saver">"Mettre en pause le GIF lorsque l'économiseur de batterie est activé"</string>
+  <string name="pause_blayback_battery_saver">"Mettre en pause le GIF lorsque l'économiseur de batterie est activé."</string>
+  <string name="pause_playback_running_hot">"Mettre en pause le GIF lorsque le téléphone chauffe trop."</string>
   <string name="pick_a_color">"Choisissez une couleur"</string>
   <string name="privacy">"Confidentialité"</string>
   <string name="rotate">"Rotation"</string>
   <string name="settings">"Paramètres"</string>
+  <string name="thermal_throttle">"Atténuation thermique"</string>
 </resources>

@@ -16,10 +16,12 @@
 package net.redwarp.gifwallpaper
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import androidx.annotation.Keep
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import kotlinx.coroutines.runBlocking
 
 @Keep
@@ -29,6 +31,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         preferenceManager?.preferenceDataStore = dataStore
 
         setPreferencesFromResource(R.xml.preferences, rootKey)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            preferenceManager.findPreference<SwitchPreferenceCompat>("thermal_throttle")?.isVisible =
+                false
+        }
     }
 }
 

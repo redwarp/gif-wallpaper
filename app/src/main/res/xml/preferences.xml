@@ -5,4 +5,9 @@
         app:key="power_saving"
         app:summary="@string/pause_blayback_battery_saver"
         app:title="@string/battery_saver" />
+    <SwitchPreferenceCompat
+        app:defaultValue="false"
+        app:key="thermal_throttle"
+        app:summary="@string/pause_playback_running_hot"
+        app:title="@string/thermal_throttle" />
 </PreferenceScreen>

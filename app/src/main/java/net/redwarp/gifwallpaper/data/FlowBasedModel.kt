@@ -79,13 +79,13 @@ class FlowBasedModel private constructor(context: Context) {
     val shouldPlay: Flow<Boolean> = combine(
         appSettings.powerSavingSettingFlow,
         powerSaveFlow(context),
+        appSettings.thermalThrottleSettingFlow,
         thermalThrottleFlow(context)
-    ) { powerSavingSetting, powerSave, thermalThrottle ->
-        if (powerSavingSetting) {
-            !(powerSave || thermalThrottle)
-        } else {
-            true
-        }
+    ) { powerSavingSetting, powerSave, thermalThrottleSetting, thermalThrottle ->
+        val powerSavingOn = powerSavingSetting && powerSave
+        val thermalThrottlingOn = thermalThrottleSetting && thermalThrottle
+
+        !(powerSavingOn || thermalThrottlingOn)
     }
 
     @OptIn(FlowPreview::class)

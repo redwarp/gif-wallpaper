@@ -20,8 +20,9 @@ Alex Redfish. [Check their art](https://www.artstation.com/artwork/5wm5W), it's 
 
 - [JN3008](https://jn3008.tumblr.com/)
 - [Mad Max](https://www.behance.net/gallery/26428843/MAD-MAX-Fury-Road)
-- [SlimJim](http://www.slimjimstudios.com/#/la-gifathon/)
 - [SeerLight 🌙✨](https://twitter.com/seerlight)
+- [SlimJim](http://www.slimjimstudios.com/#/la-gifathon/)
+- [Waneella](https://twitter.com/waneella_/)
 
 ## Contributors
 

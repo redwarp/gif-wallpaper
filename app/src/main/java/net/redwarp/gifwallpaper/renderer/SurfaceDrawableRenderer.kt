@@ -44,21 +44,20 @@ class SurfaceDrawableRenderer(
     }
 
     var drawable: Drawable? = drawable
-        set(value) {
-            synchronized(this) {
-                field?.callback = null
+        @Synchronized set(value) {
+            field?.callback = null
 
-                field = value
-                if (value != null) {
-                    value.setBounds(0, 0, width, height)
+            field = value
+            if (value != null) {
+                value.setBounds(0, 0, width, height)
 
-                    if (isCreated && isVisible) {
-                        value.callback = this
-                        drawOnSurface()
-                    }
+                if (isCreated && isVisible) {
+                    value.callback = this
+                    drawOnSurface(value)
                 }
             }
         }
+        @Synchronized get
 
     @Synchronized
     fun visibilityChanged(isVisible: Boolean) {
@@ -66,7 +65,7 @@ class SurfaceDrawableRenderer(
 
         if (isVisible && isCreated) {
             drawable?.callback = this
-            drawOnSurface()
+            drawable?.let(::drawOnSurface)
         } else {
             drawable?.callback = null
         }
@@ -88,7 +87,7 @@ class SurfaceDrawableRenderer(
 
         hasDimension = true
 
-        drawOnSurface()
+        drawable?.let(::drawOnSurface)
     }
 
     @Synchronized
@@ -98,22 +97,18 @@ class SurfaceDrawableRenderer(
         hasDimension = false
     }
 
-    @Synchronized
     override fun surfaceRedrawNeeded(holder: SurfaceHolder) {
-        drawOnSurface()
+        drawable?.let(::drawOnSurface)
     }
 
     override fun surfaceRedrawNeededAsync(holder: SurfaceHolder, drawingFinished: Runnable) {
-        synchronized(this) {
-            drawOnSurface()
-        }
+        drawable?.let(::drawOnSurface)
         drawingFinished.run()
     }
 
     @Synchronized
-    private fun drawOnSurface() {
-        val drawable = drawable
-        if (isCreated && drawable != null && hasDimension) {
+    private fun drawOnSurface(drawable: Drawable) {
+        if (isCreated && hasDimension) {
             val canvas: Canvas? =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     holder.lockHardwareCanvas()
@@ -123,28 +118,22 @@ class SurfaceDrawableRenderer(
 
             if (canvas != null) {
                 canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-                draw(canvas, drawable)
+                drawable.draw(canvas)
 
                 holder.unlockCanvasAndPost(canvas)
             }
         }
     }
 
-    @Synchronized
-    private fun draw(canvas: Canvas, drawable: Drawable) {
-        drawable.draw(canvas)
-    }
-
     override fun invalidateDrawable(who: Drawable) {
-        drawOnSurface()
+        drawOnSurface(who)
     }
 
-    private val drawRunnable = { drawOnSurface() }
     override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) {
-        handler.postAtTime(drawRunnable, `when`)
+        handler.postAtTime(what, who, `when`)
     }
 
     override fun unscheduleDrawable(who: Drawable, what: Runnable) {
-        handler.removeCallbacks(drawRunnable)
+        handler.removeCallbacks(what, who)
     }
 }

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.1](https://github.com/redwarp/gif-wallpaper/compare/v1.10.0...v1.10.1) (2021-08-09)
+
+
+### Bug Fixes
+
+* Cleanup SurfaceDrawableRenderer ([39ed72f](https://github.com/redwarp/gif-wallpaper/commit/39ed72f7ddd00bef8e5c89b1c59d86618ebafa88))
+* Update forgotten app icons ([d39b947](https://github.com/redwarp/gif-wallpaper/commit/d39b947b45948968b444f59c88925f8334541547))
+
 ## [1.10.0](https://github.com/redwarp/gif-wallpaper/compare/v1.9.2...v1.10.0) (2021-08-07)
 
 

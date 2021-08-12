@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.2](https://github.com/redwarp/gif-wallpaper/compare/v1.10.1...v1.10.2) (2021-08-12)
+
+
+### Bug Fixes
+
+* Replace SurfaceView with ImageView, might solve random crashes ([5bc0fe0](https://github.com/redwarp/gif-wallpaper/commit/5bc0fe084f2e465ee144a3321af7ff1bbec6ad96))
+* Update decoder lib to avoid index out of bounds in Gif decoding ([6d41ba8](https://github.com/redwarp/gif-wallpaper/commit/6d41ba84efa98175449dc32815d16874241d2d21))
+
 ### [1.10.1](https://github.com/redwarp/gif-wallpaper/compare/v1.10.0...v1.10.1) (2021-08-09)
 
 

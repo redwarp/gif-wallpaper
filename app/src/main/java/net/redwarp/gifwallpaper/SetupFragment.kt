@@ -21,7 +21,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.Menu
@@ -48,7 +47,6 @@ import net.redwarp.gifwallpaper.data.WallpaperStatus
 import net.redwarp.gifwallpaper.databinding.FragmentSetupBinding
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
-import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.drawableFlow
 import net.redwarp.gifwallpaper.util.isDark
 import net.redwarp.gifwallpaper.util.setStatusBarColor
@@ -116,8 +114,6 @@ class SetupFragment : Fragment() {
             insets
         }
 
-        val renderer = SurfaceDrawableRenderer(binding.surfaceView.holder, Looper.getMainLooper())
-
         flowBasedModel = FlowBasedModel.get(requireContext())
 
         lifecycleScope.launchWhenStarted {
@@ -147,7 +143,7 @@ class SetupFragment : Fragment() {
                 animated = true,
                 isService = false
             ).onEach { drawable ->
-                renderer.drawable = drawable
+                binding.imageView.background = drawable
             }.launchIn(this)
         }
 
@@ -155,7 +151,7 @@ class SetupFragment : Fragment() {
         binding.touchArea.setOnTouchListener { _, event ->
             detector.onTouchEvent(event)
         }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.surfaceView) { _, inset ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.imageView) { _, inset ->
             (binding.touchArea.layoutParams as? FrameLayout.LayoutParams)?.setMargins(
                 inset.systemGestureInsets.left,
                 inset.systemGestureInsets.top,

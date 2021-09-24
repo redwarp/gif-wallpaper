@@ -14,7 +14,7 @@ jobs:
       - name: Build release bundle
         run: ./gradlew bundleRelease
       - name: Sign bundle
-        uses: r0adkll/sign-android-release@v1
+        uses: r0adkll/sign-android-release@v1.0.4
         with:
           releaseDirectory: app/build/outputs/bundle/release
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
@@ -27,7 +27,7 @@ jobs:
           name: signed-android-app
           path: app/build/outputs/bundle/release/app-release.aab
       - name: Publish
-        uses: r0adkll/upload-google-play@v1
+        uses: r0adkll/upload-google-play@v1.0.15
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: net.redwarp.gifwallpaper

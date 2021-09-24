@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
     <SwitchPreferenceCompat
-        app:defaultValue="true"
+        app:defaultValue="@bool/power_saving_enabled"
         app:key="power_saving"
         app:summary="@string/pause_blayback_battery_saver"
         app:title="@string/battery_saver" />
     <SwitchPreferenceCompat
-        app:defaultValue="false"
+        app:defaultValue="@bool/thermal_throttle_enabled"
         app:key="thermal_throttle"
         app:summary="@string/pause_playback_running_hot"
         app:title="@string/thermal_throttle" />

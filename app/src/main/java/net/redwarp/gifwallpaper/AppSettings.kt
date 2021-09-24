@@ -34,10 +34,11 @@ class AppSettings(context: Context) {
     private val thermalThrottleKey = booleanPreferencesKey("thermal_throttle")
 
     val powerSavingSettingFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[powerSavingKey] ?: true
+        preferences[powerSavingKey] ?: context.resources.getBoolean(R.bool.power_saving_enabled)
     }
     val thermalThrottleSettingFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[thermalThrottleKey] ?: false
+        preferences[thermalThrottleKey]
+            ?: context.resources.getBoolean(R.bool.thermal_throttle_enabled)
     }
 
     suspend fun getBoolean(key: String, defValue: Boolean): Boolean {

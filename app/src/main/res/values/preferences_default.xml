@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="power_saving_enabled">false</bool>
+    <bool name="thermal_throttle_enabled">false</bool>
+</resources>

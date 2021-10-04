@@ -18,7 +18,6 @@ package net.redwarp.gifwallpaper.data
 import android.content.Context
 import android.net.Uri
 import app.redwarp.gif.decoder.Parser
-import app.redwarp.gif.decoder.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
@@ -78,13 +77,9 @@ object GifLoader {
                 } else {
                     Parser.parse(file.inputStream())
                 }
-                when (result) {
-                    is Result.Success -> {
-                        WallpaperStatus.Wallpaper(result.value)
-                    }
-                    else -> {
-                        WallpaperStatus.NotSet
-                    }
+
+                result.fold(WallpaperStatus::Wallpaper) {
+                    WallpaperStatus.NotSet
                 }
             }.getOrDefault(WallpaperStatus.NotSet)
         }

@@ -82,7 +82,7 @@ dependencies {
     implementation "dev.sasikanth:colorsheet:1.0.1"
     implementation "io.noties.markwon:core:4.6.2"
     implementation "app.redwarp.gif:decoder:0.7.3"
-    implementation "app.redwarp.gif:android-drawable:0.7.3"
+    implementation "app.redwarp.gif:android-drawable:0.8.0"
     implementation "androidx.preference:preference-ktx:1.1.1"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 

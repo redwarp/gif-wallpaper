@@ -90,6 +90,7 @@ class GifWallpaperService : WallpaperService() {
         override fun onDestroy() {
             super.onDestroy()
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            surfaceDrawableRenderer = null
             handlerThread.quit()
         }
 

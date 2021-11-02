@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.1](https://github.com/redwarp/gif-wallpaper/compare/v1.11.0...v1.11.1) (2021-11-02)
+
+
+### Bug Fixes
+
+* Bump gifdecoder lib to 0.8.0 ([826f40b](https://github.com/redwarp/gif-wallpaper/commit/826f40bae00f6feb0e0d13ef24c8d775d51fd70a))
+* Change gif picker so that third party apps can be used ([9d6f7d6](https://github.com/redwarp/gif-wallpaper/commit/9d6f7d6247645332fa3d63c7652809b763170a16))
+
 ## [1.11.0](https://github.com/redwarp/gif-wallpaper/compare/v1.10.2...v1.11.0) (2021-09-24)
 
 

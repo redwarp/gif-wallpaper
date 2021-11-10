@@ -265,7 +265,7 @@ class GifWrapperDrawable(
         var rotation: Rotation = Rotation.NORTH,
         var translation: Pair<Float, Float> = 0f to 0f,
     ) : ConstantState() {
-        var backgroundColor = gifDrawable.backgroundColor()
+        var backgroundColor = gifDrawable.backgroundColor
 
         override fun newDrawable(): Drawable {
             val copiedGifDrawable = gifDrawable.constantState.newDrawable() as GifDrawable

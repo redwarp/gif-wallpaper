@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.2](https://github.com/redwarp/gif-wallpaper/compare/v1.11.1...v1.11.2) (2021-11-10)
+
+
+### Bug Fixes
+
+* Bump decoder library ([64433ed](https://github.com/redwarp/gif-wallpaper/commit/64433ed42f7b71db8dc8c18f61a9275ff6aa8999))
+* Fix crash when cancelling picking a gif ([8f67ebd](https://github.com/redwarp/gif-wallpaper/commit/8f67ebd2def65645c228a288d5f62fc5a1d23bc0))
+
 ### [1.11.1](https://github.com/redwarp/gif-wallpaper/compare/v1.11.0...v1.11.1) (2021-11-02)
 
 

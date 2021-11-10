@@ -18,6 +18,7 @@ package net.redwarp.gifwallpaper
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.GestureDetector
@@ -71,12 +72,14 @@ class SetupFragment : Fragment() {
         }
     private var currentColor: Int? = null
     private lateinit var detector: GestureDetectorCompat
-    private val getGif = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        lifecycleScope.launchWhenCreated {
-            flowBasedModel.loadNewGif(requireContext(), uri)
-            flowBasedModel.resetTranslate()
+    private val getGif =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            if (uri == null) return@registerForActivityResult
+            lifecycleScope.launchWhenCreated {
+                flowBasedModel.loadNewGif(requireContext(), uri)
+                flowBasedModel.resetTranslate()
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

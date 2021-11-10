@@ -18,7 +18,6 @@ package net.redwarp.gifwallpaper
 import android.app.WallpaperColors
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
@@ -30,9 +29,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
@@ -40,8 +38,6 @@ import net.redwarp.gifwallpaper.renderer.createMiniature
 import net.redwarp.gifwallpaper.renderer.drawableFlow
 
 class GifWallpaperService : WallpaperService() {
-    private var drawableFlow: Flow<Drawable>? = null
-
     override fun onCreateEngine(): Engine {
         return GifEngine()
     }
@@ -52,6 +48,7 @@ class GifWallpaperService : WallpaperService() {
         private val handlerThread = HandlerThread("WallpaperLooper")
         private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
         private var handler: Handler? = null
+        private var wallpaperColors: WallpaperColors? = null
 
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
@@ -65,23 +62,25 @@ class GifWallpaperService : WallpaperService() {
             val modelFlow = FlowBasedModel.get(this@GifWallpaperService)
 
             lifecycleScope.launchWhenStarted {
-                drawableFlow(
-                    context = this@GifWallpaperService,
-                    flowBasedModel = modelFlow,
-                    unsetText = getString(R.string.open_app),
-                    animated = false,
-                    isService = true
-                ).also {
-                    this@GifWallpaperService.drawableFlow = it
-                }.onEach { drawable ->
-                    surfaceDrawableRenderer?.drawable = drawable
-                }.launchIn(this)
-
-                modelFlow.updateFlow.onEach {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                        refreshWallpaperColors()
+                launch {
+                    drawableFlow(
+                        context = this@GifWallpaperService,
+                        flowBasedModel = modelFlow,
+                        unsetText = getString(R.string.open_app),
+                        animated = false,
+                        isService = true
+                    ).collectLatest { drawable ->
+                        surfaceDrawableRenderer?.drawable = drawable
                     }
-                }.launchIn(this)
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                    launch {
+                        modelFlow.updateFlow.collectLatest {
+                            updateWallpaperColors()
+                        }
+                    }
+                }
             }
 
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
@@ -105,10 +104,8 @@ class GifWallpaperService : WallpaperService() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
-        override fun onComputeColors(): WallpaperColors {
-            return surfaceDrawableRenderer?.drawable?.createMiniature()
-                ?.let(WallpaperColors::fromBitmap)
-                ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
+        override fun onComputeColors(): WallpaperColors? {
+            return wallpaperColors
         }
 
         override fun getLifecycle(): Lifecycle {
@@ -116,8 +113,14 @@ class GifWallpaperService : WallpaperService() {
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
-        private suspend fun refreshWallpaperColors() = withContext(Dispatchers.Main) {
-            notifyColorsChanged()
+        private suspend fun updateWallpaperColors() {
+            withContext(Dispatchers.Default) {
+                wallpaperColors = surfaceDrawableRenderer?.drawable?.createMiniature()?.let(WallpaperColors::fromBitmap)
+                    ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
+                withContext(Dispatchers.Main) {
+                    notifyColorsChanged()
+                }
+            }
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)

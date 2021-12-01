@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.3](https://github.com/redwarp/gif-wallpaper/compare/v1.11.2...v1.11.3) (2021-12-01)
+
+
+### Bug Fixes
+
+* Hoping to solve samsung s21 crashes ([9e8fc97](https://github.com/redwarp/gif-wallpaper/commit/9e8fc97585e40556feadb47464803ecf228540f5))
+* WallpaperService color computation optimization ([460369a](https://github.com/redwarp/gif-wallpaper/commit/460369ab185859330035e696d722fd977a8034e8))
+
 ### [1.11.2](https://github.com/redwarp/gif-wallpaper/compare/v1.11.1...v1.11.2) (2021-11-10)
 
 

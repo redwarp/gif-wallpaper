@@ -48,7 +48,11 @@ class GifWallpaperService : WallpaperService() {
         private val handlerThread = HandlerThread("WallpaperLooper")
         private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
         private var handler: Handler? = null
-        private var wallpaperColors: WallpaperColors? = null
+        private var wallpaperColors: WallpaperColors? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
+        } else {
+            null
+        }
 
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.4](https://github.com/redwarp/gif-wallpaper/compare/v1.11.3...v1.11.4) (2021-12-05)
+
+
+### Bug Fixes
+
+* Replace vector drawable by bitmap for wallpaper thumbnail to fix samsung issues ([75f4c52](https://github.com/redwarp/gif-wallpaper/commit/75f4c52cd7efa78a5c1bc2ed813cdacc01a16777))
+
 ### [1.11.3](https://github.com/redwarp/gif-wallpaper/compare/v1.11.2...v1.11.3) (2021-12-01)
 
 

@@ -22,7 +22,7 @@ import net.redwarp.gifwallpaper.util.isDarkMode
 import net.redwarp.gifwallpaper.util.setStatusBarColor
 
 class SettingsActivity : AppCompatActivity() {
-    lateinit var toolbar: Toolbar
+    private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -26,6 +26,7 @@ import androidx.annotation.ColorInt
 import androidx.core.graphics.alpha
 import androidx.palette.graphics.Palette
 import app.redwarp.gif.android.GifDrawable
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.GlobalScope
@@ -93,6 +94,7 @@ class FlowBasedModel private constructor(context: Context) {
         get() = _updateFlow.debounce(REFRESH_DELAY)
 
     init {
+        @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             loadInitialData()
             rotationFlow.onEach {

@@ -39,6 +39,7 @@ fun Matrix.setCenterCropRectInRect(source: RectF, destination: RectF) {
     postScale(scale, scale, destination.width() * .5f, destination.height() * 0.5f)
 }
 
+@Suppress("unused")
 fun Matrix.setCenterInsideRectInRect(source: RectF, destination: RectF) {
     setCenterRectInRect(source, destination)
     if (source.width() <= destination.width() && source.height() <= destination.height()) {

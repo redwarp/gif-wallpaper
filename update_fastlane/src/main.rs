@@ -40,7 +40,7 @@ fn update_fastlane_for_entry(entry: DirEntry) -> Result<()> {
     let filename = entry
         .file_name()
         .to_str()
-        .ok_or(anyhow!("Couldn't get filename"))?
+        .ok_or_else(|| anyhow!("Couldn't get filename"))?
         .to_owned();
 
     let content = fs::read_to_string(entry.path())?;

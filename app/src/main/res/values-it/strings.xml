@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="about">"Info"</string>
+  <string name="activate">"Attiva"</string>
+  <string name="app_name">"GIF Live Wallpaper"</string>
+  <string name="battery_saver">"Risparmio energetico"</string>
+  <string name="change_color">"Cambia il colore"</string>
+  <string name="change_scale">"Ridimensiona"</string>
+  <string name="clear_gif">"Cancella GIF"</string>
+  <string name="click_the_open_gif_button">"\"Scegli GIF\""</string>
+  <string name="error_wallpaper_chooser">"Impossibile avviare il selettore di sfondi. Puoi comunque attivare 
+il tuo sfondo animato scegliendo 'Live Wallpapers' 
+nel selettore di sfondi del tuo launcher."</string>
+  <string name="loading">"Caricamento..."</string>
+  <string name="open_app">"Apri l'app GIF Live Wallpaper e scegli la tua GIF preferita per iniziare."</string>
+  <string name="open_gif">"Scegli GIF"</string>
+  <string name="pause_blayback_battery_saver">"Blocca la GIF quando il risparmio energetico è attivo"</string>
+  <string name="pause_playback_running_hot">"Blocca la gif in caso di surriscaldamento"</string>
+  <string name="pick_a_color">"Scegli un colore"</string>
+  <string name="privacy">"Privacy"</string>
+  <string name="rotate">"Ruota"</string>
+  <string name="settings">"Impostazioni"</string>
+  <string name="thermal_throttle">"Mitigazione termica"</string>
+</resources>

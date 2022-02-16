@@ -1,0 +1,1 @@
+Uno sfondo animato che visualizzerà GIF animate come sfondo del telefono.

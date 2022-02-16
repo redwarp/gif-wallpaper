@@ -3,7 +3,6 @@ mod poe;
 
 use crate::outputs::Language as SupportedLanguage;
 use crate::outputs::Strings;
-use anyhow::Error;
 use anyhow::Result;
 use poe::TermResponse;
 use reqwest::Client;
@@ -11,14 +10,14 @@ use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 struct Language {
-    name: String,
     code: String,
-    percentage: f32,
 }
+
 #[derive(Deserialize, Debug)]
 struct LanguageResult {
     languages: Vec<Language>,
 }
+
 #[derive(Deserialize, Debug)]
 struct LanguageResponse {
     result: LanguageResult,
@@ -37,15 +36,16 @@ async fn main() -> Result<()> {
     println!("Printing fetched content: {:?}", content);
 
     for language in &content {
-        let supported_language = SupportedLanguage::from(&language.code).ok_or(Error::msg(
-            format!("Unsupported language {}", language.code),
-        ))?;
+        match SupportedLanguage::from(&language.code) {
+            Some(supported_language) => {
+                let terms = fetch_terms(&client, &language.code).await?;
 
-        let terms = fetch_terms(&client, &language.code).await?;
-
-        let strings = Strings::from(supported_language, terms);
-        strings.write_xml()?;
-        strings.write_json()?;
+                let strings = Strings::from(supported_language, terms);
+                strings.write_xml()?;
+                strings.write_json()?;
+            }
+            None => println!("Unsupported language {}", language.code),
+        }
     }
 
     Ok(())

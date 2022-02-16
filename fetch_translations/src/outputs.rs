@@ -4,7 +4,7 @@ use convert_case::{Case, Casing};
 use serde_json::json;
 use std::{
     collections::HashMap,
-    fs::{self, File},
+    fs::{self, create_dir_all, File},
     path::PathBuf,
 };
 use xml::writer::{EmitterConfig, XmlEvent};
@@ -70,9 +70,9 @@ impl Strings {
     }
 
     pub fn write_xml(&self) -> Result<()> {
-        let file_path = PathBuf::from("../app/src/main/res")
-            .join(self.language.values_folder())
-            .join("strings.xml");
+        let folder = PathBuf::from("../app/src/main/res").join(self.language.values_folder());
+        create_dir_all(&folder)?;
+        let file_path = folder.join("strings.xml");
 
         let mut file = File::create(file_path)?;
         let mut writer = EmitterConfig::new()
@@ -112,6 +112,7 @@ pub enum Language {
     German,
     Russian,
     Spanish,
+    Italian,
 }
 
 impl Language {
@@ -125,27 +126,30 @@ impl Language {
             "de" => Some(Self::German),
             "ru" => Some(Self::Russian),
             "es" => Some(Self::Spanish),
+            "it" => Some(Self::Italian),
             _ => None,
         }
     }
 
     fn values_folder(&self) -> String {
         match self {
-            Self::English => ("values".to_string()),
-            Self::French => ("values-fr".to_string()),
-            Self::German => ("values-de".to_string()),
-            Self::Russian => ("values-ru".to_string()),
-            Self::Spanish => ("values-es".to_string()),
+            Self::English => "values".to_string(),
+            Self::French => "values-fr".to_string(),
+            Self::German => "values-de".to_string(),
+            Self::Russian => "values-ru".to_string(),
+            Self::Spanish => "values-es".to_string(),
+            Self::Italian => "values-it".to_string(),
         }
     }
 
     fn store_listing_file(&self) -> String {
         match self {
-            Self::English => ("en-US.json".to_string()),
-            Self::French => ("fr-FR.json".to_string()),
-            Self::German => ("de-DE.json".to_string()),
-            Self::Russian => ("ru-RU.json".to_string()),
-            Self::Spanish => ("es-ES.json".to_string()),
+            Self::English => "en-US.json".to_string(),
+            Self::French => "fr-FR.json".to_string(),
+            Self::German => "de-DE.json".to_string(),
+            Self::Russian => "ru-RU.json".to_string(),
+            Self::Spanish => "es-ES.json".to_string(),
+            Self::Italian => "it-IT.json".to_string(),
         }
     }
 }

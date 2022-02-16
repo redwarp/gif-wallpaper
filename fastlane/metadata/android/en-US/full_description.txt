@@ -19,3 +19,7 @@ The application stands out:
 Source available on https://github.com/redwarp/gif-wallpaper
 
 Interested in using it in your own language? Contact me if you would like to help with the translations!
+
+FAQ:
+Q: Can I set a different GIF for the home screen and the lock screen?
+A: Sorry, it's not possible: this is one of the limitation of Live Wallpapers, you can only apply to both. On some phones, they don't even run on lock screens!

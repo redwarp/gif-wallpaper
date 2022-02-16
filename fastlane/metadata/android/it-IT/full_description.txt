@@ -1,0 +1,27 @@
+Hai scaricato una GIF e vorresti usarla come sfondo del tuo telefono?
+
+GIF Live Wallpaper è quello che ti serve! Probabilmente il modo più semplice
+per usare una GIF come sfondo.
+
+Tutto questo e possibile in pochi semplici passaggi:
+
+Step 1 - Apri l'app.
+Step 2 - Attivala.
+Step 3 - Clicca su ''Apri GIF''.
+Step 4 - Seleziona il file che vuoi.
+
+Se tutto è corretto, è fatta! Goditi il tuo nuovo sfondo!
+
+L'applicazione si distingue per:
+- Non necessità di permessi root, ed occupa poca memoria(<3MB)
+- Si arresta automaticamente quando lo sfondo non è visibile o il dispositivo è bloccato, non consumando così la carica della batteria. 
+- E, naturalmente, nessuna pubblicità, e non condividerà i tuoi dati o raccoglierà informazioni!
+
+Codice sorgente disponibile su https://github.com/redwarp/gif-wallpaper
+
+Ti interessa usarlo nella tua lingua? Contattami se 
+vuoi aiutare con le traduzioni!
+
+FAQ: 
+D: Posso impostare una GIF diversa per la schermata iniziale e la schermata di blocco? 
+R: Mi dispiace, non è possibile: questa è una delle limitazioni degli sfondi animati, puoi applicarla solo a entrambi. Su alcuni telefoni, non funzionano nemmeno sulle schermate di blocco!

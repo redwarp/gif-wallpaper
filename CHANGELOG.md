@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.12.0](https://github.com/redwarp/gif-wallpaper/compare/v1.11.5...v1.12.0) (2022-02-16)
+
+
+### Features
+
+* Add Italian language ([d4cf725](https://github.com/redwarp/gif-wallpaper/commit/d4cf725abfda6fb157bf15cac01652e1c2b6f592))
+
 ### [1.11.5](https://github.com/redwarp/gif-wallpaper/compare/v1.11.4...v1.11.5) (2022-02-10)
 
 

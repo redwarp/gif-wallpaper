@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.1](https://github.com/redwarp/gif-wallpaper/compare/v1.12.0...v1.12.1) (2022-02-16)
+
+
+### Bug Fixes
+
+* Update the renderer to release surface ([dc87103](https://github.com/redwarp/gif-wallpaper/commit/dc87103d14c9849e6f1e6e1c7bbde2b960c4c1c8))
+
 ## [1.12.0](https://github.com/redwarp/gif-wallpaper/compare/v1.11.5...v1.12.0) (2022-02-16)
 
 

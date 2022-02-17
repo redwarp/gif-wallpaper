@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.2](https://github.com/redwarp/gif-wallpaper/compare/v1.12.1...v1.12.2) (2022-02-17)
+
+
+### Bug Fixes
+
+* Gif pausing in the service ([7fdabd4](https://github.com/redwarp/gif-wallpaper/commit/7fdabd4222abdf56206d635359d69c9deba73b49))
+
 ### [1.12.1](https://github.com/redwarp/gif-wallpaper/compare/v1.12.0...v1.12.1) (2022-02-16)
 
 

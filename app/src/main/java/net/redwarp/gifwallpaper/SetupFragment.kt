@@ -150,7 +150,7 @@ class SetupFragment : Fragment() {
                 animated = true,
                 isService = false
             ).onEach { drawable ->
-                binding.imageView.background = drawable
+                binding.imageView.setImageDrawable(drawable)
             }.launchIn(this)
         }
 

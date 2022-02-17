@@ -171,6 +171,10 @@ class GifWrapperDrawable(
 
     override fun getConstantState(): ConstantState = state
 
+    override fun setVisible(visible: Boolean, restart: Boolean): Boolean {
+        return state.gifDrawable.setVisible(visible, restart)
+    }
+
     private fun Rect.toRectF(): RectF =
         RectF(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
 

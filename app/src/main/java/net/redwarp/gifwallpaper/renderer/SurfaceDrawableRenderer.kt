@@ -39,12 +39,13 @@ class SurfaceDrawableRenderer(
 ) : SurfaceHolder.Callback2, Drawable.Callback {
     private var width: Int = 0
     private var height: Int = 0
-    private var isVisible = true
+    private var isVisible = false
     private var hasDimension = false
-    private val handler: Handler = Handler(looper)
     private var surface: Surface? = null
+    private val handler: Handler = Handler(looper)
 
     init {
+        drawable?.setVisible(false, false)
         holder.addCallback(this)
     }
 
@@ -56,8 +57,10 @@ class SurfaceDrawableRenderer(
             if (value != null) {
                 value.setBounds(0, 0, width, height)
 
+                value.callback = this
+                value.setVisible(isVisible, false)
+
                 if (isVisible) {
-                    value.callback = this
                     bothNotNull(surface, value) { surface, drawable ->
                         drawOnSurface(surface, drawable)
                     }
@@ -69,14 +72,12 @@ class SurfaceDrawableRenderer(
     @Synchronized
     fun visibilityChanged(isVisible: Boolean) {
         this.isVisible = isVisible
+        drawable?.setVisible(isVisible, false)
 
         if (isVisible) {
-            drawable?.callback = this
             bothNotNull(surface, drawable) { surface, drawable ->
                 drawOnSurface(surface, drawable)
             }
-        } else {
-            drawable?.callback = null
         }
     }
 
@@ -84,7 +85,9 @@ class SurfaceDrawableRenderer(
     override fun surfaceCreated(holder: SurfaceHolder) {
         surface = holder.surface
 
-        if (isVisible) drawable?.callback = this
+        drawable?.callback = this
+        drawable?.setVisible(isVisible, true)
+        Log.d("GifWallpaper", "Surface created.")
     }
 
     @Synchronized
@@ -104,6 +107,7 @@ class SurfaceDrawableRenderer(
     @Synchronized
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         drawable?.callback = null
+        drawable?.setVisible(isVisible, false)
         surface?.release()
         surface = null
         hasDimension = false

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.3](https://github.com/redwarp/gif-wallpaper/compare/v1.12.2...v1.12.3) (2022-02-18)
+
+
+### Bug Fixes
+
+* Temporary reset gifdecoder lib to 1.0.0 ([2aa93bd](https://github.com/redwarp/gif-wallpaper/commit/2aa93bdbe1bff2a85c3e56617c446ffff9c0265e))
+
 ### [1.12.2](https://github.com/redwarp/gif-wallpaper/compare/v1.12.1...v1.12.2) (2022-02-17)
 
 

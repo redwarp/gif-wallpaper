@@ -73,6 +73,7 @@ class SurfaceDrawableRenderer(
     fun visibilityChanged(isVisible: Boolean) {
         this.isVisible = isVisible
         drawable?.setVisible(isVisible, false)
+        drawable?.callback = if (isVisible) this else null
 
         if (isVisible) {
             bothNotNull(surface, drawable) { surface, drawable ->

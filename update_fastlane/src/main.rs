@@ -1,9 +1,9 @@
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use serde::Deserialize;
 use std::{
     fs::{self, DirEntry, OpenOptions},
     io::Write,
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 
 const PROJECT_DIR: &str = env!("CARGO_MANIFEST_DIR");
@@ -39,63 +39,45 @@ fn main() -> Result<()> {
 }
 
 fn update_fastlane_for_entry(entry: DirEntry) -> Result<()> {
-    let filename = entry
-        .file_name()
-        .to_str()
-        .ok_or_else(|| anyhow!("Couldn't get filename"))?
-        .to_owned();
+    let filename = entry.file_name();
+    let filename = filename.to_string_lossy();
 
     let content = fs::read_to_string(entry.path())?;
 
     let store_info = serde_json::from_str::<StoreInfo>(&content)?;
 
-    let mut dir_path = PathBuf::from(PROJECT_DIR).join("../fastlane/metadata/android");
     let dirname = filename.trim_end_matches(".json");
-    dir_path.push(dirname);
+    let dir_path = PathBuf::from(PROJECT_DIR)
+        .join("../fastlane/metadata/android")
+        .join(dirname);
 
-    fs::create_dir_all(dir_path.clone())?;
+    fs::create_dir_all(&dir_path)?;
 
     if let Some(title) = &store_info.title {
-        let mut file_path = dir_path.clone();
-        file_path.push("title.txt");
-
-        let mut file = OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .open(file_path)?;
-
-        file.write_all(&title.clone().into_bytes())?;
-        file.write_all(b"\n")?;
+        write_file(&dir_path, "title.txt", title)?;
     }
 
     if let Some(full_description) = &store_info.full_description {
-        let mut file_path = dir_path.clone();
-        file_path.push("full_description.txt");
-
-        let mut file = OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .open(file_path)?;
-
-        file.write_all(&full_description.clone().into_bytes())?;
-        file.write_all(b"\n")?;
+        write_file(&dir_path, "full_description.txt", full_description)?;
     }
 
     if let Some(short_description) = &store_info.short_description {
-        let mut file_path = dir_path.clone();
-        file_path.push("short_description.txt");
-
-        let mut file = OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .open(file_path)?;
-
-        file.write_all(&short_description.clone().into_bytes())?;
-        file.write_all(b"\n")?;
+        write_file(&dir_path, "short_description.txt", short_description)?;
     }
+
+    Ok(())
+}
+
+fn write_file(directory: &Path, filename: &str, content: &str) -> Result<()> {
+    let file_path = directory.join(filename);
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(file_path)?;
+
+    file.write_all(content.as_bytes())?;
+    file.write_all(b"\n")?;
 
     Ok(())
 }

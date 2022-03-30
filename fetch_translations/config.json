@@ -1,0 +1,32 @@
+[
+    {
+        "code": "en",
+        "values_folder": "values",
+        "store_listing_file": "en-US.json"
+    },
+    {
+        "code": "fr",
+        "values_folder": "values-fr",
+        "store_listing_file": "fr-FR.json"
+    },
+    {
+        "code": "de",
+        "values_folder": "values-de",
+        "store_listing_file": "de-DE.json"
+    },
+    {
+        "code": "ru",
+        "values_folder": "values-ru",
+        "store_listing_file": "ru-RU.json"
+    },
+    {
+        "code": "es",
+        "values_folder": "values-es",
+        "store_listing_file": "es-ES.json"
+    },
+    {
+        "code": "it",
+        "values_folder": "values-it",
+        "store_listing_file": "it-IT.json"
+    }
+]

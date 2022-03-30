@@ -6,6 +6,8 @@ use std::{
     path::PathBuf,
 };
 
+const PROJECT_DIR: &str = env!("CARGO_MANIFEST_DIR");
+
 #[derive(Deserialize)]
 struct StoreInfo {
     #[serde(rename = "app_name")]
@@ -17,7 +19,7 @@ struct StoreInfo {
 }
 
 fn main() -> Result<()> {
-    let files = fs::read_dir("../store-listing")?;
+    let files = fs::read_dir(PathBuf::from(PROJECT_DIR).join("../store-listing"))?;
     let files = files
         .filter_map(Result::ok)
         .filter(|d| {
@@ -47,7 +49,7 @@ fn update_fastlane_for_entry(entry: DirEntry) -> Result<()> {
 
     let store_info = serde_json::from_str::<StoreInfo>(&content)?;
 
-    let mut dir_path = PathBuf::from("../fastlane/metadata/android");
+    let mut dir_path = PathBuf::from(PROJECT_DIR).join("../fastlane/metadata/android");
     let dirname = filename.trim_end_matches(".json");
     dir_path.push(dirname);
 

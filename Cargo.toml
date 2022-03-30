@@ -1,0 +1,3 @@
+[workspace]
+members = ["fetch_translations", "update_fastlane"]
+resolver = "2"

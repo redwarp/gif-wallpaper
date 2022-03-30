@@ -1,12 +1,13 @@
-mod outputs;
-mod poe;
-
-use crate::outputs::Language as SupportedLanguage;
+use crate::configuration::Configuration;
 use crate::outputs::Strings;
 use anyhow::Result;
 use poe::TermResponse;
 use reqwest::Client;
 use serde::Deserialize;
+
+mod configuration;
+mod outputs;
+mod poe;
 
 #[derive(Deserialize, Debug)]
 struct Language {
@@ -29,6 +30,8 @@ static PROJECT_ID: &str = "362629";
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let configuration = Configuration::load_configuration()?;
+
     let client = reqwest::Client::new();
 
     let content = fetch_languages(&client).await?;
@@ -36,7 +39,7 @@ async fn main() -> Result<()> {
     println!("Printing fetched content: {:?}", content);
 
     for language in &content {
-        match SupportedLanguage::from(&language.code) {
+        match configuration.language_by_code(&language.code) {
             Some(supported_language) => {
                 let terms = fetch_terms(&client, &language.code).await?;
 
@@ -63,7 +66,7 @@ async fn fetch_languages(client: &Client) -> Result<Vec<Language>> {
     Ok(response.result.languages)
 }
 
-async fn fetch_terms(client: &Client, language_code: &String) -> Result<TermResponse> {
+async fn fetch_terms(client: &Client, language_code: &str) -> Result<TermResponse> {
     // Must use untagged for the plural stuff: https://github.com/serde-rs/json/issues/473
     // as the content can be either string, or plural. We don't have plurals for now, so... ignore.
     let response = client
@@ -71,7 +74,7 @@ async fn fetch_terms(client: &Client, language_code: &String) -> Result<TermResp
         .form(&[
             ("api_token", API_TOKEN),
             ("id", PROJECT_ID),
-            ("language", language_code.as_str()),
+            ("language", language_code),
         ])
         .send()
         .await?

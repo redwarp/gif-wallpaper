@@ -26,7 +26,6 @@ import android.view.SurfaceHolder
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -38,6 +37,7 @@ import net.redwarp.gifwallpaper.renderer.createMiniature
 import net.redwarp.gifwallpaper.renderer.drawableFlow
 
 class GifWallpaperService : WallpaperService() {
+
     override fun onCreateEngine(): Engine {
         return GifEngine()
     }
@@ -46,13 +46,14 @@ class GifWallpaperService : WallpaperService() {
         private var surfaceDrawableRenderer: SurfaceDrawableRenderer? = null
 
         private val handlerThread = HandlerThread("WallpaperLooper")
-        private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
+        private val dispatcher = EngineLifecycleDispatcher(this)
         private var handler: Handler? = null
-        private var wallpaperColors: WallpaperColors? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
-        } else {
-            null
-        }
+        private var wallpaperColors: WallpaperColors? =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
+            } else {
+                null
+            }
 
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
@@ -86,13 +87,12 @@ class GifWallpaperService : WallpaperService() {
                     }
                 }
             }
-
-            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+            dispatcher.onCreate()
         }
 
         override fun onDestroy() {
             super.onDestroy()
-            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            dispatcher.onDestroy()
             surfaceDrawableRenderer = null
             handlerThread.quit()
         }
@@ -100,9 +100,9 @@ class GifWallpaperService : WallpaperService() {
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
             if (visible) {
-                lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+                dispatcher.onResume()
             } else {
-                lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+                dispatcher.onStop()
             }
             surfaceDrawableRenderer?.visibilityChanged(visible)
         }
@@ -113,13 +113,14 @@ class GifWallpaperService : WallpaperService() {
         }
 
         override fun getLifecycle(): Lifecycle {
-            return lifecycleRegistry
+            return dispatcher.lifecycle
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
         private suspend fun updateWallpaperColors() {
             withContext(Dispatchers.Default) {
-                wallpaperColors = surfaceDrawableRenderer?.drawable?.createMiniature()?.let(WallpaperColors::fromBitmap)
+                wallpaperColors = surfaceDrawableRenderer?.drawable?.createMiniature()
+                    ?.let(WallpaperColors::fromBitmap)
                     ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
                 withContext(Dispatchers.Main) {
                     notifyColorsChanged()

@@ -1,13 +1,18 @@
-[![GitHub license](https://img.shields.io/github/license/redwarp/gif-wallpaper)](https://github.com/redwarp/gif-wallpaper/blob/master/LICENSE) ![GitHub top language](https://img.shields.io/github/languages/top/redwarp/gif-wallpaper) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/redwarp/gif-wallpaper) [![F-Droid (including pre-releases)](https://img.shields.io/f-droid/v/net.redwarp.gifwallpaper)](https://f-droid.org/packages/net.redwarp.gifwallpaper/)
+[![GitHub license](https://img.shields.io/github/license/redwarp/gif-wallpaper)](https://github.com/redwarp/gif-wallpaper/blob/master/LICENSE) 
+
+![GitHub top language](https://img.shields.io/github/languages/top/redwarp/gif-wallpaper) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/redwarp/gif-wallpaper) [![F-Droid (including pre-releases)](https://img.shields.io/f-droid/v/net.redwarp.gifwallpaper)](https://f-droid.org/packages/net.redwarp.gifwallpaper/)
 
 # gif-wallpaper
 
 Playing with GIFs, animatable and drawable
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+
      alt="Get it on F-Droid"
      height="50">](https://f-droid.org/packages/net.redwarp.gifwallpaper/)
+
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+
      alt="Get it on Google Play"
      height="50">](https://play.google.com/store/apps/details?id=net.redwarp.gifwallpaper)
 
@@ -18,23 +23,32 @@ Alex Redfish. [Check their art](https://www.artstation.com/artwork/5wm5W), it's 
 
 ## Other cool gifs
 
-- [JN3008](https://jn3008.tumblr.com/)
-- [Mad Max](https://www.behance.net/gallery/26428843/MAD-MAX-Fury-Road)
-- [SeerLight 🌙✨](https://twitter.com/seerlight)
-- [SlimJim](http://www.slimjimstudios.com/#/la-gifathon/)
-- [Waneella](https://twitter.com/waneella_/)
+* [JN3008](https://jn3008.tumblr.com/)
+* [Mad Max](https://www.behance.net/gallery/26428843/MAD-MAX-Fury-Road)
+* [SeerLight 🌙✨](https://twitter.com/seerlight)
+* [SlimJim](http://www.slimjimstudios.com/#/la-gifathon/)
+* [Waneella](https://twitter.com/waneella_/)
 
 ## Contributors
 
-- [Poussinou](https://github.com/Poussinou) - F-Droid and Google Play Store links
-- Mister klaid - Russian translations
-- [YesIanYeha](https://github.com/Preyesianyeha) - Spanish translations
+* [Poussinou](https://github.com/Poussinou) - F-Droid and Google Play Store links
+* Mister klaid - Russian translations
+* [YesIanYeha](https://github.com/Preyesianyeha) - Spanish translations
+* mzzg - Simplified Chinese translations
 
 ## Translations
 
 You want to help with translations? You find your language missing and want to help?
 That is awesome!
 I use the website **POEditor** to handle translations. They are free for open source project and easy to use, and provide synchronisation with Github. So follow [this link to join the translations project](https://poeditor.com/join/project?hash=QaDkuFZTp2).
+
+### Steps when adding a new language
+
+* Edit the [`config.json`](fetch_translations) file in the `fetch_translations` folder to add the new language, and map the POEditor values with Android's value folder, and fastlane supported language list.
+* Run `cargo run --bin fetch_translations`, verify that a new strings.xml files was created in the Android project.
+* Run `cargo run --bin update_fastlane`, verify that new meta data files were added in the fastlane folder.
+* Edit the [`app/build.gradle`](app/build.gradle) file and add to the res config the new language code.
+* Run the app in an emulator or device set on the chosen language, verify it shows properly, and take the 5 screenshots needed for fastlane. At some point, I should automate that with picasso, but we are not there yet.
 
 ## Example
 
@@ -45,5 +59,6 @@ I use the website **POEditor** to handle translations. They are free for open so
 #### Set as Wallpaper
 
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png"
+
      alt="a flying rocket on your homescreen"
      height="400">](https://github.com/redwarp/gif-wallpaper/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png)

@@ -28,5 +28,10 @@
         "code": "it",
         "values_folder": "values-it",
         "store_listing_file": "it-IT.json"
+    },
+    {
+        "code": "zh-Hans",
+        "values_folder": "values-zh",
+        "store_listing_file": "zh-Hans.json"
     }
 ]

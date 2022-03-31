@@ -91,7 +91,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fetch_translations"
+name = "fetch-translations"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -863,7 +863,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ccb82d61f80a663efe1f787a51b16b5a51e3314d6ac365b08639f52387b33f3"
 
 [[package]]
-name = "update_fastlane"
+name = "update-fastlane"
 version = "0.1.0"
 dependencies = [
  "anyhow",

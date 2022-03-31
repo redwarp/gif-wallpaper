@@ -45,8 +45,8 @@ I use the website **POEditor** to handle translations. They are free for open so
 ### Steps when adding a new language
 
 * Edit the [`config.json`](fetch_translations) file in the `fetch_translations` folder to add the new language, and map the POEditor values with Android's value folder, and fastlane supported language list.
-* Run `cargo run --bin fetch_translations`, verify that a new strings.xml files was created in the Android project.
-* Run `cargo run --bin update_fastlane`, verify that new meta data files were added in the fastlane folder.
+* Run `cargo run --bin fetch-translations`, verify that a new strings.xml files was created in the Android project.
+* Run `cargo run --bin update-fastlane`, verify that new meta data files were added in the fastlane folder.
 * Edit the [`app/build.gradle`](app/build.gradle) file and add to the res config the new language code.
 * Run the app in an emulator or device set on the chosen language, verify it shows properly, and take the 5 screenshots needed for fastlane. At some point, I should automate that with picasso, but we are not there yet.
 

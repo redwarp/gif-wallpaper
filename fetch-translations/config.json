@@ -32,6 +32,6 @@
     {
         "code": "zh-Hans",
         "values_folder": "values-zh",
-        "store_listing_file": "zh-Hans.json"
+        "store_listing_file": "zh-CN.json"
     }
 ]

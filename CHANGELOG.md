@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.1](https://github.com/redwarp/gif-wallpaper/compare/v1.13.0...v1.13.1) (2022-03-31)
+
+
+### Bug Fixes
+
+* Fix crash in lifecycle affecting Vivo v21 ([#206](https://github.com/redwarp/gif-wallpaper/issues/206)) ([4fc2737](https://github.com/redwarp/gif-wallpaper/commit/4fc273748177ec7d1d76fb237e317cb3edf292ec))
+
 ## [1.13.0](https://github.com/redwarp/gif-wallpaper/compare/v1.12.3...v1.13.0) (2022-03-31)
 
 

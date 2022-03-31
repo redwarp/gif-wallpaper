@@ -15,6 +15,7 @@
  */
 package net.redwarp.gifwallpaper
 
+import android.annotation.SuppressLint
 import android.os.Handler
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -25,7 +26,8 @@ import androidx.lifecycle.LifecycleRegistry
  * Adapted from [androidx.lifecycle.ServiceLifecycleDispatcher].
  */
 class EngineLifecycleDispatcher(provider: LifecycleOwner) {
-    private val registry: LifecycleRegistry = LifecycleRegistry(provider)
+    @SuppressLint("VisibleForTests")
+    private val registry: LifecycleRegistry = LifecycleRegistry.createUnsafe(provider)
     @Suppress("DEPRECATION")
     private val handler: Handler = Handler()
     private var lastDispatchRunnable: DispatchRunnable? = null

@@ -55,6 +55,10 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
         dispatcher.onDestroy()
     }
 
+    override fun getLifecycle(): Lifecycle {
+        return dispatcher.lifecycle
+    }
+
     inner class GifEngine : Engine() {
         private var surfaceDrawableRenderer: SurfaceDrawableRenderer? = null
 
@@ -143,9 +147,5 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
             bitmap.recycle()
             return wallpaperColors
         }
-    }
-
-    override fun getLifecycle(): Lifecycle {
-        return dispatcher.lifecycle
     }
 }

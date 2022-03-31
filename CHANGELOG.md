@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/redwarp/gif-wallpaper/compare/v1.12.3...v1.13.0) (2022-03-31)
+
+
+### Features
+
+* Add simplified chinese language support ([70369d9](https://github.com/redwarp/gif-wallpaper/commit/70369d9f1592296fbf8d046ac8c47346dbef4722))
+
 ### [1.12.3](https://github.com/redwarp/gif-wallpaper/compare/v1.12.2...v1.12.3) (2022-02-18)
 
 

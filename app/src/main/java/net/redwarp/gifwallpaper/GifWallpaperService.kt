@@ -36,17 +36,29 @@ import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.createMiniature
 import net.redwarp.gifwallpaper.renderer.drawableFlow
 
-class GifWallpaperService : WallpaperService() {
+class GifWallpaperService : WallpaperService(), LifecycleOwner {
+    private val dispatcher = EngineLifecycleDispatcher(this)
 
     override fun onCreateEngine(): Engine {
         return GifEngine()
     }
 
-    inner class GifEngine : Engine(), LifecycleOwner {
+    override fun onCreate() {
+        super.onCreate()
+
+        dispatcher.onCreate()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        dispatcher.onDestroy()
+    }
+
+    inner class GifEngine : Engine() {
         private var surfaceDrawableRenderer: SurfaceDrawableRenderer? = null
 
         private val handlerThread = HandlerThread("WallpaperLooper")
-        private val dispatcher = EngineLifecycleDispatcher(this)
         private var handler: Handler? = null
         private var wallpaperColors: WallpaperColors? =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -87,12 +99,10 @@ class GifWallpaperService : WallpaperService() {
                     }
                 }
             }
-            dispatcher.onCreate()
         }
 
         override fun onDestroy() {
             super.onDestroy()
-            dispatcher.onDestroy()
             surfaceDrawableRenderer = null
             handlerThread.quit()
         }
@@ -111,11 +121,6 @@ class GifWallpaperService : WallpaperService() {
         override fun onComputeColors(): WallpaperColors? {
             return wallpaperColors
         }
-
-        override fun getLifecycle(): Lifecycle {
-            return dispatcher.lifecycle
-        }
-
         @RequiresApi(Build.VERSION_CODES.O_MR1)
         private suspend fun updateWallpaperColors() {
             withContext(Dispatchers.Default) {
@@ -138,5 +143,9 @@ class GifWallpaperService : WallpaperService() {
             bitmap.recycle()
             return wallpaperColors
         }
+    }
+
+    override fun getLifecycle(): Lifecycle {
+        return dispatcher.lifecycle
     }
 }

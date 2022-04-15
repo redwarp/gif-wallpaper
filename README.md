@@ -1,6 +1,6 @@
-[![GitHub license](https://img.shields.io/github/license/redwarp/gif-wallpaper)](https://github.com/redwarp/gif-wallpaper/blob/main/LICENSE) 
+[![GitHub license](https://img.shields.io/github/license/redwarp/gif-wallpaper)](https://github.com/redwarp/gif-wallpaper/blob/main/LICENSE)
 
-![GitHub top language](https://img.shields.io/github/languages/top/redwarp/gif-wallpaper)[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/redwarp/gif-wallpaper)](https://github.com/redwarp/gif-wallpaper/releases) [![F-Droid (including pre-releases)](https://img.shields.io/f-droid/v/net.redwarp.gifwallpaper)](https://f-droid.org/packages/net.redwarp.gifwallpaper)
+[![GitHub top language](https://img.shields.io/github/languages/top/redwarp/gif-wallpaper)](https://github.com/redwarp/gif-wallpaper/search?l=kotlin) [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/redwarp/gif-wallpaper)](https://github.com/redwarp/gif-wallpaper/releases) [![F-Droid (including pre-releases)](https://img.shields.io/f-droid/v/net.redwarp.gifwallpaper)](https://f-droid.org/packages/net.redwarp.gifwallpaper)
 
 # gif-wallpaper
 

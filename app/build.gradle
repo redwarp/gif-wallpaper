@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id "com.diffplug.spotless" version "6.4.1"
+    id "com.diffplug.spotless" version "6.5.2"
     id "se.ascp.gradle.gradle-versions-filter" version "0.1.10"
 }
 

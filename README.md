@@ -38,7 +38,7 @@ I use the website **POEditor** to handle translations. They are free for open so
 
 ### Steps when adding a new language
 
-* Edit the [`config.json`](fetch_translations) file in the `fetch_translations` folder to add the new language, and map the POEditor values with Android's value folder, and fastlane supported language list.
+* Edit the [`config.json`](fetch-translations) file in the `fetch-translations` folder to add the new language, and map the POEditor values with Android's value folder, and fastlane supported language list.
 * Run `cargo run --bin fetch-translations`, verify that a new strings.xml files was created in the Android project.
 * Run `cargo run --bin update-fastlane`, verify that new metadata files were added in the fastlane folder.
 * Edit the [`app/build.gradle`](app/build.gradle) file and add to the res config the new language code.

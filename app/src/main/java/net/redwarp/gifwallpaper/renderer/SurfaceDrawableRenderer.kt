@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
@@ -45,6 +46,7 @@ class SurfaceDrawableRenderer(
     private val handler: Handler = Handler(looper)
 
     init {
+        drawable?.callback = this
         drawable?.setVisible(false, false)
         holder.addCallback(this)
     }
@@ -73,7 +75,6 @@ class SurfaceDrawableRenderer(
     fun visibilityChanged(isVisible: Boolean) {
         this.isVisible = isVisible
         drawable?.setVisible(isVisible, false)
-        drawable?.callback = if (isVisible) this else null
 
         if (isVisible) {
             bothNotNull(surface, drawable) { surface, drawable ->
@@ -86,7 +87,6 @@ class SurfaceDrawableRenderer(
     override fun surfaceCreated(holder: SurfaceHolder) {
         surface = holder.surface
 
-        drawable?.callback = this
         drawable?.setVisible(isVisible, true)
         Log.d("GifWallpaper", "Surface created.")
     }

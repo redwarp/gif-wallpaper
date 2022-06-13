@@ -25,6 +25,7 @@ import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.view.animation.AccelerateDecelerateInterpolator
 import app.redwarp.gif.android.GifDrawable
@@ -39,7 +40,7 @@ class GifWrapperDrawable(
     scaleType: ScaleType = ScaleType.FIT_CENTER,
     rotation: Rotation = Rotation.NORTH,
     translation: Pair<Float, Float> = 0f to 0f,
-) : Drawable() {
+) : Drawable(), Animatable {
     private val state = GifWrapperState(gifDrawable, scaleType, rotation, translation)
 
     private val paint = Paint().apply {
@@ -123,12 +124,16 @@ class GifWrapperDrawable(
         }
     }
 
-    fun start() {
+    override fun start() {
         state.gifDrawable.start()
     }
 
-    fun stop() {
+    override fun stop() {
         state.gifDrawable.stop()
+    }
+
+    override fun isRunning(): Boolean {
+        return state.gifDrawable.isRunning
     }
 
     override fun draw(canvas: Canvas) {
@@ -153,6 +158,7 @@ class GifWrapperDrawable(
         state.gifDrawable.colorFilter = colorFilter
     }
 
+    @Deprecated("This method is no longer used in graphics optimizations", ReplaceWith(""))
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     override fun getIntrinsicWidth(): Int {
@@ -254,9 +260,7 @@ class GifWrapperDrawable(
             sourceMatrix,
             targetMatrix
         ).apply {
-            addUpdateListener { _ ->
-                invalidateSelf()
-            }
+            addUpdateListener { invalidateSelf() }
             interpolator = animationInterpolator
             duration = ANIMATION_DURATION
             start()

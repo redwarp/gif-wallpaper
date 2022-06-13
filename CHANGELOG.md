@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.2](https://github.com/redwarp/gif-wallpaper/compare/v1.13.1...v1.13.2) (2022-06-13)
+
+
+### Bug Fixes
+
+* Update deprecated inset code ([b292143](https://github.com/redwarp/gif-wallpaper/commit/b292143e9226d6289ca07d8165891eceaa77456e))
+* Update GifDrawable and decoder to 1.2.0 ([b9eaec8](https://github.com/redwarp/gif-wallpaper/commit/b9eaec8fd6e6e010ccc222e4dd57829d7ecc7cb2))
+
 ### [1.13.1](https://github.com/redwarp/gif-wallpaper/compare/v1.13.0...v1.13.1) (2022-03-31)
 
 

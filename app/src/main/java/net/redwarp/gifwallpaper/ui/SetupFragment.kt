@@ -29,7 +29,6 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
 import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
@@ -37,6 +36,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -161,7 +161,7 @@ class SetupFragment : Fragment() {
             detector.onTouchEvent(event)
         }
         ViewCompat.setOnApplyWindowInsetsListener(binding.imageView) { _, inset ->
-            val systemGestureInsets = inset.getInsets(WindowInsets.Type.systemGestures())
+            val systemGestureInsets = inset.getInsets(WindowInsetsCompat.Type.systemGestures())
 
             (binding.touchArea.layoutParams as? FrameLayout.LayoutParams)?.setMargins(
                 systemGestureInsets.left,

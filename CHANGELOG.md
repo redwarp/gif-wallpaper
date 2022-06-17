@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.3](https://github.com/redwarp/gif-wallpaper/compare/v1.13.2...v1.13.3) (2022-06-17)
+
+
+### Bug Fixes
+
+* Fix for inset code, use proper compat code ([7479ca2](https://github.com/redwarp/gif-wallpaper/commit/7479ca235a369657080c9cca03480de186b735b9))
+
 ### [1.13.2](https://github.com/redwarp/gif-wallpaper/compare/v1.13.1...v1.13.2) (2022-06-13)
 
 

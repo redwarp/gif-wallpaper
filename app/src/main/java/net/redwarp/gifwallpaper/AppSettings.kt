@@ -15,23 +15,24 @@
  */
 package net.redwarp.gifwallpaper
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("app_settings")
-
-class AppSettings(context: Context) {
-    private val context = context.applicationContext
+class AppSettings(private val context: Context, ioScope: CoroutineScope) {
     private val powerSavingKey = booleanPreferencesKey("power_saving")
     private val thermalThrottleKey = booleanPreferencesKey("thermal_throttle")
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+        "app_settings",
+        scope = ioScope
+    )
 
     val powerSavingSettingFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[powerSavingKey] ?: context.resources.getBoolean(R.bool.power_saving_enabled)
@@ -54,20 +55,6 @@ class AppSettings(context: Context) {
 
         context.dataStore.edit { preferences ->
             preferences[preferenceKey] = value
-        }
-    }
-
-    companion object {
-        @SuppressLint("StaticFieldLeak") // Suppressed because it's the application context.
-        private lateinit var instance: AppSettings
-
-        fun get(context: Context): AppSettings {
-            instance = if (Companion::instance.isInitialized) {
-                instance
-            } else {
-                AppSettings(context.applicationContext)
-            }
-            return instance
         }
     }
 }

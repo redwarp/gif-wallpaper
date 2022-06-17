@@ -57,7 +57,9 @@ object GifLoader {
 
     suspend fun clearGif(wallpaperSettings: WallpaperSettings) {
         val localFile: File? = wallpaperSettings.getWallpaperFile()
-        localFile?.let(this::cleanupOldUri)
+        withContext(Dispatchers.IO) {
+            localFile?.let(this@GifLoader::cleanupOldUri)
+        }
         wallpaperSettings.setWallpaperFile(null)
     }
 
@@ -71,7 +73,7 @@ object GifLoader {
 
     private suspend fun loadGifDescriptor(file: File): WallpaperStatus =
         withContext(Dispatchers.IO) {
-            kotlin.runCatching {
+            runCatching {
                 val result = if (file.length() > FILE_SIZE_THRESHOLD) {
                     Parser.parse(file)
                 } else {

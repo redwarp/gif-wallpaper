@@ -23,7 +23,7 @@ import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import kotlinx.coroutines.runBlocking
-import net.redwarp.gifwallpaper.AppSettings
+import net.redwarp.gifwallpaper.GifApplication
 import net.redwarp.gifwallpaper.R
 
 @Keep
@@ -42,7 +42,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 }
 
 class AppSettingsPreferencesDataStore(context: Context) : PreferenceDataStore() {
-    private val appSettings = AppSettings.get(context)
+    private val appSettings = GifApplication.app.appSettings
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean = runBlocking {
         appSettings.getBoolean(key, defValue)

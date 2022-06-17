@@ -43,6 +43,7 @@ import androidx.lifecycle.lifecycleScope
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import net.redwarp.gifwallpaper.GifApplication
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.FlowBasedModel
@@ -123,7 +124,7 @@ class SetupFragment : Fragment() {
             insets
         }
 
-        flowBasedModel = FlowBasedModel.get(requireContext())
+        flowBasedModel = GifApplication.app.model
 
         lifecycleScope.launchWhenStarted {
             flowBasedModel.colorInfoFlow.onEach { colorInfo ->

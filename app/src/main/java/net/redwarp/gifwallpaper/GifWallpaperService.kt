@@ -31,7 +31,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.createMiniature
 import net.redwarp.gifwallpaper.renderer.drawableFlow
@@ -80,7 +79,7 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
             surfaceDrawableRenderer =
                 SurfaceDrawableRenderer(surfaceHolder, handlerThread.looper)
 
-            val modelFlow = FlowBasedModel.get(this@GifWallpaperService)
+            val modelFlow = GifApplication.app.model
 
             lifecycleScope.launchWhenStarted {
                 launch {

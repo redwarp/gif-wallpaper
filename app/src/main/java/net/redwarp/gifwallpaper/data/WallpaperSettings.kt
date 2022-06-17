@@ -15,7 +15,6 @@
  */
 package net.redwarp.gifwallpaper.data
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.net.Uri
@@ -28,6 +27,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
@@ -44,35 +44,34 @@ private const val KEY_WALLPAPER_TRANSLATE_Y = "wallpaper_translate_y"
 private const val KEY_WALLPAPER_SCALE_TYPE = "wallpaper_scale_type"
 private const val KEY_WALLPAPER_URI = "wallpaper_uri"
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-    name = "wallpaper_settings",
-    produceMigrations = { context ->
-        listOf(
-            SharedPreferencesMigration(
-                context,
-                SHARED_PREF_NAME,
-                setOf(
-                    KEY_WALLPAPER_ROTATION,
-                    KEY_WALLPAPER_BACKGROUND_COLOR,
-                    KEY_WALLPAPER_TRANSLATE_X,
-                    KEY_WALLPAPER_TRANSLATE_Y,
-                    KEY_WALLPAPER_SCALE_TYPE,
-                    KEY_WALLPAPER_URI
-                )
-            )
-        )
-    }
-)
-
 @Suppress("PrivatePropertyName")
-class WallpaperSettings private constructor(context: Context) {
-    private val context = context.applicationContext
+class WallpaperSettings(private val context: Context, ioScope: CoroutineScope) {
     private val WALLPAPER_ROTATION = intPreferencesKey(KEY_WALLPAPER_ROTATION)
     private val WALLPAPER_BACKGROUND_COLOR = intPreferencesKey(KEY_WALLPAPER_BACKGROUND_COLOR)
     private val WALLPAPER_TRANSLATE_X = floatPreferencesKey(KEY_WALLPAPER_TRANSLATE_X)
     private val WALLPAPER_TRANSLATE_Y = floatPreferencesKey(KEY_WALLPAPER_TRANSLATE_Y)
     private val WALLPAPER_SCALE_TYPE = intPreferencesKey(KEY_WALLPAPER_SCALE_TYPE)
     private val WALLPAPER_URI = stringPreferencesKey(KEY_WALLPAPER_URI)
+
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+        name = "wallpaper_settings",
+        produceMigrations = { context ->
+            listOf(
+                SharedPreferencesMigration(
+                    context,
+                    SHARED_PREF_NAME,
+                    setOf(
+                        KEY_WALLPAPER_ROTATION,
+                        KEY_WALLPAPER_BACKGROUND_COLOR,
+                        KEY_WALLPAPER_TRANSLATE_X,
+                        KEY_WALLPAPER_TRANSLATE_Y,
+                        KEY_WALLPAPER_SCALE_TYPE,
+                        KEY_WALLPAPER_URI
+                    )
+                )
+            )
+        }, scope = ioScope
+    )
 
     val rotationFlow: Flow<Rotation>
         get() = context.dataStore.data.map { preferences ->
@@ -134,17 +133,13 @@ class WallpaperSettings private constructor(context: Context) {
         }
     }
 
-    suspend fun getWallpaperFile(): File? = context.dataStore.data.map { preferences ->
-        val urlString = preferences[WALLPAPER_URI]
-        urlString?.let {
-            val path = Uri.parse(it).path
-            if (path != null) {
-                File(path)
-            } else {
-                null
+    suspend fun getWallpaperFile(): File? =
+        context.dataStore.data.firstOrNull()?.let { preferences ->
+            val urlString = preferences[WALLPAPER_URI]
+            urlString?.let {
+                Uri.parse(it).path?.let(::File)
             }
         }
-    }.firstOrNull()
 
     suspend fun setWallpaperFile(file: File?) {
         context.dataStore.edit { preferences ->
@@ -154,20 +149,6 @@ class WallpaperSettings private constructor(context: Context) {
             } else {
                 preferences.remove(WALLPAPER_URI)
             }
-        }
-    }
-
-    companion object {
-        @SuppressLint("StaticFieldLeak") // Suppressed because it's the application context.
-        private lateinit var instance: WallpaperSettings
-
-        fun get(context: Context): WallpaperSettings {
-            instance = if (Companion::instance.isInitialized) {
-                instance
-            } else {
-                WallpaperSettings(context.applicationContext)
-            }
-            return instance
         }
     }
 }

@@ -13,36 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import net.redwarp.gifwallpaper.util.systemWindowInsetCompatTop
+import net.redwarp.gifwallpaper.R
+import net.redwarp.gifwallpaper.util.isDarkMode
+import net.redwarp.gifwallpaper.util.setStatusBarColor
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
-class SetupActivity : AppCompatActivity() {
-    lateinit var toolbar: Toolbar
+class SettingsActivity : AppCompatActivity() {
+    private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_setup)
+        setContentView(R.layout.activity_settings)
         setupActionBar()
+        setStatusBarColor(isDarkMode)
     }
 
     private fun setupActionBar() {
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        toolbar.setOnApplyWindowInsetsListener { _, insets ->
-            toolbar.y = insets.systemWindowInsetCompatTop.toFloat()
-
-            insets
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
         }
+    }
 
-        supportActionBar?.title = null
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }

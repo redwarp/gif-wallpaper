@@ -4,15 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SetupActivity">
+    tools:context=".ui.SetupActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
-        android:name="net.redwarp.gifwallpaper.SetupFragment"
+        android:name="net.redwarp.gifwallpaper.ui.SetupFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
-        tools:context=".SetupFragment"
+        tools:context=".ui.SetupFragment"
         tools:layout="@layout/fragment_setup" />
 
     <androidx.appcompat.widget.Toolbar

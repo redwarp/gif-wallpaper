@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -43,6 +43,7 @@ import androidx.lifecycle.lifecycleScope
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.WallpaperStatus

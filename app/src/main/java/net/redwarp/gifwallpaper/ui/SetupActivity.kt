@@ -13,39 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.redwarp.gifwallpaper
+package net.redwarp.gifwallpaper.ui
 
-import android.app.WallpaperManager
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import net.redwarp.gifwallpaper.R
+import net.redwarp.gifwallpaper.util.systemWindowInsetCompatTop
 
-class LauncherActivity : AppCompatActivity() {
+/**
+ * An example full-screen activity that shows and hides the system UI (i.e.
+ * status bar and navigation/system bar) with user interaction.
+ */
+class SetupActivity : AppCompatActivity() {
+    lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (isWallpaperSet(this)) {
-            startActivity(Intent(this, SetupActivity::class.java))
-            finish()
-            return
-        }
 
-        setContentView(R.layout.activity_launcher)
+        setContentView(R.layout.activity_setup)
+        setupActionBar()
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (isWallpaperSet(this)) {
-            startActivity(Intent(this, SetupActivity::class.java))
-            finish()
-        }
-    }
+    private fun setupActionBar() {
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        toolbar.setOnApplyWindowInsetsListener { _, insets ->
+            toolbar.y = insets.systemWindowInsetCompatTop.toFloat()
 
-    private fun isWallpaperSet(context: Context): Boolean {
-        val wallpaperManager = WallpaperManager.getInstance(context)
-        return wallpaperManager.wallpaperInfo?.let {
-            it.packageName == context.packageName
-        } ?: false
+            insets
+        }
+
+        supportActionBar?.title = null
     }
 }

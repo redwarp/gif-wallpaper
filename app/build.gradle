@@ -22,6 +22,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        compose true
     }
 
     buildTypes {
@@ -55,6 +56,10 @@ android {
             includeAndroidResources = true
         }
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.1.1'
+    }
 }
 
 spotless {
@@ -85,6 +90,21 @@ dependencies {
     implementation "app.redwarp.gif:android-drawable:1.2.0"
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+    // Integration with activities
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    // Compose Material Design
+    implementation 'androidx.compose.material:material:1.1.1'
+    // Animations
+    implementation 'androidx.compose.animation:animation:1.1.1'
+    // Tooling support (Previews, etc.)
+    implementation 'androidx.compose.ui:ui-tooling:1.1.1'
+    implementation "androidx.compose.ui:ui-tooling-preview:1.1.1"
+
+    // Integration with ViewModels
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
+    // UI Tests
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.8.1'

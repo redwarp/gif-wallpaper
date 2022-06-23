@@ -33,6 +33,10 @@ import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.ViewCompat
@@ -42,6 +46,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import dev.sasikanth.colorsheet.ColorSheet
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import net.redwarp.gifwallpaper.GifApplication
 import net.redwarp.gifwallpaper.R
@@ -68,11 +73,11 @@ class SetupFragment : Fragment() {
     private var _binding: FragmentSetupBinding? = null
     private val binding get() = _binding!!
 
-    private var colorInfo: ColorScheme? = null
-        set(value) {
-            field = value
-            binding.changeColorButton.isEnabled = value != null
-        }
+    // private var colorInfo: ColorScheme? = null
+    //     set(value) {
+    //         field = value
+    //         binding.changeColorButton.isEnabled = value != null
+    //     }
     private var currentColor: Int? = null
     private lateinit var detector: GestureDetectorCompat
     private val getGif =
@@ -95,6 +100,12 @@ class SetupFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSetupBinding.inflate(inflater, container, false)
+        binding.buttonContainer.setContent {
+            AppTheme {
+                ActionBar(flowBasedModel = GifApplication.app.model)
+            }
+        }
+
         return binding.root
     }
 
@@ -107,18 +118,6 @@ class SetupFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.openGifButton.setOnClickListener {
-            pickDocument()
-        }
-        binding.changeScaleButton.setOnClickListener {
-            changeScale()
-        }
-        binding.changeColorButton.setOnClickListener {
-            changeColor()
-        }
-        binding.rotateButton.setOnClickListener {
-            rotate()
-        }
         binding.buttonContainer.setOnApplyWindowInsetsListener { _, insets ->
             binding.buttonContainer.updatePadding(bottom = insets.systemWindowInsetCompatBottom)
             insets
@@ -127,9 +126,6 @@ class SetupFragment : Fragment() {
         flowBasedModel = GifApplication.app.model
 
         lifecycleScope.launchWhenStarted {
-            flowBasedModel.colorInfoFlow.onEach { colorInfo ->
-                this@SetupFragment.colorInfo = colorInfo as? ColorScheme
-            }.launchIn(this)
             flowBasedModel.backgroundColorFlow.onEach { backgroundColor ->
                 currentColor = backgroundColor
                 adjustTheme(backgroundColor)
@@ -139,11 +135,6 @@ class SetupFragment : Fragment() {
             }.launchIn(this)
             flowBasedModel.rotationFlow.onEach { rotation ->
                 currentRotation = rotation.ordinal
-            }.launchIn(this)
-            flowBasedModel.wallpaperStatusFlow.onEach {
-                val isWallpaperSet = it is WallpaperStatus.Wallpaper
-                binding.changeScaleButton.isEnabled = isWallpaperSet
-                binding.rotateButton.isEnabled = isWallpaperSet
             }.launchIn(this)
 
             drawableFlow(
@@ -229,27 +220,25 @@ class SetupFragment : Fragment() {
         }
     }
 
-    private fun changeColor() {
-        colorInfo?.let { colorInfo ->
-            val colors =
-                colorInfo.palette.targets.map {
-                    colorInfo.palette.getColorForTarget(it, Color.BLACK)
-                }.distinct().toIntArray()
+    private fun changeColor(colorInfo: ColorScheme) {
+        val colors =
+            colorInfo.palette.targets.map {
+                colorInfo.palette.getColorForTarget(it, Color.BLACK)
+            }.distinct().toIntArray()
 
-            ColorSheet().colorPicker(
-                colors, currentColor, noColorOption = true
-            ) {
-                lifecycleScope.launchWhenCreated {
-                    if (it == ColorSheet.NO_COLOR) {
-                        currentColor = null
-                        flowBasedModel.setBackgroundColor(colorInfo.defaultColor)
-                    } else {
-                        currentColor = it
-                        flowBasedModel.setBackgroundColor(it)
-                    }
+        ColorSheet().colorPicker(
+            colors, currentColor, noColorOption = true
+        ) {
+            lifecycleScope.launchWhenCreated {
+                if (it == ColorSheet.NO_COLOR) {
+                    currentColor = null
+                    flowBasedModel.setBackgroundColor(colorInfo.defaultColor)
+                } else {
+                    currentColor = it
+                    flowBasedModel.setBackgroundColor(it)
                 }
-            }.cornerRadius(0).show(parentFragmentManager)
-        }
+            }
+        }.cornerRadius(0).show(parentFragmentManager)
     }
 
     private fun rotate() {
@@ -277,6 +266,49 @@ class SetupFragment : Fragment() {
                 flowBasedModel.resetTranslate()
             }
             return true
+        }
+    }
+
+    @Composable
+    fun ActionBar(flowBasedModel: FlowBasedModel) {
+        val colorInfo by flowBasedModel.colorInfoFlow.map { it as? ColorScheme }
+            .collectAsState(
+                initial = null
+            )
+        val wallpaperStatus by flowBasedModel.wallpaperStatusFlow.collectAsState(initial = WallpaperStatus.NotSet)
+
+        ActionRow {
+            ActionButton(
+                icon = R.drawable.ic_collections,
+                text = stringResource(id = R.string.open_gif)
+            ) {
+                pickDocument()
+            }
+
+            ActionButton(
+                icon = R.drawable.ic_transform,
+                text = stringResource(id = R.string.change_scale),
+                enabled = wallpaperStatus is WallpaperStatus.Wallpaper
+
+            ) {
+                changeScale()
+            }
+
+            ActionButton(
+                icon = R.drawable.ic_rotate_90_degrees_cw,
+                text = stringResource(id = R.string.rotate),
+                enabled = wallpaperStatus is WallpaperStatus.Wallpaper
+            ) {
+                rotate()
+            }
+
+            ActionButton(
+                icon = R.drawable.ic_color_lens,
+                text = stringResource(id = R.string.change_color),
+                enabled = colorInfo != null
+            ) {
+                colorInfo?.let(::changeColor)
+            }
         }
     }
 }

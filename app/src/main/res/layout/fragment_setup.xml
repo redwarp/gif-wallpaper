@@ -9,8 +9,9 @@
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:contentDescription="@null"
         android:scaleType="fitXY"
-        android:contentDescription="@null" />
+        tools:ignore="ImageContrastCheck" />
 
     <View
         android:id="@+id/touch_area"
@@ -20,53 +21,9 @@
         android:focusable="false"
         tools:ignore="KeyboardInaccessibleWidget" />
 
-    <LinearLayout
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/button_container"
-        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:elevation="4dp"
-        android:gravity="top"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/open_gif_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_collections"
-            android:text="@string/open_gif" />
-
-        <Button
-            android:id="@+id/change_scale_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_transform"
-            android:enabled="false"
-            android:text="@string/change_scale" />
-
-        <Button
-            android:id="@+id/rotate_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_rotate_90_degrees_cw"
-            android:enabled="false"
-            android:text="@string/rotate" />
-
-        <Button
-            android:id="@+id/change_color_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_color_lens"
-            android:enabled="false"
-            android:text="@string/change_color" />
-    </LinearLayout>
+        android:layout_height="wrap_content" />
 </FrameLayout>

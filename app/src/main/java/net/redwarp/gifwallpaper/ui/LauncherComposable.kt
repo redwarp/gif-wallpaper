@@ -77,8 +77,7 @@ fun LauncherUi(onClick: () -> Unit) {
                 onClick = onClick,
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
-                modifier = Modifier
-                    .size(220.dp)
+                modifier = Modifier.size(220.dp)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(

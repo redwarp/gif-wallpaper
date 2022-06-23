@@ -29,19 +29,30 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GestureDetectorCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import dev.sasikanth.colorsheet.ColorSheet
@@ -53,13 +64,11 @@ import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.WallpaperStatus
-import net.redwarp.gifwallpaper.databinding.FragmentSetupBinding
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
 import net.redwarp.gifwallpaper.renderer.drawableFlow
 import net.redwarp.gifwallpaper.util.isDark
 import net.redwarp.gifwallpaper.util.setStatusBarColor
-import net.redwarp.gifwallpaper.util.systemWindowInsetCompatBottom
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -70,8 +79,8 @@ class SetupFragment : Fragment() {
     private var currentRotation = 0
     private lateinit var flowBasedModel: FlowBasedModel
 
-    private var _binding: FragmentSetupBinding? = null
-    private val binding get() = _binding!!
+    // private var _binding: FragmentSetupBinding? = null
+    // private val binding get() = _binding!!
 
     // private var colorInfo: ColorScheme? = null
     //     set(value) {
@@ -99,29 +108,40 @@ class SetupFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSetupBinding.inflate(inflater, container, false)
-        binding.buttonContainer.setContent {
-            AppTheme {
-                ActionBar(flowBasedModel = GifApplication.app.model)
+        // _binding = FragmentSetupBinding.inflate(inflater, container, false)
+        // binding.buttonContainer.setContent {
+        //     AppTheme {
+        //         ActionBar(flowBasedModel = GifApplication.app.model)
+        //     }
+        // }
+
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                AppTheme {
+                    SetupUi(flowBasedModel = GifApplication.app.model)
+                }
             }
         }
 
-        return binding.root
+        // return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        // _binding = null
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonContainer.setOnApplyWindowInsetsListener { _, insets ->
-            binding.buttonContainer.updatePadding(bottom = insets.systemWindowInsetCompatBottom)
-            insets
-        }
+        // binding.buttonContainer.setOnApplyWindowInsetsListener { _, insets ->
+        //     binding.buttonContainer.updatePadding(bottom = insets.systemWindowInsetCompatBottom)
+        //     insets
+        // }
 
         flowBasedModel = GifApplication.app.model
 
@@ -136,34 +156,24 @@ class SetupFragment : Fragment() {
             flowBasedModel.rotationFlow.onEach { rotation ->
                 currentRotation = rotation.ordinal
             }.launchIn(this)
-
-            drawableFlow(
-                this@SetupFragment.requireContext(),
-                flowBasedModel,
-                getString(R.string.click_the_open_gif_button),
-                animated = true,
-                isService = false
-            ).onEach { drawable ->
-                binding.imageView.setImageDrawable(drawable)
-            }.launchIn(this)
         }
 
         detector = GestureDetectorCompat(requireContext(), MyGestureListener())
-        binding.touchArea.setOnTouchListener { _, event ->
-            detector.onTouchEvent(event)
-        }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.imageView) { _, inset ->
-            val systemGestureInsets = inset.getInsets(WindowInsetsCompat.Type.systemGestures())
-
-            (binding.touchArea.layoutParams as? FrameLayout.LayoutParams)?.setMargins(
-                systemGestureInsets.left,
-                systemGestureInsets.top,
-                systemGestureInsets.right,
-                systemGestureInsets.bottom,
-            )
-
-            inset
-        }
+        // binding.touchArea.setOnTouchListener { _, event ->
+        //     detector.onTouchEvent(event)
+        // }
+        // ViewCompat.setOnApplyWindowInsetsListener(binding.imageView) { _, inset ->
+        //     val systemGestureInsets = inset.getInsets(WindowInsetsCompat.Type.systemGestures())
+        //
+        //     (binding.touchArea.layoutParams as? FrameLayout.LayoutParams)?.setMargins(
+        //         systemGestureInsets.left,
+        //         systemGestureInsets.top,
+        //         systemGestureInsets.right,
+        //         systemGestureInsets.bottom,
+        //     )
+        //
+        //     inset
+        // }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -270,14 +280,14 @@ class SetupFragment : Fragment() {
     }
 
     @Composable
-    fun ActionBar(flowBasedModel: FlowBasedModel) {
+    fun ActionBar(flowBasedModel: FlowBasedModel, modifier: Modifier = Modifier) {
         val colorInfo by flowBasedModel.colorInfoFlow.map { it as? ColorScheme }
             .collectAsState(
                 initial = null
             )
         val wallpaperStatus by flowBasedModel.wallpaperStatusFlow.collectAsState(initial = WallpaperStatus.NotSet)
 
-        ActionRow {
+        ActionRow(modifier = modifier) {
             ActionButton(
                 icon = R.drawable.ic_collections,
                 text = stringResource(id = R.string.open_gif)
@@ -309,6 +319,76 @@ class SetupFragment : Fragment() {
             ) {
                 colorInfo?.let(::changeColor)
             }
+        }
+    }
+
+    @Composable
+    fun TransparentTopBar() {
+        TopAppBar(
+            title = {
+                Text(text = "Hello")
+            },
+            actions = {
+                OverflowMenu {
+                    DropdownMenuItem(onClick = { /*TODO*/ }) {
+                        Text(text = stringResource(id = R.string.clear_gif))
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        DropdownMenuItem(onClick = { /*TODO*/ }) {
+                            Text(text = stringResource(id = R.string.settings))
+                        }
+                    }
+                    DropdownMenuItem(onClick = { /*TODO*/ }) {
+                        Text(text = stringResource(id = R.string.about))
+                    }
+
+                    DropdownMenuItem(onClick = { /*TODO*/ }) {
+                        Text(text = stringResource(id = R.string.privacy))
+                    }
+                }
+            },
+
+            backgroundColor = androidx.compose.ui.graphics.Color.Transparent,
+            contentColor = androidx.compose.ui.graphics.Color.Transparent,
+            elevation = 0.dp
+        )
+    }
+
+    @Preview
+    @Composable
+    fun TopBarPreview() {
+        TransparentTopBar()
+    }
+
+    @Composable
+    fun SetupUi(flowBasedModel: FlowBasedModel) {
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
+
+        val drawable by scope.drawableFlow(
+            context, flowBasedModel,
+            stringResource(id = R.string.click_the_open_gif_button),
+            animated = true,
+            isService = false
+        ).collectAsState(null)
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { context ->
+                    ImageView(context).apply {
+                        scaleType = ImageView.ScaleType.FIT_XY
+                    }
+                },
+                update = {
+                    it.setImageDrawable(drawable)
+                }
+            )
+            ActionBar(
+                flowBasedModel = flowBasedModel,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }

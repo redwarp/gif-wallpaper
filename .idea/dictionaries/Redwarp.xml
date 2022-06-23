@@ -2,9 +2,9 @@
   <dictionary name="Redwarp">
     <words>
       <w>animatable</w>
-      <w>redwarp</w>
       <w>measurables</w>
       <w>placeables</w>
+      <w>redwarp</w>
     </words>
   </dictionary>
 </component>

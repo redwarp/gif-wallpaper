@@ -40,8 +40,9 @@ class GifWrapperDrawable(
     scaleType: ScaleType = ScaleType.FIT_CENTER,
     rotation: Rotation = Rotation.NORTH,
     translation: Pair<Float, Float> = 0f to 0f,
+    shouldPlay: Boolean
 ) : Drawable(), Animatable {
-    private val state = GifWrapperState(gifDrawable, scaleType, rotation, translation)
+    private val state = GifWrapperState(gifDrawable, scaleType, rotation, translation, shouldPlay)
 
     private val paint = Paint().apply {
         color = state.backgroundColor
@@ -70,6 +71,17 @@ class GifWrapperDrawable(
         gifDrawable.callback = chainingCallback
         updateMatrixAndInvalidate()
     }
+
+    var shouldPlay: Boolean
+        get() = state.shouldPlay
+        set(value) {
+            state.shouldPlay = value
+            if (isRunning && !shouldPlay) {
+                stop()
+            } else if (!isRunning && shouldPlay) {
+                start()
+            }
+        }
 
     fun setBackgroundColor(color: Int) {
         state.backgroundColor = color
@@ -125,7 +137,9 @@ class GifWrapperDrawable(
     }
 
     override fun start() {
-        state.gifDrawable.start()
+        if (shouldPlay) {
+            state.gifDrawable.start()
+        }
     }
 
     override fun stop() {
@@ -272,13 +286,20 @@ class GifWrapperDrawable(
         var scaleType: ScaleType = ScaleType.FIT_CENTER,
         var rotation: Rotation = Rotation.NORTH,
         var translation: Pair<Float, Float> = 0f to 0f,
+        var shouldPlay: Boolean,
     ) : ConstantState() {
         var backgroundColor = gifDrawable.backgroundColor
 
         override fun newDrawable(): Drawable {
             val copiedGifDrawable = gifDrawable.constantState.newDrawable() as GifDrawable
 
-            return GifWrapperDrawable(copiedGifDrawable, scaleType, rotation, translation).also {
+            return GifWrapperDrawable(
+                copiedGifDrawable,
+                scaleType,
+                rotation,
+                translation,
+                shouldPlay
+            ).also {
                 it.setBackgroundColor(backgroundColor)
             }
         }

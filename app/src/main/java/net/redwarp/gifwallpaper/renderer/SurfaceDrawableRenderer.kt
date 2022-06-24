@@ -18,6 +18,7 @@ package net.redwarp.gifwallpaper.renderer
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
@@ -67,7 +68,10 @@ class SurfaceDrawableRenderer(
         drawable?.setVisible(isVisible, false)
 
         if (isVisible) {
+            (drawable as? Animatable)?.let(Animatable::start)
             drawable?.invalidateSelf()
+        } else {
+            (drawable as? Animatable)?.let(Animatable::stop)
         }
     }
 

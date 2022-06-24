@@ -29,10 +29,10 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.DropdownMenuItem
@@ -41,16 +41,18 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.fragment.app.Fragment
@@ -64,9 +66,10 @@ import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.WallpaperStatus
+import net.redwarp.gifwallpaper.renderer.DrawableMapper
 import net.redwarp.gifwallpaper.renderer.Rotation
 import net.redwarp.gifwallpaper.renderer.ScaleType
-import net.redwarp.gifwallpaper.renderer.drawableFlow
+import net.redwarp.gifwallpaper.renderer.rememberGifDrawablePainter
 import net.redwarp.gifwallpaper.util.isDark
 import net.redwarp.gifwallpaper.util.setStatusBarColor
 
@@ -366,24 +369,23 @@ class SetupFragment : Fragment() {
         val context = LocalContext.current
         val scope = rememberCoroutineScope()
 
-        val drawable by scope.drawableFlow(
-            context, flowBasedModel,
-            stringResource(id = R.string.click_the_open_gif_button),
-            animated = true,
-            isService = false
-        ).collectAsState(null)
+        val drawableOwner by remember {
+            mutableStateOf(
+                DrawableMapper.previewMapper(
+                    context = context,
+                    flowBasedModel = flowBasedModel,
+                    scope = scope,
+                )
+            )
+        }
+        val drawable by drawableOwner.drawables.collectAsState(null)
 
         Box(modifier = Modifier.fillMaxSize()) {
-            AndroidView(
+            Image(
                 modifier = Modifier.fillMaxSize(),
-                factory = { context ->
-                    ImageView(context).apply {
-                        scaleType = ImageView.ScaleType.FIT_XY
-                    }
-                },
-                update = {
-                    it.setImageDrawable(drawable)
-                }
+                painter = rememberGifDrawablePainter(drawable = drawable),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds
             )
             ActionBar(
                 flowBasedModel = flowBasedModel,

@@ -31,9 +31,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.redwarp.gifwallpaper.renderer.DrawableMapper
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.createMiniature
-import net.redwarp.gifwallpaper.renderer.drawableFlow
 import net.redwarp.gifwallpaper.util.WallpaperColorsCompat
 import net.redwarp.gifwallpaper.util.toCompat
 import net.redwarp.gifwallpaper.util.toReal
@@ -82,13 +82,10 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
 
             lifecycleScope.launchWhenStarted {
                 launch {
-                    drawableFlow(
-                        context = this@GifWallpaperService,
-                        flowBasedModel = modelFlow,
-                        unsetText = getString(R.string.open_app),
-                        animated = false,
-                        isService = true
-                    ).collectLatest { drawable ->
+                    val drawableOwner =
+                        DrawableMapper.serviceMapper(this@GifWallpaperService, modelFlow, this)
+
+                    drawableOwner.drawables.collectLatest { drawable ->
                         surfaceDrawableRenderer?.drawable = drawable
                     }
                 }

@@ -16,6 +16,8 @@
 package net.redwarp.gifwallpaper.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +25,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -44,42 +45,54 @@ import com.google.accompanist.flowlayout.FlowRow
 import net.redwarp.gifwallpaper.R
 
 @Composable
-fun NoColorChoice() {
+fun NoColorChoice(onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .size(40.dp)
+            .size(48.dp)
             .clip(CircleShape)
-            .background(Color.Black),
-        contentAlignment = Alignment.Center
+            .background(MaterialTheme.colors.onSurface)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_no_color),
             contentDescription = null,
-            tint = Color.White
+            tint = MaterialTheme.colors.surface
         )
     }
 }
 
 @Composable
-fun ColorChoice(color: Int) {
+fun ColorChoice(color: Color, onClick: () -> Unit) {
+    var modifier = Modifier
+        .size(48.dp)
+        .clip(CircleShape)
+        .background(color)
+        .clickable(onClick = onClick)
+    if (color == MaterialTheme.colors.surface) {
+        modifier = modifier
+            .border(width = 1.dp, color = MaterialTheme.colors.onSurface, shape = CircleShape)
+    }
     Box(
-        modifier = Modifier
-            .size(40.dp)
-            .clip(CircleShape)
-            .background(color.rgbToColor())
+        modifier = modifier
     ) {
     }
 }
 
 @Composable
-fun ColorPicker(colors: List<Int>) {
+fun ColorPicker(
+    defaultColor: Color,
+    colors: List<Color>,
+    onColorPicked: (Color) -> Unit = {},
+    onCloseClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.surface)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onCloseClick) {
                 Icon(Icons.Filled.Close, contentDescription = null)
             }
             Text(
@@ -90,11 +103,16 @@ fun ColorPicker(colors: List<Int>) {
         Divider()
         FlowRow(
             mainAxisSpacing = 16.dp,
-            modifier = Modifier.padding(ButtonDefaults.ContentPadding)
+            crossAxisSpacing = 16.dp,
+            modifier = Modifier.padding(16.dp)
         ) {
-            NoColorChoice()
+            NoColorChoice {
+                onColorPicked(defaultColor)
+            }
             for (color in colors) {
-                ColorChoice(color = color)
+                ColorChoice(color = color) {
+                    onColorPicked(color)
+                }
             }
         }
     }
@@ -104,7 +122,17 @@ fun ColorPicker(colors: List<Int>) {
 @Composable
 fun ColorPickerPreview() {
     AppTheme {
-        ColorPicker(colors = listOf(0xffffff, 0xff0000, 0x00ff00, 0x0000ff, 0x000000))
+        ColorPicker(
+            defaultColor = Color.White,
+            colors = listOf(
+                0xffffff,
+                0xff0000,
+                0x00ff00,
+                0x0000ff,
+                0x000000
+            ).map(Int::rgbToColor)
+        ) {
+        }
     }
 }
 

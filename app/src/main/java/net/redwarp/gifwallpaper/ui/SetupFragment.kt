@@ -35,7 +35,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -82,14 +82,6 @@ class SetupFragment : Fragment() {
     private var currentRotation = 0
     private lateinit var flowBasedModel: FlowBasedModel
 
-    // private var _binding: FragmentSetupBinding? = null
-    // private val binding get() = _binding!!
-
-    // private var colorInfo: ColorScheme? = null
-    //     set(value) {
-    //         field = value
-    //         binding.changeColorButton.isEnabled = value != null
-    //     }
     private var currentColor: Int? = null
     private lateinit var detector: GestureDetectorCompat
     private val getGif =
@@ -111,13 +103,6 @@ class SetupFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // _binding = FragmentSetupBinding.inflate(inflater, container, false)
-        // binding.buttonContainer.setContent {
-        //     AppTheme {
-        //         ActionBar(flowBasedModel = GifApplication.app.model)
-        //     }
-        // }
-
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
@@ -128,8 +113,6 @@ class SetupFragment : Fragment() {
                 }
             }
         }
-
-        // return binding.root
     }
 
     override fun onDestroyView() {
@@ -214,7 +197,8 @@ class SetupFragment : Fragment() {
         setStatusBarColor(backgroundColor.isDark())
         val overflowColor = if (backgroundColor.isDark()) Color.WHITE else Color.BLACK
 
-        val toolbar: Toolbar? = (activity as? SetupActivity)?.toolbar
+        val toolbar: Toolbar? = null
+        // val toolbar: Toolbar? = (activity as? SetupActivity)?.toolbar
         val icon = toolbar?.overflowIcon?.let {
             DrawableCompat.wrap(it).also { wrapped -> wrapped.setTint(overflowColor) }
         }
@@ -326,35 +310,36 @@ class SetupFragment : Fragment() {
     }
 
     @Composable
-    fun TransparentTopBar() {
+    fun TransparentTopBar(modifier: Modifier = Modifier) {
         TopAppBar(
             title = {
                 Text(text = "Hello")
             },
             actions = {
-                OverflowMenu {
-                    DropdownMenuItem(onClick = { /*TODO*/ }) {
-                        Text(text = stringResource(id = R.string.clear_gif))
-                    }
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        DropdownMenuItem(onClick = { /*TODO*/ }) {
-                            Text(text = stringResource(id = R.string.settings))
-                        }
-                    }
-                    DropdownMenuItem(onClick = { /*TODO*/ }) {
-                        Text(text = stringResource(id = R.string.about))
-                    }
-
-                    DropdownMenuItem(onClick = { /*TODO*/ }) {
-                        Text(text = stringResource(id = R.string.privacy))
-                    }
-                }
+                // OverflowMenu {
+                //     DropdownMenuItem(onClick = { /*TODO*/ }) {
+                //         Text(text = stringResource(id = R.string.clear_gif))
+                //     }
+                //
+                //     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                //         DropdownMenuItem(onClick = { /*TODO*/ }) {
+                //             Text(text = stringResource(id = R.string.settings))
+                //         }
+                //     }
+                //     DropdownMenuItem(onClick = { /*TODO*/ }) {
+                //         Text(text = stringResource(id = R.string.about))
+                //     }
+                //
+                //     DropdownMenuItem(onClick = { /*TODO*/ }) {
+                //         Text(text = stringResource(id = R.string.privacy))
+                //     }
+                // }
             },
 
             backgroundColor = androidx.compose.ui.graphics.Color.Transparent,
             contentColor = androidx.compose.ui.graphics.Color.Transparent,
-            elevation = 0.dp
+            elevation = 0.dp,
+            modifier = modifier
         )
     }
 
@@ -380,17 +365,21 @@ class SetupFragment : Fragment() {
         }
         val drawable by drawableOwner.drawables.collectAsState(null)
 
-        Box(modifier = Modifier.fillMaxSize()) {
-            Image(
-                modifier = Modifier.fillMaxSize(),
-                painter = rememberGifDrawablePainter(drawable = drawable),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds
-            )
-            ActionBar(
-                flowBasedModel = flowBasedModel,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
+        Scaffold(topBar = {
+            TransparentTopBar()
+        }) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Image(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = rememberGifDrawablePainter(drawable = drawable),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds
+                )
+                ActionBar(
+                    flowBasedModel = flowBasedModel,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
+            }
         }
     }
 }

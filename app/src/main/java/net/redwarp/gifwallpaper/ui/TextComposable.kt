@@ -15,22 +15,28 @@
  */
 package net.redwarp.gifwallpaper.ui
 
+import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.widget.TextView
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import io.noties.markwon.Markwon
+import java.io.InputStream
 
 @Composable
 fun MarkdownText(text: String, modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     val markwon = remember {
-
         Markwon.create(context)
     }
 
@@ -39,6 +45,22 @@ fun MarkdownText(text: String, modifier: Modifier = Modifier) {
     }, update = {
             markwon.setMarkdown(it, text)
         })
+}
+
+@Composable
+fun MarkdownUi(fileName: String) {
+    val context = LocalContext.current
+
+    val text = remember {
+        context.loadMarkdownFile(fileName) ?: ""
+    }
+
+    MarkdownText(
+        text = text,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    )
 }
 
 @Preview(uiMode = UI_MODE_NIGHT_YES)
@@ -56,8 +78,20 @@ fun MarkdownTextPreview() {
          - Bob
          - Pif et hercule pour devenir des amis de toujours mais le ferons-il?
            - Boulet
-           - Buil
+           - Bill
             """.trimIndent()
         )
     }
+}
+
+private fun Context.loadMarkdownFile(markdownFileName: String): String? {
+    val url: InputStream? = this::class.java.classLoader?.getResourceAsStream(markdownFileName)
+    val content: String?
+    if (url != null) {
+        content = url.reader().readText()
+        url.close()
+    } else {
+        content = null
+    }
+    return content
 }

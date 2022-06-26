@@ -56,7 +56,16 @@ class MainActivity : AppCompatActivity() {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "setup") {
                         composable("setup") {
-                            SetupUi(flowBasedModel = GifApplication.app.model)
+                            SetupUi(
+                                flowBasedModel = GifApplication.app.model,
+                                navController = navController
+                            )
+                        }
+                        composable("privacy") {
+                            MarkdownUi(fileName = "privacy.md")
+                        }
+                        composable("about") {
+                            MarkdownUi(fileName = "about.md")
                         }
                     }
                 } else {

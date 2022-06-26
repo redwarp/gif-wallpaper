@@ -77,6 +77,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.R
@@ -148,7 +149,7 @@ fun ActionBar(
 }
 
 @Composable
-fun SetupUi(flowBasedModel: FlowBasedModel) {
+fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -220,7 +221,7 @@ fun SetupUi(flowBasedModel: FlowBasedModel) {
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds
             )
-            TransparentTopBar(flowBasedModel)
+            TransparentTopBar(flowBasedModel, navController)
             ActionBar(
                 flowBasedModel = flowBasedModel,
                 modifier = Modifier.align(Alignment.BottomCenter),
@@ -235,7 +236,11 @@ fun SetupUi(flowBasedModel: FlowBasedModel) {
 }
 
 @Composable
-fun TransparentTopBar(flowBasedModel: FlowBasedModel, modifier: Modifier = Modifier) {
+fun TransparentTopBar(
+    flowBasedModel: FlowBasedModel,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -261,13 +266,13 @@ fun TransparentTopBar(flowBasedModel: FlowBasedModel, modifier: Modifier = Modif
             }
             items.add(
                 OverflowAction(stringResource(id = R.string.about)) {
-                    context.startActivity(TextActivity.getIntent(context, "about.md"))
+                    navController.navigate("about")
                 }
             )
 
             items.add(
                 OverflowAction(stringResource(id = R.string.privacy)) {
-                    context.startActivity(TextActivity.getIntent(context, "privacy.md"))
+                    navController.navigate("privacy")
                 }
             )
 

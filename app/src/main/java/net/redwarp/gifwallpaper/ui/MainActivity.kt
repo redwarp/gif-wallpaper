@@ -15,6 +15,7 @@
  */
 package net.redwarp.gifwallpaper.ui
 
+import android.app.Activity
 import android.app.WallpaperManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
@@ -25,6 +26,7 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,7 +35,9 @@ import net.redwarp.gifwallpaper.GifApplication
 import net.redwarp.gifwallpaper.GifWallpaperService
 import net.redwarp.gifwallpaper.R
 
-class LauncherActivity : AppCompatActivity() {
+const val EXTRA_PREVIEW_MODE = "android.service.wallpaper.PREVIEW_MODE"
+
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +48,11 @@ class LauncherActivity : AppCompatActivity() {
                 val isWallpaperSet by CheckOnResume {
                     isWallpaperSet(context)
                 }
+                val isPreview = remember {
+                    isPreviewMode()
+                }
 
-                if (isWallpaperSet) {
+                if (isWallpaperSet || isPreview) {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "setup") {
                         composable("setup") {
@@ -86,5 +93,13 @@ fun activateWallpaper(context: Context) {
         } catch (_: ActivityNotFoundException) {
             Toast.makeText(context, R.string.error_wallpaper_chooser, Toast.LENGTH_LONG).show()
         }
+    }
+}
+
+fun Context.isPreviewMode(): Boolean {
+    return if (this is Activity) {
+        this.intent.getBooleanExtra(EXTRA_PREVIEW_MODE, false)
+    } else {
+        false
     }
 }

@@ -18,6 +18,7 @@ package net.redwarp.gifwallpaper
 import android.app.WallpaperColors
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
@@ -63,7 +64,7 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
 
         private val handlerThread = HandlerThread("WallpaperLooper")
         private var handler: Handler? = null
-        private var wallpaperColors: WallpaperColors? =
+        private var wallpaperColors: LocalWallpaperColors? =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
                 getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
             } else {
@@ -122,13 +123,13 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
         override fun onComputeColors(): WallpaperColors? {
-            return wallpaperColors
+            return wallpaperColors?.toReal()
         }
         @RequiresApi(Build.VERSION_CODES.O_MR1)
         private suspend fun updateWallpaperColors() {
             withContext(Dispatchers.Default) {
                 wallpaperColors = surfaceDrawableRenderer?.drawable?.createMiniature()
-                    ?.let(WallpaperColors::fromBitmap)
+                    ?.let(WallpaperColors::fromBitmap)?.toLocal()
                     ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
                 withContext(Dispatchers.Main) {
                     notifyColorsChanged()
@@ -137,14 +138,28 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
-        private fun Int.colorToWallpaperColor(): WallpaperColors {
+        private fun Int.colorToWallpaperColor(): LocalWallpaperColors {
             val bitmap = Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
 
             canvas.drawColor(this)
             val wallpaperColors = WallpaperColors.fromBitmap(bitmap)
             bitmap.recycle()
-            return wallpaperColors
+            return wallpaperColors.toLocal()
         }
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O_MR1)
+data class LocalWallpaperColors(
+    val primaryColor: Color,
+    val secondaryColor: Color?,
+    val tertiaryColor: Color?,
+    val colorHints: Int
+)
+
+fun WallpaperColors.toLocal(): LocalWallpaperColors =
+    LocalWallpaperColors(primaryColor, secondaryColor, tertiaryColor, colorHints)
+
+fun LocalWallpaperColors.toReal(): WallpaperColors =
+    WallpaperColors(primaryColor, secondaryColor, tertiaryColor, colorHints)

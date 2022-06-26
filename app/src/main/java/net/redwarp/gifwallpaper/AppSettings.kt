@@ -23,7 +23,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class AppSettings(private val context: Context, ioScope: CoroutineScope) {
@@ -42,19 +41,15 @@ class AppSettings(private val context: Context, ioScope: CoroutineScope) {
             ?: context.resources.getBoolean(R.bool.thermal_throttle_enabled)
     }
 
-    suspend fun getBoolean(key: String, defValue: Boolean): Boolean {
-        val preferenceKey = booleanPreferencesKey(key)
-
-        return context.dataStore.data.map { preferences ->
-            preferences[preferenceKey]
-        }.firstOrNull() ?: defValue
+    suspend fun setPowerSaving(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[powerSavingKey] = enabled
+        }
     }
 
-    suspend fun putBoolean(key: String, value: Boolean) {
-        val preferenceKey = booleanPreferencesKey(key)
-
+    suspend fun setThermalThrottle(enabled: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[preferenceKey] = value
+            preferences[thermalThrottleKey] = enabled
         }
     }
 }

@@ -97,7 +97,7 @@ fun ColorPicker(
             }
             Text(
                 text = stringResource(id = R.string.pick_a_color),
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.h6
             )
         }
         Divider()

@@ -67,6 +67,12 @@ class MainActivity : AppCompatActivity() {
                         composable("about") {
                             MarkdownUi(fileName = "about.md")
                         }
+                        composable("settings") {
+                            SettingUi(
+                                appSettings = GifApplication.app.appSettings,
+                                navController = navController
+                            )
+                        }
                     }
                 } else {
                     LauncherUi {

@@ -17,7 +17,6 @@
 
 package net.redwarp.gifwallpaper.ui
 
-import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.Build
@@ -260,7 +259,8 @@ fun TransparentTopBar(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 items.add(
                     OverflowAction(stringResource(id = R.string.settings)) {
-                        context.startActivity(Intent(context, SettingsActivity::class.java))
+                        // context.startActivity(Intent(context, SettingsActivity::class.java))
+                        navController.navigate("settings")
                     }
                 )
             }

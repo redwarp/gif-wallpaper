@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.13.4](https://github.com/redwarp/gif-wallpaper/compare/v1.13.3...v1.13.4) (2022-06-26)
+
+
+### Bug Fixes
+
+* Fix for Android 21 ([2d05d25](https://github.com/redwarp/gif-wallpaper/commit/2d05d253622b5ffbb15231475bbe4702eb20aa09))
+* Remove use of global scope, declare scope in app. ([7b2ba7e](https://github.com/redwarp/gif-wallpaper/commit/7b2ba7ea07b4c0226abd194c2d4af139b7dd53b6))
+* Target sdk 32 ([49cf76d](https://github.com/redwarp/gif-wallpaper/commit/49cf76defd6329797b30eb4a7665329fe93d9ce5))
+* Update russian translations ([72be969](https://github.com/redwarp/gif-wallpaper/commit/72be9695f44156159cb6814ca45d9b516dff3004))
+
 ### [1.13.3](https://github.com/redwarp/gif-wallpaper/compare/v1.13.2...v1.13.3) (2022-06-17)
 
 

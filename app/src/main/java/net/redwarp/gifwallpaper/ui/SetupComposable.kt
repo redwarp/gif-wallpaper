@@ -54,6 +54,7 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -93,15 +94,21 @@ fun ActionBar(
     modifier: Modifier = Modifier,
     onChangeColorClick: () -> Unit
 ) {
-    val colorInfo by flowBasedModel.colorInfoFlow.map { it as? ColorScheme }
-        .collectAsState(
-            initial = null
-        )
+
+    var colorScheme: ColorScheme? by remember {
+        mutableStateOf(null)
+    }
+    LaunchedEffect("colorScheme") {
+        flowBasedModel.colorInfoFlow.map { it as? ColorScheme }.collect {
+            colorScheme = it
+        }
+    }
+
     val wallpaperStatus by flowBasedModel.wallpaperStatusFlow.collectAsState(initial = WallpaperStatus.NotSet)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val pickGif = PickGif { uri ->
+    val pickGif = rememberGifPicker { uri ->
         scope.launch {
             flowBasedModel.loadNewGif(context, uri)
             flowBasedModel.resetTranslate()
@@ -122,7 +129,6 @@ fun ActionBar(
             enabled = wallpaperStatus is WallpaperStatus.Wallpaper
 
         ) {
-            // changeScale()
             scope.launch {
                 flowBasedModel.setNextScale()
             }
@@ -141,7 +147,7 @@ fun ActionBar(
         ActionButton(
             icon = R.drawable.ic_color_lens,
             text = stringResource(id = R.string.change_color),
-            enabled = colorInfo != null,
+            enabled = colorScheme != null,
             onClick = onChangeColorClick
         )
     }
@@ -152,13 +158,11 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val drawableOwner by remember {
-        mutableStateOf(
-            DrawableMapper.previewMapper(
-                context = context,
-                flowBasedModel = flowBasedModel,
-                scope = scope,
-            )
+    val drawableOwner = remember {
+        DrawableMapper.previewMapper(
+            context = context,
+            flowBasedModel = flowBasedModel,
+            scope = scope,
         )
     }
     val drawable by drawableOwner.drawables.collectAsState(null)
@@ -166,16 +170,22 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
-    val colorInfo: Pair<Color, List<Color>> by flowBasedModel.colorInfoFlow.map { colorInfo ->
-        if (colorInfo is ColorScheme) {
-            colorInfo.defaultColor.rgbToColor() to colorInfo.palette.targets.map {
-                colorInfo.palette.getColorForTarget(it, android.graphics.Color.BLACK)
-                    .rgbToColor()
-            }.distinct()
-        } else Color.Black to emptyList()
-    }.collectAsState(
-        initial = Color.Black to emptyList()
-    )
+
+    var colorInfo: Pair<Color, List<Color>> by remember {
+        mutableStateOf(Color.Black to emptyList())
+    }
+    LaunchedEffect("colorInfo") {
+        flowBasedModel.colorInfoFlow.map { colorInfo ->
+            if (colorInfo is ColorScheme) {
+                colorInfo.defaultColor.rgbToColor() to colorInfo.palette.targets.map {
+                    colorInfo.palette.getColorForTarget(it, android.graphics.Color.BLACK)
+                        .rgbToColor()
+                }.distinct()
+            } else Color.Black to emptyList()
+        }.collect {
+            colorInfo = it
+        }
+    }
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -286,7 +296,7 @@ fun TransparentTopBar(
 }
 
 @Composable
-fun PickGif(onUri: (Uri) -> Unit): ManagedActivityResultLauncher<String, Uri?> {
+fun rememberGifPicker(onUri: (Uri) -> Unit): ManagedActivityResultLauncher<String, Uri?> {
     val result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->

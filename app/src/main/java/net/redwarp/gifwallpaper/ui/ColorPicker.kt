@@ -55,7 +55,7 @@ fun NoColorChoice(onClick: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_no_color),
+            painter = painterResource(id = R.drawable.ic_color_lens_off),
             contentDescription = null,
             tint = MaterialTheme.colors.surface
         )

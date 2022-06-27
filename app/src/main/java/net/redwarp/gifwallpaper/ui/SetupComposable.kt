@@ -241,7 +241,6 @@ fun TransparentTopBar(
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     TopAppBar(
         title = {

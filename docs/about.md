@@ -2,8 +2,7 @@
 
 ## Made with
 
-- [Colorsheet](https://github.com/msasikanth/ColorSheet)
-- [Android X](https://developer.android.com/jetpack/androidx)
+- [Jetpack Compose](https://developer.android.com/jetpack/compose)
 - [Markwon](https://github.com/noties/Markwon) (To display this page)
 
 ## Attribution

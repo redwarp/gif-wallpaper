@@ -47,7 +47,6 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.rememberModalBottomSheetState
@@ -222,10 +221,14 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds
             )
-            TransparentTopBar(flowBasedModel, navController)
+            ActionMenu(
+                modifier = Modifier.align(Alignment.TopEnd),
+                flowBasedModel = flowBasedModel,
+                navController = navController
+            )
             ActionBar(
                 flowBasedModel = flowBasedModel,
-                modifier = Modifier.align(Alignment.BottomCenter),
+                modifier = Modifier.align(Alignment.BottomStart),
                 onChangeColorClick = {
                     scope.launch {
                         sheetState.show()
@@ -237,54 +240,40 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
 }
 
 @Composable
-fun TransparentTopBar(
+fun ActionMenu(
     flowBasedModel: FlowBasedModel,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
-
-    TopAppBar(
-        title = {
-            Text(text = "Hello")
-        },
-        actions = {
-            val items = mutableListOf<OverflowAction>()
-            items.add(
-                OverflowAction(stringResource(id = R.string.clear_gif)) {
-                    scope.launch {
-                        flowBasedModel.clearGif()
-                    }
-                }
-            )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                items.add(
-                    OverflowAction(stringResource(id = R.string.settings)) {
-                        // context.startActivity(Intent(context, SettingsActivity::class.java))
-                        navController.navigate("settings")
-                    }
-                )
+    val items = mutableListOf<OverflowAction>()
+    items.add(
+        OverflowAction(stringResource(id = R.string.clear_gif)) {
+            scope.launch {
+                flowBasedModel.clearGif()
             }
-            items.add(
-                OverflowAction(stringResource(id = R.string.about)) {
-                    navController.navigate("about")
-                }
-            )
-
-            items.add(
-                OverflowAction(stringResource(id = R.string.privacy)) {
-                    navController.navigate("privacy")
-                }
-            )
-
-            OverflowMenu(items = items)
-        },
-
-        backgroundColor = Color.Transparent,
-        contentColor = Color.Transparent,
-        elevation = 0.dp,
-        modifier = modifier
+        }
     )
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        items.add(
+            OverflowAction(stringResource(id = R.string.settings)) {
+                navController.navigate("settings")
+            }
+        )
+    }
+    items.add(
+        OverflowAction(stringResource(id = R.string.about)) {
+            navController.navigate("about")
+        }
+    )
+
+    items.add(
+        OverflowAction(stringResource(id = R.string.privacy)) {
+            navController.navigate("privacy")
+        }
+    )
+
+    OverflowMenu(modifier = modifier, items = items)
 }
 
 @Composable
@@ -446,21 +435,25 @@ fun ActionBarPreview() {
 }
 
 @Composable
-fun OverflowMenu(items: List<OverflowAction>) {
+fun OverflowMenu(modifier: Modifier = Modifier, items: List<OverflowAction>) {
     var showMenu by remember {
         mutableStateOf(false)
     }
-
-    IconButton(onClick = { showMenu = !showMenu }) {
-        Icon(imageVector = Icons.Outlined.MoreVert, contentDescription = "More")
-    }
-    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-        for (item in items) {
-            DropdownMenuItem(onClick = {
-                showMenu = false
-                item.onClick()
-            }) {
-                Text(text = item.text)
+    Box(modifier = modifier) {
+        IconButton(onClick = { showMenu = !showMenu }) {
+            Icon(imageVector = Icons.Outlined.MoreVert, contentDescription = "More")
+        }
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            for (item in items) {
+                DropdownMenuItem(onClick = {
+                    showMenu = false
+                    item.onClick()
+                }) {
+                    Text(text = item.text)
+                }
             }
         }
     }

@@ -22,15 +22,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -77,13 +72,7 @@ fun SettingUi(navController: NavController, appSettings: AppSettings) {
     val scope = rememberCoroutineScope()
 
     Scaffold(topBar = {
-        TopAppBar(title = {
-            Text(text = stringResource(id = R.string.settings))
-        }, navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Filled.ArrowBack, null)
-                }
-            })
+        BasicTopBar(title = stringResource(id = R.string.settings), navController = navController)
     }) {
         Column(
             modifier = Modifier.padding(16.dp),

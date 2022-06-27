@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             AppTheme {
                 val context = LocalContext.current
-                val isWallpaperSet by CheckOnResume {
+                val isWallpaperSet by checkOnResume {
                     isWallpaperSet(context)
                 }
                 val isPreview = remember {
@@ -62,10 +63,18 @@ class MainActivity : AppCompatActivity() {
                             )
                         }
                         composable("privacy") {
-                            MarkdownUi(fileName = "privacy.md")
+                            MarkdownUi(
+                                fileName = "privacy.md",
+                                title = stringResource(id = R.string.privacy),
+                                navController = navController
+                            )
                         }
                         composable("about") {
-                            MarkdownUi(fileName = "about.md")
+                            MarkdownUi(
+                                fileName = "about.md",
+                                title = stringResource(id = R.string.about),
+                                navController = navController
+                            )
                         }
                         composable("settings") {
                             SettingUi(

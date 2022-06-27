@@ -20,15 +20,15 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.widget.TextView
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
 import io.noties.markwon.Markwon
 import java.io.InputStream
 
@@ -48,38 +48,50 @@ fun MarkdownText(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MarkdownUi(fileName: String) {
+fun MarkdownUi(title: String, fileName: String, navController: NavController) {
     val context = LocalContext.current
 
     val text = remember {
         context.loadMarkdownFile(fileName) ?: ""
     }
 
-    MarkdownText(
-        text = text,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    )
+    MarkdownPage(title = title, markdownText = text, navController = navController)
+}
+
+@Composable
+fun MarkdownPage(title: String, markdownText: String, navController: NavController) {
+    Scaffold(topBar = {
+        BasicTopBar(title = title, navController = navController)
+    }) {
+        MarkdownText(
+            text = markdownText,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        )
+    }
 }
 
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun MarkdownTextPreview() {
+fun MarkdownUiPreview() {
+    val context = LocalContext.current
+    val navController = NavController(context)
     AppTheme {
-        MarkdownText(
-            text = """
-         # About
+        MarkdownPage(
+            title = "About",
+            markdownText = """
+            # About
+            
+            So, this is how the page will look like?
 
-         ## Made with
-         
-         Let's show some basic markdown text, with some *italic* and **bold** text.
-         
-         - Bob
-         - Pif et hercule pour devenir des amis de toujours mais le ferons-il?
-           - Boulet
-           - Bill
-            """.trimIndent()
+            ## Check the sources
+
+            Sources are available on [github](https://github.com/redwarp/gif-wallpaper).
+
+            Head there if you have feature requests or so.
+            """.trimIndent(),
+            navController = navController
         )
     }
 }

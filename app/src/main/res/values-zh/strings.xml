@@ -3,11 +3,13 @@
   <string name="about">"关于"</string>
   <string name="activate">"启用"</string>
   <string name="app_name">"GIF动态壁纸"</string>
+  <string name="back">"上一步"</string>
   <string name="battery_saver">"省电模式"</string>
   <string name="change_color">"改变颜色"</string>
   <string name="change_scale">"改变比例"</string>
   <string name="clear_gif">"清除 GIF"</string>
   <string name="click_the_open_gif_button">"点击“打开 GIF”按钮"</string>
+  <string name="close">"关闭"</string>
   <string name="error_wallpaper_chooser">"无法启动壁纸选择器。您仍然可以激活GIF动态壁纸，通过选择“动态壁纸”在您的主屏幕壁纸选择器中。"</string>
   <string name="loading">"正在加载…"</string>
   <string name="open_app">"打开GIF动态壁纸应用程序并设置您最喜欢的 GIF 以开始使用。"</string>

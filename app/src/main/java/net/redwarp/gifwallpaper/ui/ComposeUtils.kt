@@ -15,17 +15,26 @@
  */
 package net.redwarp.gifwallpaper.ui
 
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.navigation.NavController
+import net.redwarp.gifwallpaper.R
 
 @Composable
-fun <T> CheckOnResume(check: () -> T): State<T> {
+fun <T> checkOnResume(check: () -> T): State<T> {
     val state = remember {
         mutableStateOf(check())
     }
@@ -43,4 +52,15 @@ fun <T> CheckOnResume(check: () -> T): State<T> {
     }
 
     return state
+}
+
+@Composable
+fun BasicTopBar(title: String, navController: NavController) {
+    TopAppBar(title = {
+        Text(text = title)
+    }, navigationIcon = {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.Filled.ArrowBack, stringResource(id = R.string.back))
+            }
+        })
 }

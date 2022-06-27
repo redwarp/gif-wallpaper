@@ -29,8 +29,10 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.unit.Density
 import androidx.core.content.ContextCompat
 import net.redwarp.gifwallpaper.R
+import net.redwarp.gifwallpaper.ui.typography
 import kotlin.math.max
 
 class TextDrawable(context: Context, private val text: String) : Drawable() {
@@ -39,11 +41,20 @@ class TextDrawable(context: Context, private val text: String) : Drawable() {
         style = Paint.Style.FILL
     }
     private val textPaint = TextPaint().apply {
+        val density = Density(context)
+        val fontSize = with(density) {
+            typography.body1.fontSize.toPx()
+        }
+        val spacing = with(density) {
+            typography.body1.letterSpacing.toPx() / fontSize
+        }
+
         isAntiAlias = true
         color = Color.WHITE
         textAlign = Paint.Align.CENTER
-        typeface = Typeface.SANS_SERIF
-        textSize = context.resources.getDimension(R.dimen.text_renderer_font_size)
+        typeface = Typeface.DEFAULT
+        textSize = fontSize
+        letterSpacing = spacing
     }
     private val canvasRect = RectF(0f, 0f, 1f, 1f)
     private val textPadding = context.resources.getDimension(R.dimen.text_renderer_padding)

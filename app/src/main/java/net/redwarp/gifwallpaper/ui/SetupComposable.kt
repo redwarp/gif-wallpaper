@@ -94,15 +94,7 @@ fun ActionBar(
     modifier: Modifier = Modifier,
     onChangeColorClick: () -> Unit
 ) {
-
-    var colorScheme: ColorScheme? by remember {
-        mutableStateOf(null)
-    }
-    LaunchedEffect("colorScheme") {
-        flowBasedModel.colorInfoFlow.map { it as? ColorScheme }.collect {
-            colorScheme = it
-        }
-    }
+    val hasColor by flowBasedModel.hasColorFlow.collectAsState(initial = false)
 
     val wallpaperStatus by flowBasedModel.wallpaperStatusFlow.collectAsState(initial = WallpaperStatus.NotSet)
     val scope = rememberCoroutineScope()
@@ -147,7 +139,7 @@ fun ActionBar(
         ActionButton(
             icon = R.drawable.ic_color_lens,
             text = stringResource(id = R.string.change_color),
-            enabled = colorScheme != null,
+            enabled = hasColor,
             onClick = onChangeColorClick
         )
     }
@@ -331,7 +323,6 @@ fun VerticalButton(
                         interactionSource = interactionSource,
                         indication = rememberRipple(bounded = true)
                     )
-                    // .background(MaterialTheme.colors.surface)
                     .padding(PaddingValues(8.dp))
             ) { measurables, constraints ->
                 val placeables = measurables.map { measurable ->

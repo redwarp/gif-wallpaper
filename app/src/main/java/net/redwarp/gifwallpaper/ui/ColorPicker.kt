@@ -37,18 +37,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.flowlayout.FlowRow
 import net.redwarp.gifwallpaper.R
+
+private val choiceSize = 48.dp
+private val choicePadding = 4.dp
 
 @Composable
 fun NoColorChoice(onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .size(48.dp)
+            .size(choiceSize)
+            .padding(choicePadding)
             .clip(CircleShape)
             .background(MaterialTheme.colors.onSurface)
             .clickable(onClick = onClick),
@@ -65,7 +71,8 @@ fun NoColorChoice(onClick: () -> Unit) {
 @Composable
 fun ColorChoice(color: Color, onClick: () -> Unit) {
     var modifier = Modifier
-        .size(48.dp)
+        .size(choiceSize)
+        .padding(choicePadding)
         .clip(CircleShape)
         .background(color)
         .clickable(onClick = onClick)
@@ -77,6 +84,80 @@ fun ColorChoice(color: Color, onClick: () -> Unit) {
         modifier = modifier
     ) {
     }
+}
+
+@Composable
+fun EvenFlow(modifier: Modifier = Modifier, spacing: Dp = 0.dp, content: @Composable () -> Unit) {
+    Layout(
+        modifier = modifier,
+        content = content,
+        measurePolicy = { measurables, constraints ->
+            val spacingInPx = spacing.roundToPx()
+            val placeables = measurables.map { measurable ->
+                measurable.measure(constraints)
+            }
+
+            val sequences = mutableListOf<List<Placeable>>()
+            val currentSequence = mutableListOf<Placeable>()
+
+            var usedWidth = 0
+            var lineFull = false
+
+            fun canAddToCurrent(placeable: Placeable): Boolean =
+                currentSequence.isEmpty() || (usedWidth + placeable.width + spacingInPx) < constraints.maxWidth
+
+            fun newSequence() {
+                sequences.add(currentSequence.toList())
+                lineFull = true
+
+                currentSequence.clear()
+                usedWidth = 0
+            }
+
+            for (placeable in placeables) {
+                if (!canAddToCurrent(placeable)) {
+                    newSequence()
+                }
+                if (currentSequence.isNotEmpty()) {
+                    usedWidth += spacingInPx
+                }
+                usedWidth += placeable.width
+                currentSequence.add(placeable)
+            }
+            if (currentSequence.isNotEmpty()) {
+                sequences.add(currentSequence.toList())
+            }
+
+            val evenSpacing = if (lineFull) {
+                sequences.firstOrNull()?.let { line ->
+                    val summedWidth = line.sumOf(Placeable::width)
+
+                    (constraints.maxWidth - summedWidth) / (line.size - 1)
+                } ?: 0
+            } else {
+                spacingInPx
+            }
+
+            val totalHeight = sequences.sumOf { line ->
+                line.maxOf(Placeable::height)
+            } + kotlin.math.max(0, sequences.size - 1) * evenSpacing
+
+            layout(constraints.maxWidth, totalHeight) {
+                var yOffset = 0
+                var xOffset: Int
+                for (line in sequences) {
+                    xOffset = 0
+
+                    for (placeable in line) {
+                        placeable.placeRelative(xOffset, yOffset)
+
+                        xOffset += placeable.width + evenSpacing
+                    }
+                    yOffset += evenSpacing + line.maxOf(Placeable::height)
+                }
+            }
+        }
+    )
 }
 
 @Composable
@@ -102,11 +183,7 @@ fun ColorPicker(
             )
         }
         Divider()
-        FlowRow(
-            mainAxisSpacing = 16.dp,
-            crossAxisSpacing = 16.dp,
-            modifier = Modifier.padding(16.dp)
-        ) {
+        EvenFlow(spacing = 8.dp, modifier = Modifier.padding(16.dp)) {
             NoColorChoice {
                 onColorPicked(defaultColor)
             }
@@ -130,7 +207,9 @@ fun ColorPickerPreview() {
                 0xff0000,
                 0x00ff00,
                 0x0000ff,
-                0x000000
+                0x000000,
+                0x1587af,
+                0x4578f3
             ).map(Int::rgbToColor)
         ) {
         }

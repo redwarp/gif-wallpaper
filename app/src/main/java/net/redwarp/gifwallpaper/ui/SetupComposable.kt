@@ -81,7 +81,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.R
@@ -155,20 +155,9 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val systemUiController = rememberSystemUiController()
-    var darkIcons by remember {
-        mutableStateOf(false)
-    }
+    val darkIcons by flowBasedModel.displayDarkIcons.collectAsState(initial = false)
 
-    LaunchedEffect(Unit) {
-        flowBasedModel.backgroundColorFlow.collect { backgroundColor ->
-            darkIcons = !backgroundColor.isDark()
-        }
-    }
-    systemUiController.setStatusBarColor(
-        color = Color.Transparent,
-        darkIcons = darkIcons
-    )
+    UpdateStatusBarColors(darkIcons = darkIcons)
 
     val drawableOwner = remember {
         DrawableMapper.previewMapper(
@@ -243,6 +232,7 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds
             )
+
             ActionMenu(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -512,3 +502,5 @@ fun OverflowMenu(
 }
 
 data class OverflowAction(val text: String, val onClick: () -> Unit)
+
+private val FlowBasedModel.displayDarkIcons: Flow<Boolean> get() = backgroundColorFlow.map { !it.isDark() }

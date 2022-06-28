@@ -22,21 +22,26 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import net.redwarp.gifwallpaper.R
 
 @Composable
@@ -77,6 +82,23 @@ fun BasicTopBar(modifier: Modifier = Modifier, title: String, navController: Nav
                 }
             },
             elevation = 0.dp,
+            backgroundColor = Color.Transparent,
+            contentColor = contentColorFor(MaterialTheme.colors.primarySurface)
+        )
+    }
+}
+
+@Composable
+fun UpdateStatusBarColors(
+    color: Color = Color.Transparent,
+    darkIcons: Boolean = color.luminance() > 0.5f
+) {
+    val systemUiController = rememberSystemUiController()
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = color,
+            darkIcons = darkIcons
         )
     }
 }

@@ -16,7 +16,6 @@
 package net.redwarp.gifwallpaper.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
@@ -48,5 +47,3 @@ fun AppTheme(
 
     MaterialTheme.colors.primarySurface
 }
-
-val Colors.primaryVariantSurface: Color get() = if (isLight) primaryVariant else surface

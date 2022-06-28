@@ -153,7 +153,7 @@ class FlowBasedModel(
     }
 
     suspend fun resetTranslate() {
-        wallpaperSettings.setTranslation(Translation(0f, 0f))
+        wallpaperSettings.resetTranslation()
         _translationEventFlow.emit(TranslationEvent.Reset)
     }
 

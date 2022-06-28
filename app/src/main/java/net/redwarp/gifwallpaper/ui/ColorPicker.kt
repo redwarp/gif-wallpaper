@@ -81,13 +81,14 @@ fun ColorChoice(color: Color, onClick: () -> Unit) {
 
 @Composable
 fun ColorPicker(
+    modifier: Modifier = Modifier,
     defaultColor: Color,
     colors: List<Color>,
     onColorPicked: (Color) -> Unit = {},
-    onCloseClick: () -> Unit = {}
+    onCloseClick: () -> Unit = {},
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.surface)
     ) {

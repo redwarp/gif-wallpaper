@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -46,6 +47,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ProvideTextStyle
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
@@ -77,6 +79,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.R
@@ -85,6 +90,7 @@ import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.WallpaperStatus
 import net.redwarp.gifwallpaper.renderer.DrawableMapper
 import net.redwarp.gifwallpaper.renderer.rememberGifDrawablePainter
+import net.redwarp.gifwallpaper.util.isDark
 import kotlin.math.max
 
 @Composable
@@ -149,6 +155,21 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
+    val systemUiController = rememberSystemUiController()
+    var darkIcons by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        flowBasedModel.backgroundColorFlow.collect { backgroundColor ->
+            darkIcons = !backgroundColor.isDark()
+        }
+    }
+    systemUiController.setStatusBarColor(
+        color = Color.Transparent,
+        darkIcons = darkIcons
+    )
+
     val drawableOwner = remember {
         DrawableMapper.previewMapper(
             context = context,
@@ -182,6 +203,7 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
         sheetState = sheetState,
         sheetContent = {
             ColorPicker(
+                modifier = Modifier.navigationBarsPadding(),
                 defaultColor = colorInfo.first,
                 colors = colorInfo.second,
                 onColorPicked = { color ->
@@ -222,13 +244,30 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
                 contentScale = ContentScale.FillBounds
             )
             ActionMenu(
-                modifier = Modifier.align(Alignment.TopEnd),
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .statusBarsPadding(),
                 flowBasedModel = flowBasedModel,
-                navController = navController
+                navController = navController,
+                tint = if (darkIcons) {
+                    if (MaterialTheme.colors.isLight) {
+                        MaterialTheme.colors.onSurface
+                    } else {
+                        MaterialTheme.colors.surface
+                    }
+                } else {
+                    if (MaterialTheme.colors.isLight) {
+                        MaterialTheme.colors.surface
+                    } else {
+                        MaterialTheme.colors.onSurface
+                    }
+                }
             )
             ActionBar(
                 flowBasedModel = flowBasedModel,
-                modifier = Modifier.align(Alignment.BottomStart),
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .navigationBarsPadding(),
                 onChangeColorClick = {
                     scope.launch {
                         sheetState.show()
@@ -243,7 +282,8 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
 fun ActionMenu(
     flowBasedModel: FlowBasedModel,
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
 ) {
     val scope = rememberCoroutineScope()
     val items = mutableListOf<OverflowAction>()
@@ -273,7 +313,7 @@ fun ActionMenu(
         }
     )
 
-    OverflowMenu(modifier = modifier, items = items)
+    OverflowMenu(modifier = modifier, items = items, tint = tint)
 }
 
 @Composable
@@ -373,30 +413,34 @@ fun ActionButtonPreviewNight() {
 
 @Composable
 fun ActionRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Layout(
-        content = content,
-        modifier = modifier.background(MaterialTheme.colors.surface)
-    ) { measurables, constraints ->
-        val childWidth = constraints.maxWidth / measurables.size
-        val childHeight = measurables.maxOf { it.minIntrinsicHeight(childWidth) }
-        val childConstraint = constraints.copy(
-            maxWidth = childWidth,
-            minWidth = childWidth,
-            minHeight = childHeight,
-        )
-        val placeables = measurables.map { measurable ->
-            measurable.measure(childConstraint)
-        }
+    Surface(
+        modifier = modifier.background(MaterialTheme.colors.surface),
+        elevation = AppBarDefaults.BottomAppBarElevation
+    ) {
+        Layout(
+            content = content,
+        ) { measurables, constraints ->
+            val childWidth = constraints.maxWidth / measurables.size
+            val childHeight = measurables.maxOf { it.minIntrinsicHeight(childWidth) }
+            val childConstraint = constraints.copy(
+                maxWidth = childWidth,
+                minWidth = childWidth,
+                minHeight = childHeight,
+            )
+            val placeables = measurables.map { measurable ->
+                measurable.measure(childConstraint)
+            }
 
-        val height = placeables.maxOf(Placeable::height)
+            val height = placeables.maxOf(Placeable::height)
 
-        layout(constraints.maxWidth, height) {
-            var xPosition = 0
+            layout(constraints.maxWidth, height) {
+                var xPosition = 0
 
-            placeables.forEach { placeable ->
-                placeable.placeRelative(x = xPosition, y = 0)
+                placeables.forEach { placeable ->
+                    placeable.placeRelative(x = xPosition, y = 0)
 
-                xPosition += placeable.width
+                    xPosition += placeable.width
+                }
             }
         }
     }
@@ -435,13 +479,21 @@ fun ActionBarPreview() {
 }
 
 @Composable
-fun OverflowMenu(modifier: Modifier = Modifier, items: List<OverflowAction>) {
+fun OverflowMenu(
+    modifier: Modifier = Modifier,
+    items: List<OverflowAction>,
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+) {
     var showMenu by remember {
         mutableStateOf(false)
     }
     Box(modifier = modifier) {
         IconButton(onClick = { showMenu = !showMenu }) {
-            Icon(imageVector = Icons.Outlined.MoreVert, contentDescription = "More")
+            Icon(
+                imageVector = Icons.Outlined.MoreVert,
+                contentDescription = "More",
+                tint = tint
+            )
         }
         DropdownMenu(
             expanded = showMenu,

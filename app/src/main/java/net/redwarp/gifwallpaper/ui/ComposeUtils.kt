@@ -15,19 +15,25 @@
  */
 package net.redwarp.gifwallpaper.ui
 
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
@@ -55,12 +61,22 @@ fun <T> checkOnResume(check: () -> T): State<T> {
 }
 
 @Composable
-fun BasicTopBar(title: String, navController: NavController) {
-    TopAppBar(title = {
-        Text(text = title)
-    }, navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Filled.ArrowBack, stringResource(id = R.string.back))
-            }
-        })
+fun BasicTopBar(modifier: Modifier = Modifier, title: String, navController: NavController) {
+    Surface(
+        color = MaterialTheme.colors.primarySurface,
+        elevation = AppBarDefaults.TopAppBarElevation
+    ) {
+        TopAppBar(
+            modifier = modifier,
+            title = {
+                Text(text = title)
+            },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Filled.ArrowBack, stringResource(id = R.string.back))
+                }
+            },
+            elevation = 0.dp,
+        )
+    }
 }

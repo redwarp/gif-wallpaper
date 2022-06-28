@@ -25,7 +25,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class AppSettings(private val context: Context, ioScope: CoroutineScope) {
+interface AppSettings {
+    val powerSavingSettingFlow: Flow<Boolean>
+    val thermalThrottleSettingFlow: Flow<Boolean>
+    suspend fun setPowerSaving(enabled: Boolean)
+    suspend fun setThermalThrottle(enabled: Boolean)
+}
+
+class DataStoreAppSettings(private val context: Context, ioScope: CoroutineScope) : AppSettings {
     private val powerSavingKey = booleanPreferencesKey("power_saving")
     private val thermalThrottleKey = booleanPreferencesKey("thermal_throttle")
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
@@ -33,21 +40,22 @@ class AppSettings(private val context: Context, ioScope: CoroutineScope) {
         scope = ioScope
     )
 
-    val powerSavingSettingFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+    override val powerSavingSettingFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[powerSavingKey] ?: context.resources.getBoolean(R.bool.power_saving_enabled)
     }
-    val thermalThrottleSettingFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[thermalThrottleKey]
-            ?: context.resources.getBoolean(R.bool.thermal_throttle_enabled)
-    }
+    override val thermalThrottleSettingFlow: Flow<Boolean> =
+        context.dataStore.data.map { preferences ->
+            preferences[thermalThrottleKey]
+                ?: context.resources.getBoolean(R.bool.thermal_throttle_enabled)
+        }
 
-    suspend fun setPowerSaving(enabled: Boolean) {
+    override suspend fun setPowerSaving(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[powerSavingKey] = enabled
         }
     }
 
-    suspend fun setThermalThrottle(enabled: Boolean) {
+    override suspend fun setThermalThrottle(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[thermalThrottleKey] = enabled
         }

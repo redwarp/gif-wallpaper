@@ -29,9 +29,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.insets.ProvideWindowInsets
 import net.redwarp.gifwallpaper.GifApplication
 import net.redwarp.gifwallpaper.GifWallpaperService
 import net.redwarp.gifwallpaper.R
@@ -42,50 +44,53 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            AppTheme {
-                val context = LocalContext.current
-                val isWallpaperSet by checkOnResume {
-                    isWallpaperSet(context)
-                }
-                val isPreview = remember {
-                    isPreviewMode()
-                }
-
-                if (isWallpaperSet || isPreview) {
-                    val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "setup") {
-                        composable("setup") {
-                            SetupUi(
-                                flowBasedModel = GifApplication.app.model,
-                                navController = navController
-                            )
-                        }
-                        composable("privacy") {
-                            MarkdownUi(
-                                fileName = "privacy.md",
-                                title = stringResource(id = R.string.privacy),
-                                navController = navController
-                            )
-                        }
-                        composable("about") {
-                            MarkdownUi(
-                                fileName = "about.md",
-                                title = stringResource(id = R.string.about),
-                                navController = navController
-                            )
-                        }
-                        composable("settings") {
-                            SettingUi(
-                                appSettings = GifApplication.app.appSettings,
-                                navController = navController
-                            )
-                        }
+            ProvideWindowInsets {
+                AppTheme {
+                    val context = LocalContext.current
+                    val isWallpaperSet by checkOnResume {
+                        isWallpaperSet(context)
                     }
-                } else {
-                    LauncherUi {
-                        activateWallpaper(context)
+                    val isPreview = remember {
+                        isPreviewMode()
+                    }
+
+                    if (isWallpaperSet || isPreview) {
+                        val navController = rememberNavController()
+                        NavHost(navController = navController, startDestination = "setup") {
+                            composable("setup") {
+                                SetupUi(
+                                    flowBasedModel = GifApplication.app.model,
+                                    navController = navController
+                                )
+                            }
+                            composable("privacy") {
+                                MarkdownUi(
+                                    fileName = "privacy.md",
+                                    title = stringResource(id = R.string.privacy),
+                                    navController = navController
+                                )
+                            }
+                            composable("about") {
+                                MarkdownUi(
+                                    fileName = "about.md",
+                                    title = stringResource(id = R.string.about),
+                                    navController = navController
+                                )
+                            }
+                            composable("settings") {
+                                SettingUi(
+                                    appSettings = GifApplication.app.appSettings,
+                                    navController = navController
+                                )
+                            }
+                        }
+                    } else {
+                        LauncherUi {
+                            activateWallpaper(context)
+                        }
                     }
                 }
             }
@@ -122,7 +127,7 @@ fun activateWallpaper(context: Context) {
 
 fun Context.isPreviewMode(): Boolean {
     return if (this is Activity) {
-        this.intent.getBooleanExtra(EXTRA_PREVIEW_MODE, false)
+        intent.getBooleanExtra(EXTRA_PREVIEW_MODE, false)
     } else {
         false
     }

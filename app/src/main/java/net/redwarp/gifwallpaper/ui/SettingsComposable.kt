@@ -82,9 +82,9 @@ fun SettingUi(navController: NavController, appSettings: AppSettings) {
                 navController = navController
             )
         }
-    ) {
+    ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(paddingValues).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Setting(

@@ -17,7 +17,6 @@ package net.redwarp.gifwallpaper.ui
 
 import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.widget.TextView
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -27,29 +26,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import app.redwarp.markdown.MDDocument
 import com.google.accompanist.insets.statusBarsPadding
-import io.noties.markwon.Markwon
+import org.commonmark.node.Document
+import org.commonmark.parser.Parser
 import java.io.InputStream
 
 @Composable
 fun MarkdownText(text: String, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-
-    val markwon = remember {
-        Markwon.create(context)
+    val document = remember {
+        val parser = Parser.builder().build()
+        parser.parse(text) as Document
     }
 
-    AndroidView(
-        modifier = modifier,
-        factory = { ctx ->
-            TextView(ctx)
-        },
-        update = {
-            markwon.setMarkdown(it, text)
-        }
-    )
+    MDDocument(document = document, modifier = modifier)
 }
 
 @Composable
@@ -87,11 +78,12 @@ fun MarkdownPage(
                 modifier = topBarModifier
             )
         }
-    ) {
+    ) { paddingValues ->
         MarkdownText(
             text = markdownText,
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .padding(16.dp)
         )
     }

@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id "com.diffplug.spotless" version "6.7.2"
+    id "com.diffplug.spotless"
     id "se.ascp.gradle.gradle-versions-filter" version "0.1.16"
 }
 
@@ -63,16 +63,15 @@ android {
 
 spotless {
     kotlin {
-        target project.fileTree(project.rootDir) {
-            include '**/net/redwarp/gifwallpaper/**/*.kt'
-        }
+        target '**/*.kt'
 
-        licenseHeaderFile 'license_header.kt'
+        licenseHeaderFile(new File(rootDir, 'assets/license_header.kt'))
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation(project(':markdown'))
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'com.google.android.material:material:1.6.1'
@@ -81,7 +80,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2'
     implementation 'androidx.lifecycle:lifecycle-service:2.4.1'
     implementation 'androidx.palette:palette-ktx:1.0.0'
-    implementation "io.noties.markwon:core:4.6.2"
+    implementation "com.atlassian.commonmark:commonmark:0.17.0"
     implementation "app.redwarp.gif:decoder:1.2.0"
     implementation "app.redwarp.gif:android-drawable:1.2.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"

@@ -18,7 +18,6 @@ package net.redwarp.gifwallpaper
 import android.app.WallpaperColors
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
@@ -35,6 +34,9 @@ import kotlinx.coroutines.withContext
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.createMiniature
 import net.redwarp.gifwallpaper.renderer.drawableFlow
+import net.redwarp.gifwallpaper.util.WallpaperColorsCompat
+import net.redwarp.gifwallpaper.util.toCompat
+import net.redwarp.gifwallpaper.util.toReal
 
 class GifWallpaperService : WallpaperService(), LifecycleOwner {
     private val dispatcher = EngineLifecycleDispatcher(this)
@@ -64,7 +66,7 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
 
         private val handlerThread = HandlerThread("WallpaperLooper")
         private var handler: Handler? = null
-        private var wallpaperColors: LocalWallpaperColors? =
+        private var wallpaperColors: WallpaperColorsCompat? =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
                 getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
             } else {
@@ -125,11 +127,12 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
         override fun onComputeColors(): WallpaperColors? {
             return wallpaperColors?.toReal()
         }
+
         @RequiresApi(Build.VERSION_CODES.O_MR1)
         private suspend fun updateWallpaperColors() {
             withContext(Dispatchers.Default) {
                 wallpaperColors = surfaceDrawableRenderer?.drawable?.createMiniature()
-                    ?.let(WallpaperColors::fromBitmap)?.toLocal()
+                    ?.let(WallpaperColors::fromBitmap)?.toCompat()
                     ?: getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
                 withContext(Dispatchers.Main) {
                     notifyColorsChanged()
@@ -138,28 +141,14 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
         }
 
         @RequiresApi(Build.VERSION_CODES.O_MR1)
-        private fun Int.colorToWallpaperColor(): LocalWallpaperColors {
+        private fun Int.colorToWallpaperColor(): WallpaperColorsCompat {
             val bitmap = Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
 
             canvas.drawColor(this)
             val wallpaperColors = WallpaperColors.fromBitmap(bitmap)
             bitmap.recycle()
-            return wallpaperColors.toLocal()
+            return wallpaperColors.toCompat()
         }
     }
 }
-
-@RequiresApi(Build.VERSION_CODES.O_MR1)
-data class LocalWallpaperColors(
-    val primaryColor: Color,
-    val secondaryColor: Color?,
-    val tertiaryColor: Color?,
-    val colorHints: Int
-)
-
-fun WallpaperColors.toLocal(): LocalWallpaperColors =
-    LocalWallpaperColors(primaryColor, secondaryColor, tertiaryColor, colorHints)
-
-fun LocalWallpaperColors.toReal(): WallpaperColors =
-    WallpaperColors(primaryColor, secondaryColor, tertiaryColor, colorHints)

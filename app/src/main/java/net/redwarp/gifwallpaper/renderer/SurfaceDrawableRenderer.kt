@@ -54,6 +54,11 @@ class SurfaceDrawableRenderer(
 
                 value.callback = this
                 value.setVisible(isVisible, false)
+                if (isVisible) {
+                    if (value is Animatable) value.start()
+                } else {
+                    if (value is Animatable) value.stop()
+                }
 
                 if (isVisible) {
                     value.invalidateSelf()

@@ -15,6 +15,7 @@
  */
 package app.redwarp.markdown
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.AnnotatedString.Builder
+import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
@@ -66,6 +68,7 @@ import org.commonmark.node.ListBlock
 import org.commonmark.node.Node
 import org.commonmark.node.OrderedList
 import org.commonmark.node.Paragraph
+import org.commonmark.node.SoftLineBreak
 import org.commonmark.node.StrongEmphasis
 import org.commonmark.node.Text
 import org.commonmark.node.ThematicBreak
@@ -73,6 +76,7 @@ import org.commonmark.parser.Parser
 
 private const val TAG_URL = "url"
 private const val TAG_IMAGE_URL = "imageUrl"
+private val BLOCK_PADDING = 8.dp
 
 /**
  * Based on https://www.hellsoft.se/rendering-markdown-with-jetpack-compose/
@@ -104,7 +108,7 @@ fun MDHeading(heading: Heading, modifier: Modifier = Modifier) {
         }
     }
 
-    val padding = if (heading.parent is Document) 8.dp else 0.dp
+    val padding = if (heading.parent is Document) BLOCK_PADDING else 0.dp
     Box(modifier = modifier.padding(bottom = padding)) {
         val text = buildAnnotatedString {
             appendMarkdownChildren(heading, MaterialTheme.colors)
@@ -119,7 +123,7 @@ fun MDParagraph(paragraph: Paragraph, modifier: Modifier = Modifier) {
         // Paragraph with single image
         MDImage(paragraph.firstChild as Image, modifier)
     } else {
-        val padding = if (paragraph.parent is Document) 8.dp else 0.dp
+        val padding = if (paragraph.parent is Document) BLOCK_PADDING else 0.dp
         Box(modifier = modifier.padding(bottom = padding)) {
             val styledText = buildAnnotatedString {
                 pushStyle(MaterialTheme.typography.body1.toSpanStyle())
@@ -173,7 +177,7 @@ fun MDListItems(
     modifier: Modifier = Modifier,
     item: @Composable (node: Node) -> Unit
 ) {
-    val bottom = if (listBlock.parent is Document) 8.dp else 0.dp
+    val bottom = if (listBlock.parent is Document) BLOCK_PADDING else 0.dp
     val start = if (listBlock.parent is Document) 0.dp else 8.dp
     Column(modifier = modifier.padding(start = start, bottom = bottom)) {
         var listItem = listBlock.firstChild
@@ -194,18 +198,23 @@ fun MDListItems(
 
 @Composable
 fun MDBlockQuote(blockQuote: BlockQuote, modifier: Modifier = Modifier) {
-    val color = MaterialTheme.colors.onBackground
+    val color = MaterialTheme.colors.primary
+    val padding = if (blockQuote.parent is Document) BLOCK_PADDING else 0.dp
     Box(
         modifier = modifier
+            .padding(bottom = padding)
+            .padding(start = 8.dp, end = 8.dp)
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.background.copy(alpha = 0.1f))
             .drawBehind {
                 drawLine(
                     color = color,
-                    strokeWidth = 2f,
-                    start = Offset(12.dp.value, 0f),
-                    end = Offset(12.dp.value, size.height)
+                    strokeWidth = 4.dp.toPx(),
+                    start = Offset(0f, 0f),
+                    end = Offset(0f, size.height)
                 )
             }
-            .padding(start = 16.dp, top = 4.dp, bottom = 4.dp)
+            .padding(8.dp)
     ) {
         val text = buildAnnotatedString {
             pushStyle(
@@ -221,10 +230,16 @@ fun MDBlockQuote(blockQuote: BlockQuote, modifier: Modifier = Modifier) {
 
 @Composable
 fun MDFencedCodeBlock(fencedCodeBlock: FencedCodeBlock, modifier: Modifier = Modifier) {
-    val padding = if (fencedCodeBlock.parent is Document) 8.dp else 0.dp
-    Box(modifier = modifier.padding(start = 8.dp, bottom = padding)) {
+    val padding = if (fencedCodeBlock.parent is Document) BLOCK_PADDING else 0.dp
+    Box(
+        modifier = modifier
+            .padding(bottom = padding)
+            .background(MaterialTheme.colors.background)
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
         Text(
-            text = fencedCodeBlock.literal,
+            text = fencedCodeBlock.literal.trim('\n'),
             style = TextStyle(fontFamily = FontFamily.Monospace),
             modifier = modifier
         )
@@ -264,7 +279,11 @@ fun Builder.appendMarkdownChildren(
 ) {
     for (child in parent.children()) {
         when (child) {
-            is Paragraph -> appendMarkdownChildren(child, colors)
+            is Paragraph -> {
+                pushStyle(ParagraphStyle())
+                appendMarkdownChildren(child, colors)
+                pop()
+            }
             is Text -> append(child.literal)
             is Image -> appendInlineContent(TAG_IMAGE_URL, child.destination)
             is Emphasis -> {
@@ -284,6 +303,9 @@ fun Builder.appendMarkdownChildren(
             }
             is HardLineBreak -> {
                 append("\n")
+            }
+            is SoftLineBreak -> {
+                append(" ")
             }
             is Link -> {
                 val underline = SpanStyle(colors.primary, textDecoration = TextDecoration.Underline)
@@ -330,7 +352,21 @@ fun MarkdownText(text: AnnotatedString, style: TextStyle, modifier: Modifier = M
     )
 }
 
-@Preview
+fun Node.children(): NodeIterator = NodeIterator(this)
+
+class NodeIterator(node: Node) : Iterator<Node> {
+    var child: Node? = node.firstChild
+
+    override fun hasNext(): Boolean = child != null
+
+    override fun next(): Node {
+        val next = requireNotNull(child)
+        child = next.next
+        return next
+    }
+}
+
+@Preview()
 @Composable
 fun MarkdownPreview() {
     val markdownText = """
@@ -339,8 +375,13 @@ fun MarkdownPreview() {
         ## Second title
         This is some paragraph with `inline code`, *italic* and **bold**
         
-        > Test Psychologique well this is not perfect, we can work on that!
-                
+        > This is a quoted block, but well this is not perfect,
+        > we can work on that!
+        >
+        > There should be a new line.
+        
+        > Hello
+        
         ```
         This is some code
         ```
@@ -357,18 +398,4 @@ fun MarkdownPreview() {
     val document = parser.parse(markdownText) as Document
 
     MDDocument(document = document)
-}
-
-fun Node.children(): NodeIterator = NodeIterator(this)
-
-class NodeIterator(node: Node) : Iterator<Node> {
-    var child: Node? = node.firstChild
-
-    override fun hasNext(): Boolean = child != null
-
-    override fun next(): Node {
-        val next = requireNotNull(child)
-        child = next.next
-        return next
-    }
 }

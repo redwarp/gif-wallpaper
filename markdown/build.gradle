@@ -46,6 +46,7 @@ spotless {
 }
 
 dependencies {
+    var compose_version = '1.1.1'
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
@@ -53,14 +54,19 @@ dependencies {
     implementation 'io.coil-kt:coil-compose:2.1.0'
 
     // Compose Material Design
-    implementation 'androidx.compose.material:material:1.1.1'
+    implementation "androidx.compose.material:material:$compose_version"
 
     // Tooling support (Previews, etc.)
-    implementation 'androidx.compose.ui:ui-tooling:1.1.1'
-    implementation "androidx.compose.ui:ui-tooling-preview:1.1.1"
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
 
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    // Test rules and transitive dependencies:
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_version")
+    // Needed for createComposeRule, but not createAndroidComposeRule:
+    debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_version")
 }

@@ -15,6 +15,7 @@
  */
 package app.redwarp.markdown
 
+import androidx.compose.material.Text
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -126,5 +127,22 @@ class MarkdownComposableTest {
             hasText("Break after this!", true)
                 .and(hasText("Did it work?", true))
         ).assertExists()
+    }
+
+    @Test
+    fun mdList() {
+        composeTestRule.setContent {
+            MDList {
+                MDListRow("1.") {
+                    Text(text = "Hello")
+                }
+                MDListRow("-") {
+                    Text(text = "What is this?")
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText("1.").assertExists()
+        composeTestRule.onNode(hasText("-")).assertExists()
     }
 }

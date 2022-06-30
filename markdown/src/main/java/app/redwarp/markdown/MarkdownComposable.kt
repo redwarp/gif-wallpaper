@@ -15,9 +15,11 @@
  */
 package app.redwarp.markdown
 
+import android.util.SparseArray
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,6 +31,8 @@ import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,6 +40,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.AnnotatedString.Builder
@@ -70,9 +77,9 @@ import org.commonmark.node.OrderedList
 import org.commonmark.node.Paragraph
 import org.commonmark.node.SoftLineBreak
 import org.commonmark.node.StrongEmphasis
-import org.commonmark.node.Text
 import org.commonmark.node.ThematicBreak
 import org.commonmark.parser.Parser
+import org.commonmark.node.Text as TextNode
 
 private const val TAG_URL = "url"
 private const val TAG_IMAGE_URL = "imageUrl"
@@ -144,30 +151,41 @@ fun MDImage(image: Image, modifier: Modifier = Modifier) {
 
 @Composable
 fun MDBulletList(bulletList: BulletList, modifier: Modifier = Modifier) {
-    val marker = bulletList.bulletMarker
-    MDListItems(bulletList, modifier = modifier) {
-        val text = buildAnnotatedString {
-            pushStyle(MaterialTheme.typography.body1.toSpanStyle())
-            append("$marker ")
-            appendMarkdownChildren(it, MaterialTheme.colors)
-            pop()
+    CompositionLocalProvider(LocalListLevel provides LocalListLevel.current.next()) {
+        val marker = when (LocalListLevel.current.level) {
+            1 -> "•"
+            2 -> "◦"
+            3 -> "▪"
+            else -> "▫"
         }
-        MarkdownText(text, MaterialTheme.typography.body1, modifier)
+        MDListItems(bulletList, modifier = modifier) {
+            MDListRow("$marker ") {
+                val text = buildAnnotatedString {
+                    pushStyle(MaterialTheme.typography.body1.toSpanStyle())
+                    appendMarkdownChildren(it, MaterialTheme.colors)
+                    pop()
+                }
+                MarkdownText(text, MaterialTheme.typography.body1, modifier)
+            }
+        }
     }
 }
 
 @Composable
 fun MDOrderedList(orderedList: OrderedList, modifier: Modifier = Modifier) {
-    var number = orderedList.startNumber
-    val delimiter = orderedList.delimiter
-    MDListItems(orderedList, modifier) {
-        val text = buildAnnotatedString {
-            pushStyle(MaterialTheme.typography.body1.toSpanStyle())
-            append("${number++}$delimiter ")
-            appendMarkdownChildren(it, MaterialTheme.colors)
-            pop()
+    CompositionLocalProvider(LocalListLevel provides LocalListLevel.current.next()) {
+        var number = orderedList.startNumber
+        val delimiter = orderedList.delimiter
+        MDListItems(orderedList, modifier) {
+            MDListRow("${number++}$delimiter ") {
+                val text = buildAnnotatedString {
+                    pushStyle(MaterialTheme.typography.body1.toSpanStyle())
+                    appendMarkdownChildren(it, MaterialTheme.colors)
+                    pop()
+                }
+                MarkdownText(text, MaterialTheme.typography.body1, modifier)
+            }
         }
-        MarkdownText(text, MaterialTheme.typography.body1, modifier)
     }
 }
 
@@ -179,19 +197,15 @@ fun MDListItems(
 ) {
     val bottom = if (listBlock.parent is Document) BLOCK_PADDING else 0.dp
     val start = if (listBlock.parent is Document) 0.dp else 8.dp
-    Column(modifier = modifier.padding(start = start, bottom = bottom)) {
-        var listItem = listBlock.firstChild
-        while (listItem != null) {
-            var child = listItem.firstChild
-            while (child != null) {
+    MDList(modifier = modifier.padding(start = start, bottom = bottom)) {
+        for (listItem in listBlock.children()) {
+            for (child in listItem.children()) {
                 when (child) {
                     is BulletList -> MDBulletList(child, modifier)
                     is OrderedList -> MDOrderedList(child, modifier)
                     else -> item(child)
                 }
-                child = child.next
             }
-            listItem = listItem.next
         }
     }
 }
@@ -284,7 +298,7 @@ fun Builder.appendMarkdownChildren(
                 appendMarkdownChildren(child, colors)
                 pop()
             }
-            is Text -> append(child.literal)
+            is TextNode -> append(child.literal)
             is Image -> appendInlineContent(TAG_IMAGE_URL, child.destination)
             is Emphasis -> {
                 pushStyle(SpanStyle(fontStyle = FontStyle.Italic))
@@ -352,6 +366,103 @@ fun MarkdownText(text: AnnotatedString, style: TextStyle, modifier: Modifier = M
     )
 }
 
+private sealed class MDListPlaceable {
+    class WithSeparator(val separator: Placeable, val block: Placeable) : MDListPlaceable()
+    class Solo(val block: Placeable) : MDListPlaceable()
+}
+
+private enum class LayoutId {
+    Delimiter
+}
+
+@Composable
+fun MDList(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Layout(
+        modifier = modifier,
+        content = content,
+        measurePolicy = { measurables, constraints ->
+            var height = 0
+            var alignment = 0
+
+            val placeables = mutableListOf<MDListPlaceable>()
+
+            val separators = SparseArray<Placeable>()
+            measurables.mapIndexedNotNull { index, measurable ->
+                if (measurable.layoutId == LayoutId.Delimiter) {
+                    index to measurable
+                } else {
+                    null
+                }
+            }.forEach { (index, separator) ->
+                val placeable = separator.measure(constraints)
+                alignment = kotlin.math.max(placeable.width, alignment)
+                separators[index] = placeable
+            }
+
+            var index = 0
+            while (index < measurables.size) {
+                val measurable = measurables[index]
+                if (measurable.layoutId == LayoutId.Delimiter && index + 1 < measurables.size) {
+                    val nextMeasurable = measurables[index + 1]
+                    val separatorPlaceable = separators[index]
+                    val blockPlaceable =
+                        nextMeasurable.measure(constraints.copy(maxWidth = constraints.maxWidth - alignment))
+                    height += blockPlaceable.height
+                    alignment = kotlin.math.max(separatorPlaceable.width, alignment)
+
+                    placeables.add(
+                        MDListPlaceable.WithSeparator(
+                            separatorPlaceable,
+                            blockPlaceable
+                        )
+                    )
+
+                    index += 2
+                } else if (measurable.layoutId == LayoutId.Delimiter) {
+                    // Weird, the last item is a delimiter, how did that happen?
+                    index += 1
+                } else {
+                    val placeable = measurable.measure(constraints)
+                    height += placeable.height
+
+                    placeables.add(MDListPlaceable.Solo(placeable))
+
+                    index += 1
+                }
+            }
+
+            layout(constraints.maxWidth, height) {
+                var y = 0
+                for (placeable in placeables) {
+                    y += when (placeable) {
+                        is MDListPlaceable.WithSeparator -> {
+                            placeable.separator.placeRelative(0, y)
+                            placeable.block.placeRelative(alignment, y)
+                            placeable.block.height
+                        }
+                        is MDListPlaceable.Solo -> {
+                            placeable.block.placeRelative(0, y)
+                            placeable.block.height
+                        }
+                    }
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun MDListRow(separator: String, content: @Composable BoxScope.() -> Unit) {
+    Text(
+        text = separator,
+        modifier = Modifier.layoutId(LayoutId.Delimiter),
+        style = MaterialTheme.typography.body1
+    )
+    Box {
+        content()
+    }
+}
+
 fun Node.children(): NodeIterator = NodeIterator(this)
 
 class NodeIterator(node: Node) : Iterator<Node> {
@@ -366,7 +477,21 @@ class NodeIterator(node: Node) : Iterator<Node> {
     }
 }
 
-@Preview()
+@Preview
+@Composable
+fun MDListPreview() {
+    MDList(modifier = Modifier) {
+        MDListRow("1.") {
+            Text(text = "Hello, let's see how this performs with a long text that wraps on itself.")
+        }
+        MDListRow("-") {
+            Text("What is this?")
+        }
+        Text(text = "Hello")
+    }
+}
+
+@Preview
 @Composable
 fun MarkdownPreview() {
     val markdownText = """
@@ -392,6 +517,10 @@ fun MarkdownPreview() {
           1. Not sure. Let's have a super long text, so we can see how wrapping looks like.
             Well it does not look nice. We can do better I'm sure!
           2. About that
+        - Test
+          - Multiple
+            - Levels
+              - Where does it ends?
     """.trimIndent()
 
     val parser = Parser.builder().build()
@@ -399,3 +528,9 @@ fun MarkdownPreview() {
 
     MDDocument(document = document)
 }
+
+private data class ListLevel(val level: Int) {
+    fun next(): ListLevel = copy(level = level + 1)
+}
+
+private val LocalListLevel = compositionLocalOf { ListLevel(0) }

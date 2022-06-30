@@ -79,6 +79,7 @@ class TextDrawable(context: Context, private val text: String) : Drawable() {
 
     override fun setColorFilter(colorFilter: ColorFilter?) = Unit // Don't intend to use that
 
+    @Deprecated("Deprecated in Java", ReplaceWith(""))
     override fun getOpacity(): Int = PixelFormat.OPAQUE
 
     override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
@@ -102,7 +103,6 @@ class TextDrawable(context: Context, private val text: String) : Drawable() {
             .build()
 
     @Suppress("DEPRECATION")
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun buildStaticLayout21(textWidth: Int) =
         StaticLayout(text, textPaint, textWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 0f, true)
 }

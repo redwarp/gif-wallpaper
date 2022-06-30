@@ -1,9 +1,8 @@
-# About
+# About this app
 
 ## Made with
 
 * [Jetpack Compose](https://developer.android.com/jetpack/compose)
-* [Markwon](https://github.com/noties/Markwon) (To display this page)
 
 ## Help with the translations
 

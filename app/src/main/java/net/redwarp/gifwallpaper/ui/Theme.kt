@@ -26,13 +26,22 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+val Orange = Color(0xffd8aa8e)
 val DarkOrange = Color(0xffa57b60)
+val LightGreen = Color(0xffbcd88e)
+val Green = Color(0xff8ba660)
 
-private val darkColors = darkColors()
-private val lightColors = lightColors(
-    primary = Color(0xffd8aa8e),
+private val darkColors = darkColors(
+    primary = Orange,
     primaryVariant = DarkOrange,
-    secondary = Color(0xff2E688C)
+    secondary = LightGreen,
+    secondaryVariant = Green
+)
+private val lightColors = lightColors(
+    primary = Orange,
+    primaryVariant = DarkOrange,
+    secondary = LightGreen,
+    secondaryVariant = Green
 )
 val typography = Typography(
     h1 = TextStyle(

@@ -70,18 +70,10 @@ fun LauncherUi(onClick: () -> Unit) {
     }
 }
 
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Preview(uiMode = UI_MODE_NIGHT_NO)
 @Composable
-fun LauncherUiPreviewLight() {
-    AppTheme {
-        LauncherUi {
-        }
-    }
-}
-
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun LauncherUiPreviewDark() {
+fun LauncherUiPreview() {
     AppTheme {
         LauncherUi {
         }

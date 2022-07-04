@@ -103,8 +103,6 @@ dependencies {
 
     // Integration with ViewModels
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0'
-    // UI Tests
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.8.1'

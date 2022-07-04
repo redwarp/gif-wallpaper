@@ -79,15 +79,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.R
-import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.renderer.rememberGifDrawablePainter
 import net.redwarp.gifwallpaper.ui.setup.ColorPalette
 import net.redwarp.gifwallpaper.ui.setup.SetupModel
-import net.redwarp.gifwallpaper.util.isDark
 import kotlin.math.max
 
 @Composable
@@ -148,7 +144,6 @@ fun ActionBar(
 
 @Composable
 fun SetupUi(
-    flowBasedModel: FlowBasedModel,
     setupModel: SetupModel,
     navController: NavController
 ) {
@@ -485,5 +480,3 @@ fun OverflowMenu(
 }
 
 data class OverflowAction(val text: String, val onClick: () -> Unit)
-
-private val FlowBasedModel.displayDarkIcons: Flow<Boolean> get() = backgroundColorFlow.map { !it.isDark() }

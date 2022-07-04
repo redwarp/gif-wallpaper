@@ -77,7 +77,6 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 SetupUi(
-                                    flowBasedModel = GifApplication.app.model,
                                     setupModel = setupModel,
                                     navController = navController
                                 )

@@ -20,7 +20,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build
 import android.os.Handler
-import android.os.HandlerThread
+import android.os.Looper
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import androidx.annotation.RequiresApi
@@ -64,8 +64,7 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
     inner class GifEngine : Engine() {
         private var surfaceDrawableRenderer: SurfaceDrawableRenderer? = null
 
-        private val handlerThread = HandlerThread("WallpaperLooper")
-        private var handler: Handler? = null
+        private val handler: Handler = Handler(Looper.getMainLooper())
         private var wallpaperColors: WallpaperColorsCompat? =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
                 getColor(R.color.colorPrimaryDark).colorToWallpaperColor()
@@ -76,11 +75,8 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
 
-            handlerThread.start()
-            handler = Handler(handlerThread.looper)
-
             surfaceDrawableRenderer =
-                SurfaceDrawableRenderer(surfaceHolder, handlerThread.looper)
+                SurfaceDrawableRenderer(surfaceHolder, handler)
 
             val modelFlow = GifApplication.app.model
 
@@ -110,7 +106,6 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
         override fun onDestroy() {
             super.onDestroy()
             surfaceDrawableRenderer = null
-            handlerThread.quit()
         }
 
         override fun onVisibilityChanged(visible: Boolean) {

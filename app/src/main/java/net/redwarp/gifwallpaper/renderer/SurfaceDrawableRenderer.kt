@@ -21,28 +21,21 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import android.view.Surface
 import android.view.SurfaceHolder
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
 /**
  * Simple class do draw a [Drawable] on a [SurfaceHolder]
  */
 class SurfaceDrawableRenderer(
-    holder: SurfaceHolder,
-    looper: Looper,
+    private val holder: SurfaceHolder,
+    private val handler: Handler,
     drawable: Drawable? = null
 ) : SurfaceHolder.Callback2, Drawable.Callback {
     private var width: Int = 0
     private var height: Int = 0
     private var isVisible = false
     private var hasDimension = false
-    private var surface: Surface? = null
-    private val handler: Handler = Handler(looper)
+    private var isCreated = false
 
     init {
         drawable?.callback = this
@@ -62,9 +55,7 @@ class SurfaceDrawableRenderer(
                 value.setVisible(isVisible, false)
 
                 if (isVisible) {
-                    bothNotNull(surface, value) { surface, drawable ->
-                        drawOnSurface(surface, drawable)
-                    }
+                    value.invalidateSelf()
                 }
             }
         }
@@ -76,18 +67,14 @@ class SurfaceDrawableRenderer(
         drawable?.setVisible(isVisible, false)
 
         if (isVisible) {
-            bothNotNull(surface, drawable) { surface, drawable ->
-                drawOnSurface(surface, drawable)
-            }
+            drawable?.invalidateSelf()
         }
     }
 
     @Synchronized
     override fun surfaceCreated(holder: SurfaceHolder) {
-        surface = holder.surface
-
+        isCreated = true
         drawable?.setVisible(isVisible, true)
-        Log.d("GifWallpaper", "Surface created.")
     }
 
     @Synchronized
@@ -99,55 +86,46 @@ class SurfaceDrawableRenderer(
 
         hasDimension = true
 
-        bothNotNull(surface, drawable) { surface, drawable ->
-            drawOnSurface(surface, drawable)
-        }
+        drawable?.invalidateSelf()
     }
 
     @Synchronized
     override fun surfaceDestroyed(holder: SurfaceHolder) {
+        isCreated = false
         drawable?.callback = null
         drawable?.setVisible(isVisible, false)
-        surface?.release()
-        surface = null
-        hasDimension = false
-        Log.d("GifWallpaper", "Surface destroyed.")
     }
 
     override fun surfaceRedrawNeeded(holder: SurfaceHolder) {
-        bothNotNull(surface, drawable) { surface, drawable ->
-            drawOnSurface(surface, drawable)
-        }
+        drawable?.invalidateSelf()
     }
 
     override fun surfaceRedrawNeededAsync(holder: SurfaceHolder, drawingFinished: Runnable) {
-        bothNotNull(surface, drawable) { surface, drawable ->
-            drawOnSurface(surface, drawable)
-        }
+        drawable?.invalidateSelf()
         drawingFinished.run()
     }
 
     @Synchronized
-    private fun drawOnSurface(surface: Surface, drawable: Drawable) {
-        if (hasDimension) {
+    private fun drawOnSurface(drawable: Drawable) {
+        if (hasDimension && isCreated) {
             val canvas: Canvas? =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    surface.lockHardwareCanvas()
+                    holder.lockHardwareCanvas()
                 } else {
-                    surface.lockCanvas(null)
+                    holder.lockCanvas(null)
                 }
 
             if (canvas != null) {
                 canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
                 drawable.draw(canvas)
 
-                surface.unlockCanvasAndPost(canvas)
+                holder.unlockCanvasAndPost(canvas)
             }
         }
     }
 
     override fun invalidateDrawable(who: Drawable) {
-        surface?.let { drawOnSurface(it, who) }
+        drawOnSurface(who)
     }
 
     override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) {
@@ -156,15 +134,5 @@ class SurfaceDrawableRenderer(
 
     override fun unscheduleDrawable(who: Drawable, what: Runnable) {
         handler.removeCallbacks(what, who)
-    }
-
-    @OptIn(ExperimentalContracts::class)
-    inline fun <A, B, R> bothNotNull(left: A?, right: B?, block: (left: A, right: B) -> R) {
-        contract {
-            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
-        }
-        if (left != null && right != null) {
-            block(left, right)
-        }
     }
 }

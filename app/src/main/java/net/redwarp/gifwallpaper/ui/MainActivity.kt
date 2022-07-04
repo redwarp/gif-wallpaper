@@ -27,6 +27,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
@@ -37,6 +38,8 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import net.redwarp.gifwallpaper.GifApplication
 import net.redwarp.gifwallpaper.GifWallpaperService
 import net.redwarp.gifwallpaper.R
+import net.redwarp.gifwallpaper.renderer.DrawableMapper
+import net.redwarp.gifwallpaper.ui.setup.SetupModelImpl
 
 const val EXTRA_PREVIEW_MODE = "android.service.wallpaper.PREVIEW_MODE"
 
@@ -61,8 +64,21 @@ class MainActivity : ComponentActivity() {
                         val navController = rememberNavController()
                         NavHost(navController = navController, startDestination = "setup") {
                             composable("setup") {
+                                val scope = rememberCoroutineScope()
+                                val setupModel = remember {
+                                    val drawableProvider =
+                                        DrawableMapper.previewMapper(
+                                            context = context,
+                                            flowBasedModel = GifApplication.app.model,
+                                            scope = scope,
+                                        )
+
+                                    SetupModelImpl(GifApplication.app.model, drawableProvider)
+                                }
+
                                 SetupUi(
                                     flowBasedModel = GifApplication.app.model,
+                                    setupModel = setupModel,
                                     navController = navController
                                 )
                             }

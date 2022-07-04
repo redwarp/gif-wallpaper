@@ -55,7 +55,6 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -65,7 +64,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -85,30 +83,28 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.R
-import net.redwarp.gifwallpaper.data.ColorScheme
 import net.redwarp.gifwallpaper.data.FlowBasedModel
-import net.redwarp.gifwallpaper.data.WallpaperStatus
-import net.redwarp.gifwallpaper.renderer.DrawableMapper
 import net.redwarp.gifwallpaper.renderer.rememberGifDrawablePainter
+import net.redwarp.gifwallpaper.ui.setup.ColorPalette
+import net.redwarp.gifwallpaper.ui.setup.SetupModel
 import net.redwarp.gifwallpaper.util.isDark
 import kotlin.math.max
 
 @Composable
 fun ActionBar(
-    flowBasedModel: FlowBasedModel,
+    setupModel: SetupModel,
     modifier: Modifier = Modifier,
     onChangeColorClick: () -> Unit
 ) {
-    val hasColor by flowBasedModel.hasColorFlow.collectAsState(initial = false)
+    val hasColor by setupModel.hasColorFlow.collectAsState(initial = false)
 
-    val wallpaperStatus by flowBasedModel.wallpaperStatusFlow.collectAsState(initial = WallpaperStatus.NotSet)
+    val isWallpaperSet by setupModel.isWallpaperSet.collectAsState(initial = false)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     val pickGif = rememberGifPicker { uri ->
         scope.launch {
-            flowBasedModel.loadNewGif(context, uri)
-            flowBasedModel.resetTranslate()
+            setupModel.loadNewGif(context, uri)
         }
     }
 
@@ -123,21 +119,21 @@ fun ActionBar(
         ActionButton(
             icon = R.drawable.ic_transform,
             text = stringResource(id = R.string.change_scale),
-            enabled = wallpaperStatus is WallpaperStatus.Wallpaper
+            enabled = isWallpaperSet
 
         ) {
             scope.launch {
-                flowBasedModel.setNextScale()
+                setupModel.setNextScale()
             }
         }
 
         ActionButton(
             icon = R.drawable.ic_rotate_90_degrees_cw,
             text = stringResource(id = R.string.rotate),
-            enabled = wallpaperStatus is WallpaperStatus.Wallpaper
+            enabled = isWallpaperSet
         ) {
             scope.launch {
-                flowBasedModel.setNextRotation()
+                setupModel.setNextRotation()
             }
         }
 
@@ -151,53 +147,40 @@ fun ActionBar(
 }
 
 @Composable
-fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
-    val context = LocalContext.current
+fun SetupUi(
+    flowBasedModel: FlowBasedModel,
+    setupModel: SetupModel,
+    navController: NavController
+) {
     val scope = rememberCoroutineScope()
 
-    val darkIcons by flowBasedModel.displayDarkIcons.collectAsState(initial = false)
+    val darkIcons by setupModel.displayDarkIcons.collectAsState(initial = false)
 
     UpdateStatusBarColors(darkIcons = darkIcons)
 
-    val drawableOwner = remember {
-        DrawableMapper.previewMapper(
-            context = context,
-            flowBasedModel = flowBasedModel,
-            scope = scope,
-        )
-    }
-    val drawable by drawableOwner.drawables.collectAsState(null)
+    val drawable by setupModel.drawables.collectAsState(null)
 
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
 
-    var colorInfo: Pair<Color, List<Color>> by remember {
-        mutableStateOf(Color.Black to emptyList())
-    }
-    LaunchedEffect("colorInfo") {
-        flowBasedModel.colorInfoFlow.map { colorInfo ->
-            if (colorInfo is ColorScheme) {
-                colorInfo.defaultColor.rgbToColor() to colorInfo.palette.targets.map {
-                    colorInfo.palette.getColorForTarget(it, android.graphics.Color.BLACK)
-                        .rgbToColor()
-                }.distinct()
-            } else Color.Black to emptyList()
-        }.collect {
-            colorInfo = it
-        }
-    }
+    val colorInfo by setupModel.colorFlow.collectAsState(
+        initial = ColorPalette(
+            Color.Black,
+            emptyList()
+        )
+    )
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
             ColorPicker(
                 modifier = Modifier.navigationBarsPadding(),
-                defaultColor = colorInfo.first,
-                colors = colorInfo.second,
+                defaultColor = colorInfo.defaultColor,
+                colors = colorInfo.colors,
                 onColorPicked = { color ->
                     scope.launch {
-                        flowBasedModel.setBackgroundColor(color.toArgb())
+                        setupModel.setBackgroundColor(color)
                         sheetState.hide()
                     }
                 },
@@ -216,7 +199,7 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
                     .pointerInput(Unit) {
                         detectTapGestures(onDoubleTap = {
                             scope.launch {
-                                flowBasedModel.resetTranslate()
+                                setupModel.resetTranslate()
                             }
                         })
                     }
@@ -224,7 +207,7 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
                         detectDragGestures { change, dragAmount ->
                             change.consumeAllChanges()
                             scope.launch {
-                                flowBasedModel.postTranslate(dragAmount.x, dragAmount.y)
+                                setupModel.postTranslate(dragAmount.x, dragAmount.y)
                             }
                         }
                     },
@@ -237,7 +220,7 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .statusBarsPadding(),
-                flowBasedModel = flowBasedModel,
+                setupModel = setupModel,
                 navController = navController,
                 tint = if (darkIcons) {
                     if (MaterialTheme.colors.isLight) {
@@ -254,7 +237,7 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
                 }
             )
             ActionBar(
-                flowBasedModel = flowBasedModel,
+                setupModel = setupModel,
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .navigationBarsPadding(),
@@ -270,7 +253,7 @@ fun SetupUi(flowBasedModel: FlowBasedModel, navController: NavController) {
 
 @Composable
 fun ActionMenu(
-    flowBasedModel: FlowBasedModel,
+    setupModel: SetupModel,
     navController: NavController,
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
@@ -280,7 +263,7 @@ fun ActionMenu(
     items.add(
         OverflowAction(stringResource(id = R.string.clear_gif)) {
             scope.launch {
-                flowBasedModel.clearGif()
+                setupModel.clearGif()
             }
         }
     )

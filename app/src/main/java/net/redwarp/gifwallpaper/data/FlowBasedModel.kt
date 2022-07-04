@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -80,7 +79,6 @@ class FlowBasedModel(
     val backgroundColorFlow: Flow<Int> get() = wallpaperSettings.backgroundColorFlow
     val wallpaperStatusFlow: Flow<WallpaperStatus> get() = _wallpaperStatusFlow
     val colorInfoFlow: Flow<ColorInfo> get() = _colorInfoFlow
-    val hasColorFlow: Flow<Boolean> get() = _colorInfoFlow.map { it is ColorScheme }
     val shouldPlay: Flow<Boolean> = combine(
         appSettings.powerSavingSettingFlow,
         powerSaveFlow(context),

@@ -34,19 +34,23 @@ import net.redwarp.gifwallpaper.data.WallpaperStatus
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
+interface DrawableProvider {
+    val drawables: Flow<Drawable>
+}
+
 class DrawableMapper private constructor(
     context: Context,
     flowBasedModel: FlowBasedModel,
     scope: CoroutineScope,
     unsetText: String,
     isService: Boolean,
-) {
+) : DrawableProvider {
     private val _drawableFlow: MutableSharedFlow<Drawable> = MutableSharedFlow(
         replay = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
-    val drawables: Flow<Drawable> get() = _drawableFlow
+    override val drawables: Flow<Drawable> get() = _drawableFlow
 
     init {
         val animated = !isService

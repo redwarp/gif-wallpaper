@@ -18,14 +18,14 @@ package net.redwarp.gifwallpaper.util
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.captureToImage
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.platform.app.InstrumentationRegistry
 import java.io.File
 import java.io.FileOutputStream
 
-fun ComposeContentTestRule.takeScreenshot(fileName: String, locale: String = "en-US") {
+fun ComposeTestRule.takeScreenshot(fileName: String, locale: String = "en-US") {
     onRoot().captureToImage().asAndroidBitmap().save(fileName, locale)
 }
 

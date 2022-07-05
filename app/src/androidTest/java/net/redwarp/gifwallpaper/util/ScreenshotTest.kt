@@ -15,10 +15,12 @@
  */
 package net.redwarp.gifwallpaper.util
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.rememberNavController
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.accompanist.insets.ProvideWindowInsets
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.ui.AppTheme
 import net.redwarp.gifwallpaper.ui.LauncherUiPreview
@@ -33,7 +35,9 @@ class ScreenshotTest {
     @Test
     fun launcher() {
         composeRule.setContent {
-            LauncherUiPreview()
+            TestTheme {
+                LauncherUiPreview()
+            }
         }
         composeRule.takeScreenshot("launcher")
     }
@@ -43,7 +47,22 @@ class ScreenshotTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
 
         composeRule.setContent {
-            AppTheme {
+            TestTheme {
+                SetupUi(
+                    setupModel = FakeSetupModel(context), navController = rememberNavController()
+                )
+            }
+        }
+
+        composeRule.takeScreenshot("setup")
+    }
+
+    @Test
+    fun setup_color_picker() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+        composeRule.setContent {
+            TestTheme {
                 SetupUi(
                     setupModel = FakeSetupModel(context), navController = rememberNavController()
                 )
@@ -52,5 +71,13 @@ class ScreenshotTest {
         composeRule.onNodeWithText(context.getString(R.string.change_color)).performClick()
 
         composeRule.takeScreenshot("setup")
+    }
+}
+
+@Composable
+@Suppress("TestFunctionName")
+fun TestTheme(content: @Composable () -> Unit) {
+    ProvideWindowInsets {
+        AppTheme(content = content)
     }
 }

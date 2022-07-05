@@ -23,29 +23,48 @@ import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import net.redwarp.gifwallpaper.R
+import net.redwarp.gifwallpaper.renderer.GifWrapperDrawable
+import net.redwarp.gifwallpaper.ui.rgbToColor
 import net.redwarp.gifwallpaper.ui.setup.ColorPalette
 import net.redwarp.gifwallpaper.ui.setup.SetupModel
 
-class FakeSetupModel(val context: Context) : SetupModel {
+class FakeSetupModel(private val context: Context) : SetupModel {
     override val displayDarkIcons: Flow<Boolean>
         get() = flowOf(true)
     override val colorFlow: Flow<ColorPalette>
-        get() = flowOf(ColorPalette(Color.Red, listOf(Color.Green)))
+        get() = flowOf(
+            ColorPalette(
+                Color.Black,
+                listOf(
+                    0xf07880.rgbToColor(),
+                    0xe82838.rgbToColor(),
+                    0x000000.rgbToColor(),
+                    0xe8e8e8.rgbToColor(),
+                    0x000000.rgbToColor(),
+                    0x000000.rgbToColor(),
+                )
+            )
+        )
     override val hasColorFlow: Flow<Boolean>
         get() = flowOf(true)
     override val drawables: Flow<Drawable>
         get() {
             return flowOf(
-                requireNotNull(
-                    ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_launcher_foreground
-                    )
+                GifWrapperDrawable(
+                    drawable =
+                    requireNotNull(
+                        ContextCompat.getDrawable(
+                            context,
+                            R.drawable.rocket
+                        )
+                    ),
+                    backgroundColor = 0xffffff
                 )
             )
         }
     override val isWallpaperSet: Flow<Boolean>
         get() = flowOf(true)
+    override val hasSettings: Boolean = true
 
     override suspend fun setBackgroundColor(color: Color) {
     }

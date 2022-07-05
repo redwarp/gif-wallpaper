@@ -28,7 +28,6 @@ import android.graphics.RectF
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.view.animation.AccelerateDecelerateInterpolator
-import app.redwarp.gif.android.GifDrawable
 import net.redwarp.gifwallpaper.util.MatrixEvaluator
 import net.redwarp.gifwallpaper.util.setCenterCropRectInRect
 import net.redwarp.gifwallpaper.util.setCenterRectInRect
@@ -36,13 +35,15 @@ import net.redwarp.gifwallpaper.util.setCenterRectInRect
 private const val ANIMATION_DURATION = 400L
 
 class GifWrapperDrawable(
-    gifDrawable: GifDrawable,
+    drawable: Drawable,
+    backgroundColor: Int = 0,
     scaleType: ScaleType = ScaleType.FIT_CENTER,
     rotation: Rotation = Rotation.NORTH,
     translation: Pair<Float, Float> = 0f to 0f,
-    shouldPlay: Boolean
+    shouldPlay: Boolean = false
 ) : Drawable(), Animatable {
-    private val state = GifWrapperState(gifDrawable, scaleType, rotation, translation, shouldPlay)
+    private val state =
+        GifWrapperState(drawable, backgroundColor, scaleType, rotation, translation, shouldPlay)
 
     private val paint = Paint().apply {
         color = state.backgroundColor
@@ -68,7 +69,7 @@ class GifWrapperDrawable(
     }
 
     init {
-        gifDrawable.callback = chainingCallback
+        drawable.callback = chainingCallback
         updateMatrixAndInvalidate()
     }
 
@@ -138,16 +139,16 @@ class GifWrapperDrawable(
 
     override fun start() {
         if (shouldPlay) {
-            state.gifDrawable.start()
+            (state.drawable as? Animatable)?.start()
         }
     }
 
     override fun stop() {
-        state.gifDrawable.stop()
+        (state.drawable as? Animatable)?.stop()
     }
 
     override fun isRunning(): Boolean {
-        return state.gifDrawable.isRunning
+        return (state.drawable as? Animatable)?.isRunning ?: false
     }
 
     override fun draw(canvas: Canvas) {
@@ -158,29 +159,29 @@ class GifWrapperDrawable(
         }
         val checkpoint = canvas.save()
         canvas.concat(matrix)
-        state.gifDrawable.draw(canvas)
+        state.drawable.draw(canvas)
         canvas.restoreToCount(checkpoint)
     }
 
     override fun setAlpha(alpha: Int) {
         paint.alpha = alpha
-        state.gifDrawable.alpha = alpha
+        state.drawable.alpha = alpha
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
         paint.colorFilter = colorFilter
-        state.gifDrawable.colorFilter = colorFilter
+        state.drawable.colorFilter = colorFilter
     }
 
     @Deprecated("This method is no longer used in graphics optimizations", ReplaceWith(""))
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     override fun getIntrinsicWidth(): Int {
-        return state.gifDrawable.intrinsicWidth
+        return state.drawable.intrinsicWidth
     }
 
     override fun getIntrinsicHeight(): Int {
-        return state.gifDrawable.intrinsicHeight
+        return state.drawable.intrinsicHeight
     }
 
     override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
@@ -192,7 +193,7 @@ class GifWrapperDrawable(
     override fun getConstantState(): ConstantState = state
 
     override fun setVisible(visible: Boolean, restart: Boolean): Boolean {
-        return state.gifDrawable.setVisible(visible, restart)
+        return state.drawable.setVisible(visible, restart)
     }
 
     private fun Rect.toRectF(): RectF =
@@ -249,7 +250,7 @@ class GifWrapperDrawable(
             scaleType = state.scaleType,
             rotation = state.rotation,
             canvasRect = bounds.toRectF(),
-            gifRect = state.gifDrawable.bounds.toRectF(),
+            gifRect = state.drawable.bounds.toRectF(),
             translation = state.translation
         )
         invalidateSelf()
@@ -262,7 +263,7 @@ class GifWrapperDrawable(
                 scaleType = state.scaleType,
                 rotation = state.rotation,
                 canvasRect = bounds.toRectF(),
-                gifRect = state.gifDrawable.bounds.toRectF(),
+                gifRect = state.drawable.bounds.toRectF(),
                 translation = 0f to 0f
             )
         }
@@ -282,19 +283,23 @@ class GifWrapperDrawable(
     }
 
     private class GifWrapperState(
-        val gifDrawable: GifDrawable,
+        val drawable: Drawable,
+        var backgroundColor: Int,
         var scaleType: ScaleType = ScaleType.FIT_CENTER,
         var rotation: Rotation = Rotation.NORTH,
         var translation: Pair<Float, Float> = 0f to 0f,
         var shouldPlay: Boolean,
     ) : ConstantState() {
-        var backgroundColor = gifDrawable.backgroundColor
+        init {
+            drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+        }
 
         override fun newDrawable(): Drawable {
-            val copiedGifDrawable = gifDrawable.constantState.newDrawable() as GifDrawable
+            val copiedDrawable = drawable.constantState?.newDrawable() ?: drawable.mutate()
 
             return GifWrapperDrawable(
-                copiedGifDrawable,
+                copiedDrawable,
+                backgroundColor,
                 scaleType,
                 rotation,
                 translation,
@@ -305,6 +310,6 @@ class GifWrapperDrawable(
         }
 
         override fun getChangingConfigurations(): Int =
-            gifDrawable.constantState.changingConfigurations
+            drawable.constantState?.changingConfigurations ?: 0
     }
 }

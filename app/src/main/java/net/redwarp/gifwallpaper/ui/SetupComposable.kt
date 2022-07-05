@@ -19,7 +19,6 @@ package net.redwarp.gifwallpaper.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
-import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -70,6 +69,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -262,7 +262,7 @@ fun ActionMenu(
             }
         }
     )
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (setupModel.hasSettings) {
         items.add(
             OverflowAction(stringResource(id = R.string.settings)) {
                 navController.navigate("settings")
@@ -456,7 +456,10 @@ fun OverflowMenu(
         mutableStateOf(false)
     }
     Box(modifier = modifier) {
-        IconButton(onClick = { showMenu = !showMenu }) {
+        IconButton(
+            onClick = { showMenu = !showMenu },
+            modifier = Modifier.testTag("overflow")
+        ) {
             Icon(
                 imageVector = Icons.Outlined.MoreVert,
                 contentDescription = "More",

@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.res.painterResource
@@ -187,7 +188,7 @@ fun ColorPicker(
             NoColorChoice {
                 onColorPicked(defaultColor)
             }
-            for (color in colors) {
+            for (color in colors.distinct().sortedBy { it.luminance() }) {
                 ColorChoice(color = color) {
                     onColorPicked(color)
                 }

@@ -44,7 +44,7 @@ class ScreenshotTest {
                 LauncherUi {}
             }
         }
-        composeRule.takeScreenshot("2")
+        composeRule.takeScreenshot("1_launcher")
     }
 
     @Test
@@ -59,7 +59,7 @@ class ScreenshotTest {
             }
         }
 
-        composeRule.takeScreenshot("3")
+        composeRule.takeScreenshot("2_setup")
     }
 
     @Test
@@ -75,18 +75,18 @@ class ScreenshotTest {
         }
         composeRule.onNodeWithText(context.getString(R.string.change_color)).performClick()
 
-        composeRule.takeScreenshot("4")
+        composeRule.takeScreenshot("3_color_picker")
     }
 
     @Test
-    fun app_settings() {
+    fun settings() {
         composeRule.setContent {
             TestTheme {
                 SettingUi(navController = rememberNavController(), appSettings = FakeAppSettings())
             }
         }
 
-        composeRule.takeScreenshot("5")
+        composeRule.takeScreenshot("4_settings")
     }
 }
 

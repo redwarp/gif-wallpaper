@@ -132,12 +132,12 @@ class DrawableMapper private constructor(
                         val translation = flowBasedModel.translationFlow.first()
                         val wrapper = GifWrapperDrawable(
                             gif,
+                            backgroundColor,
                             scaleType,
                             rotation,
                             translation.x to translation.y,
                             shouldPlay
                         )
-                        wrapper.setBackgroundColor(backgroundColor)
                         wrapper
                     }
                 }

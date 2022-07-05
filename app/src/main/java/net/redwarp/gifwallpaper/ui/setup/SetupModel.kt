@@ -18,6 +18,7 @@ package net.redwarp.gifwallpaper.ui.setup
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +37,7 @@ interface SetupModel {
     val hasColorFlow: Flow<Boolean>
     val drawables: Flow<Drawable>
     val isWallpaperSet: Flow<Boolean>
+    val hasSettings: Boolean
 
     suspend fun setBackgroundColor(color: Color)
     suspend fun resetTranslate()
@@ -69,6 +71,7 @@ class SetupModelImpl(
         get() = drawableProvider.drawables
     override val isWallpaperSet: Flow<Boolean>
         get() = flowBasedModel.wallpaperStatusFlow.map { it is WallpaperStatus.Wallpaper }
+    override val hasSettings: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 
     override suspend fun setBackgroundColor(color: Color) {
         flowBasedModel.setBackgroundColor(color.toArgb())
@@ -107,5 +110,5 @@ private fun ColorScheme.toColorPalette(): ColorPalette =
         this.defaultColor.rgbToColor(),
         palette.targets.map { target ->
             palette.getColorForTarget(target, android.graphics.Color.BLACK).rgbToColor()
-        }
+        }.distinct()
     )

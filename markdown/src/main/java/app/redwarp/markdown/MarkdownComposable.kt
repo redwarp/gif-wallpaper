@@ -15,9 +15,12 @@
  */
 package app.redwarp.markdown
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.util.SparseArray
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -29,7 +32,10 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.darkColors
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -491,7 +497,8 @@ fun MDListPreview() {
     }
 }
 
-@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Preview(uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun MarkdownPreview() {
     val markdownText = """
@@ -521,12 +528,17 @@ fun MarkdownPreview() {
           - Multiple
             - Levels
               - Where does it ends?
+            - Hard to say
     """.trimIndent()
 
     val parser = Parser.builder().build()
     val document = parser.parse(markdownText) as Document
 
-    MDDocument(document = document)
+    MaterialTheme(colors = if (isSystemInDarkTheme()) darkColors() else lightColors()) {
+        Surface {
+            MDDocument(document = document)
+        }
+    }
 }
 
 private data class ListLevel(val level: Int) {

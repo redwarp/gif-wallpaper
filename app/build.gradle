@@ -112,6 +112,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_version")
     // Needed for createComposeRule, but not createAndroidComposeRule:
     debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_version")
+    androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
 }
 
 def isNonStable = { String version ->

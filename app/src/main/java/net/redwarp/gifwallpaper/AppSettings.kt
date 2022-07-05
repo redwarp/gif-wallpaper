@@ -16,6 +16,7 @@
 package net.redwarp.gifwallpaper
 
 import android.content.Context
+import android.os.Build
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.map
 interface AppSettings {
     val powerSavingSettingFlow: Flow<Boolean>
     val thermalThrottleSettingFlow: Flow<Boolean>
+    val isThermalThrottleSupported: Boolean
     suspend fun setPowerSaving(enabled: Boolean)
     suspend fun setThermalThrottle(enabled: Boolean)
 }
@@ -48,6 +50,8 @@ class DataStoreAppSettings(private val context: Context, ioScope: CoroutineScope
             preferences[thermalThrottleKey]
                 ?: context.resources.getBoolean(R.bool.thermal_throttle_enabled)
         }
+    override val isThermalThrottleSupported: Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
     override suspend fun setPowerSaving(enabled: Boolean) {
         context.dataStore.edit { preferences ->

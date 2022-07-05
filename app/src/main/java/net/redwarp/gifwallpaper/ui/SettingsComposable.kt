@@ -15,7 +15,6 @@
  */
 package net.redwarp.gifwallpaper.ui
 
-import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -98,7 +97,7 @@ fun SettingUi(navController: NavController, appSettings: AppSettings) {
                 }
             )
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (appSettings.isThermalThrottleSupported) {
                 Setting(
                     title = stringResource(id = R.string.thermal_throttle),
                     summary = stringResource(id = R.string.pause_playback_running_hot),

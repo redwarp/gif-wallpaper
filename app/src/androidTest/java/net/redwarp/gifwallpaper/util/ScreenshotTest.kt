@@ -23,23 +23,28 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.google.accompanist.insets.ProvideWindowInsets
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.ui.AppTheme
-import net.redwarp.gifwallpaper.ui.LauncherUiPreview
+import net.redwarp.gifwallpaper.ui.LauncherUi
+import net.redwarp.gifwallpaper.ui.SettingUi
 import net.redwarp.gifwallpaper.ui.SetupUi
 import org.junit.Rule
 import org.junit.Test
+import tools.fastlane.screengrab.locale.LocaleTestRule
 
 class ScreenshotTest {
     @get:Rule
     val composeRule = createScreenshotComposeRule()
 
+    @get:Rule
+    val localeTestRule = LocaleTestRule()
+
     @Test
     fun launcher() {
         composeRule.setContent {
             TestTheme {
-                LauncherUiPreview()
+                LauncherUi {}
             }
         }
-        composeRule.takeScreenshot("launcher")
+        composeRule.takeScreenshot("2")
     }
 
     @Test
@@ -54,7 +59,7 @@ class ScreenshotTest {
             }
         }
 
-        composeRule.takeScreenshot("setup")
+        composeRule.takeScreenshot("3")
     }
 
     @Test
@@ -70,7 +75,18 @@ class ScreenshotTest {
         }
         composeRule.onNodeWithText(context.getString(R.string.change_color)).performClick()
 
-        composeRule.takeScreenshot("setup")
+        composeRule.takeScreenshot("4")
+    }
+
+    @Test
+    fun app_settings() {
+        composeRule.setContent {
+            TestTheme {
+                SettingUi(navController = rememberNavController(), appSettings = FakeAppSettings())
+            }
+        }
+
+        composeRule.takeScreenshot("5")
     }
 }
 
@@ -78,6 +94,6 @@ class ScreenshotTest {
 @Suppress("TestFunctionName")
 fun TestTheme(content: @Composable () -> Unit) {
     ProvideWindowInsets {
-        AppTheme(content = content)
+        AppTheme(darkTheme = true, content = content)
     }
 }

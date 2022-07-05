@@ -18,4 +18,9 @@ platform :android do
       json_key_data: ENV["SERVICE_ACCOUNT_JSON"]
     )
   end
+
+  lane :screenshots do
+    gradle(task: "clean assembleDebug assembleAndroidTest")
+    screengrab
+  end
 end

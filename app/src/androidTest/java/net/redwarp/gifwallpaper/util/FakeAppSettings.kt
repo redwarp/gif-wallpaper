@@ -15,18 +15,18 @@
  */
 package net.redwarp.gifwallpaper.util
 
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.test.captureToImage
-import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onRoot
-import tools.fastlane.screengrab.Screengrab
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import net.redwarp.gifwallpaper.AppSettings
 
-fun ComposeTestRule.takeScreenshot(fileName: String) {
-    Screengrab.screenshot(fileName) { screenshotName, screenshotCallback ->
-        val bitmap = onRoot().captureToImage().asAndroidBitmap()
-        screenshotCallback.screenshotCaptured(screenshotName, bitmap)
-    }
+class FakeAppSettings : AppSettings {
+    override val powerSavingSettingFlow: Flow<Boolean>
+        get() = flowOf(true)
+    override val thermalThrottleSettingFlow: Flow<Boolean>
+        get() = flowOf(false)
+    override val isThermalThrottleSupported: Boolean = true
+
+    override suspend fun setPowerSaving(enabled: Boolean) = Unit
+
+    override suspend fun setThermalThrottle(enabled: Boolean) = Unit
 }
-
-fun createScreenshotComposeRule() = createAndroidComposeRule<ScreenshotActivity>()

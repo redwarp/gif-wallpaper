@@ -12,16 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup ruby
-        uses: actions/setup-ruby@v1
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "2.7"
-      - name: Setup Fastlane
-        run: bundle install
+          ruby-version: "3.1"
+          bundler-cache: true
       - name: Update Metadata
-        run: |
-          gem install bundler
-          bundle exec fastlane android update_playstore
+        run: bundle exec fastlane android update_playstore
         env:
           SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}

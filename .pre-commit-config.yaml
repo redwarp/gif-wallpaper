@@ -4,7 +4,7 @@ repos:
     hooks:
       - id: gradle-task
         name: Apply Spotless
-        args: [":app:spotlessApply", -w, -o]
+        args: ["spotlessApply", -w, -o]
         types: [kotlin]
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
     rev: v2.3.0

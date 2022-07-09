@@ -3,11 +3,13 @@
   <string name="about">"Acerca de"</string>
   <string name="activate">"Activar"</string>
   <string name="app_name">"GIF Live Wallpaper"</string>
+  <string name="back">"Atrás"</string>
   <string name="battery_saver">"Ahorro de batería"</string>
   <string name="change_color">"Cambiar color"</string>
   <string name="change_scale">"Cambiar escala"</string>
   <string name="clear_gif">"Quitar GIF"</string>
   <string name="click_the_open_gif_button">"Haz clic en el  botón de \"Abrir GIF\"."</string>
+  <string name="close">"Cerrar"</string>
   <string name="error_wallpaper_chooser">"No se pudo iniciar el seleccionador de wallpapers. Todavía puedes activar GIF Live Wallpaper escogiendo 'Live Wallpapers' en el seleccionador de wallpapers de tu pantalla principal."</string>
   <string name="loading">"Cargando…"</string>
   <string name="open_app">"Abre la app de GIF Live Wallpaper y selecciona tu GIF favorito para comenzar."</string>

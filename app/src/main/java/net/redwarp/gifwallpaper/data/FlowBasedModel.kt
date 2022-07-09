@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -127,18 +128,30 @@ class FlowBasedModel(
         }
     }
 
-    suspend fun setScaleType(scaleType: ScaleType) {
+    private suspend fun setScaleType(scaleType: ScaleType) {
         resetTranslate()
         wallpaperSettings.setScaleType(scaleType)
     }
 
-    suspend fun setRotation(rotation: Rotation) {
+    suspend fun setNextScale() {
+        val currentScale = scaleTypeFlow.first()
+        val nextScale = ScaleType.values()[(currentScale.ordinal + 1) % ScaleType.values().size]
+        setScaleType(nextScale)
+    }
+
+    private suspend fun setRotation(rotation: Rotation) {
         resetTranslate()
         wallpaperSettings.setRotation(rotation)
     }
 
+    suspend fun setNextRotation() {
+        val currentRotation = rotationFlow.first()
+        val nextRotation = Rotation.values()[(currentRotation.ordinal + 1) % Rotation.values().size]
+        setRotation(nextRotation)
+    }
+
     suspend fun resetTranslate() {
-        wallpaperSettings.setTranslation(Translation(0f, 0f))
+        wallpaperSettings.resetTranslation()
         _translationEventFlow.emit(TranslationEvent.Reset)
     }
 

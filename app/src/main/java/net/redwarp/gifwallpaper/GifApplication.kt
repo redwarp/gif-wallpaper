@@ -29,15 +29,15 @@ class GifApplication : Application() {
     private val appScope = CoroutineScope(SupervisorJob())
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    private lateinit var _appSettings: AppSettings
+    private lateinit var _appSettings: DataStoreAppSettings
     private lateinit var _flowBasedModel: FlowBasedModel
-    val appSettings get() = _appSettings
+    val appSettings: AppSettings get() = _appSettings
     val model get() = _flowBasedModel
 
     override fun onCreate() {
         super.onCreate()
 
-        val appSettings = AppSettings(this, ioScope)
+        val appSettings = DataStoreAppSettings(this, ioScope)
         _appSettings = appSettings
 
         val wallpaperSettings = WallpaperSettings(this, ioScope)

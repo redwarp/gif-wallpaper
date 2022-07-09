@@ -4,8 +4,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
 }
 
 include ':app'
+include ':markdown'

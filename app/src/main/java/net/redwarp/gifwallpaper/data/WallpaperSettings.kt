@@ -110,10 +110,10 @@ class WallpaperSettings(private val context: Context, ioScope: CoroutineScope) {
         }
     }
 
-    suspend fun setTranslation(translation: Translation) {
+    suspend fun resetTranslation() {
         context.dataStore.edit { settings ->
-            settings[WALLPAPER_TRANSLATE_X] = translation.x
-            settings[WALLPAPER_TRANSLATE_Y] = translation.y
+            settings[WALLPAPER_TRANSLATE_X] = 0f
+            settings[WALLPAPER_TRANSLATE_Y] = 0f
         }
     }
 

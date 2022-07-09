@@ -3,11 +3,13 @@
   <string name="about">"Über die App"</string>
   <string name="activate">"Starten"</string>
   <string name="app_name">"GIF Live Wallpaper"</string>
+  <string name="back">"Zurück"</string>
   <string name="battery_saver">"Energiesparmodus"</string>
   <string name="change_color">"Farbe ändern"</string>
   <string name="change_scale">"Skalieren"</string>
   <string name="clear_gif">"GIF löschen"</string>
   <string name="click_the_open_gif_button">"Auf \"GIF öffnen\" tappen."</string>
+  <string name="close">"Schließen"</string>
   <string name="error_wallpaper_chooser">"Hintergrund Auswähler konnte nicht gestartet werden. GIF Live Wallpaper kann manuell über Startbildschirm -> Hintergründe -> Live Hintergründe gestartet werden."</string>
   <string name="loading">"Lädt…"</string>
   <string name="open_app">"Öffne die GIF Live Wallpaper App und lade dein Lieblings-GIF um zu starten."</string>

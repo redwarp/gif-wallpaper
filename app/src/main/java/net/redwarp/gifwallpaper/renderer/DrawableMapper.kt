@@ -20,119 +20,164 @@ import android.graphics.drawable.Drawable
 import app.redwarp.gif.android.GifDrawable
 import app.redwarp.gif.decoder.descriptors.params.LoopCount
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.TranslationEvent
 import net.redwarp.gifwallpaper.data.WallpaperStatus
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
-fun CoroutineScope.drawableFlow(
+interface DrawableProvider {
+    val drawables: Flow<Drawable>
+}
+
+class DrawableMapper private constructor(
     context: Context,
     flowBasedModel: FlowBasedModel,
+    scope: CoroutineScope,
     unsetText: String,
-    animated: Boolean,
     isService: Boolean,
-): Flow<Drawable> {
-    val drawableFlow = flowBasedModel.wallpaperStatusFlow.map { status ->
-        val wallpaper = when (status) {
-            WallpaperStatus.NotSet -> TextDrawable(context, unsetText)
+) : DrawableProvider {
+    private val _drawableFlow: MutableSharedFlow<Drawable> = MutableSharedFlow(
+        replay = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
-            WallpaperStatus.Loading ->
-                TextDrawable(context, context.getString(R.string.loading))
-            is WallpaperStatus.Wallpaper -> {
-                val gif = GifDrawable(status.gifDescriptor)
-                gif.loopCount = LoopCount.Infinite
-                val shouldPlay = !isService || flowBasedModel.shouldPlay.first()
-                if (shouldPlay) {
-                    gif.start()
-                } else {
-                    gif.stop()
+    override val drawables: Flow<Drawable> get() = _drawableFlow
+
+    init {
+        val animated = !isService
+        collectDrawables(scope, flowBasedModel, context, unsetText, isService)
+        scope.launch {
+            flowBasedModel.backgroundColorFlow.collect { color ->
+                _drawableFlow.onWrappedGif {
+                    it.setBackgroundColor(color)
                 }
-                val scaleType = flowBasedModel.scaleTypeFlow.first()
-                val rotation = flowBasedModel.rotationFlow.first()
-                val backgroundColor = flowBasedModel.backgroundColorFlow.first()
-                val translation = flowBasedModel.translationFlow.first()
-                val wrapper = GifWrapperDrawable(
-                    gif,
-                    scaleType,
-                    rotation,
-                    translation.x to translation.y
-                )
-                wrapper.setBackgroundColor(backgroundColor)
-                wrapper
+            }
+        }
+        scope.launch {
+            flowBasedModel.rotationFlow.collect { rotation ->
+                _drawableFlow.onWrappedGif { it.setRotation(rotation, animated) }
+            }
+        }
+        scope.launch {
+            flowBasedModel.scaleTypeFlow.collect { scaleType ->
+                _drawableFlow.onWrappedGif { it.setScaledType(scaleType, animated) }
             }
         }
 
-        wallpaper
-    }.shareIn(scope = this, started = SharingStarted.WhileSubscribed(), replay = 1)
+        if (isService) {
+            scope.launch {
+                flowBasedModel.shouldPlay.collect { shouldPlay ->
+                    _drawableFlow.onWrappedGif {
+                        it.shouldPlay = shouldPlay
+                    }
+                }
+            }
+            scope.launch {
+                flowBasedModel.translationFlow.collect { translation ->
+                    _drawableFlow.onWrappedGif {
+                        it.setTranslate(translation.x, translation.y, animated)
+                    }
+                }
+            }
+        } else {
+            scope.launch {
+                flowBasedModel.translationEventFlow.collect { event ->
+                    _drawableFlow.onWrappedGif { drawable ->
+                        when (event) {
+                            is TranslationEvent.PostTranslate -> {
+                                drawable.postTranslate(
+                                    event.translateX,
+                                    event.translateY
+                                )
+                            }
+                            TranslationEvent.Reset -> {
+                                drawable.resetTranslation(animated)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-    setupWallpaperUpdate(
-        flowBasedModel = flowBasedModel,
-        animated = animated,
-        isService = isService,
-        drawableFlow = drawableFlow
-    )
+    private fun collectDrawables(
+        scope: CoroutineScope,
+        flowBasedModel: FlowBasedModel,
+        context: Context,
+        unsetText: String,
+        isService: Boolean
+    ) {
+        scope.launch {
+            flowBasedModel.wallpaperStatusFlow.map { status ->
+                when (status) {
+                    WallpaperStatus.Loading ->
+                        TextDrawable(context, context.getString(R.string.loading))
+                    WallpaperStatus.NotSet -> TextDrawable(context, unsetText)
+                    is WallpaperStatus.Wallpaper -> {
+                        val gif = GifDrawable(status.gifDescriptor)
+                        gif.loopCount = LoopCount.Infinite
+                        val shouldPlay = !isService || flowBasedModel.shouldPlay.first()
+                        val scaleType = flowBasedModel.scaleTypeFlow.first()
+                        val rotation = flowBasedModel.rotationFlow.first()
+                        val backgroundColor = flowBasedModel.backgroundColorFlow.first()
+                        val translation = flowBasedModel.translationFlow.first()
+                        val wrapper = GifWrapperDrawable(
+                            gif,
+                            backgroundColor,
+                            scaleType,
+                            rotation,
+                            translation.x to translation.y,
+                            shouldPlay
+                        )
+                        wrapper
+                    }
+                }
+            }.collect { _drawableFlow.emit(it) }
+        }
+    }
 
-    return drawableFlow
+    companion object {
+        fun previewMapper(
+            context: Context,
+            flowBasedModel: FlowBasedModel,
+            scope: CoroutineScope,
+        ): DrawableMapper {
+            return DrawableMapper(
+                context = context,
+                flowBasedModel = flowBasedModel,
+                scope = scope,
+                unsetText = context.getString(R.string.click_the_open_gif_button),
+                isService = false,
+            )
+        }
+
+        fun serviceMapper(
+            context: Context,
+            flowBasedModel: FlowBasedModel,
+            scope: CoroutineScope,
+        ): DrawableMapper {
+            return DrawableMapper(
+                context = context,
+                flowBasedModel = flowBasedModel,
+                scope = scope,
+                unsetText = context.getString(R.string.open_app),
+                isService = true,
+            )
+        }
+    }
 }
 
-private fun CoroutineScope.setupWallpaperUpdate(
-    flowBasedModel: FlowBasedModel,
-    animated: Boolean,
-    isService: Boolean,
-    drawableFlow: Flow<Drawable>
-) {
-    flowBasedModel.backgroundColorFlow.onEach { backgroundColor ->
-        val value = drawableFlow.first() as? GifWrapperDrawable
-        value?.setBackgroundColor(backgroundColor)
-    }.launchIn(this)
-    flowBasedModel.scaleTypeFlow.onEach { scaleType ->
-        val value = drawableFlow.first() as? GifWrapperDrawable
-        value?.setScaledType(scaleType, animated)
-    }.launchIn(this)
-    flowBasedModel.rotationFlow.onEach { rotation ->
-        val value = drawableFlow.first() as? GifWrapperDrawable
-        value?.setRotation(rotation, animated)
-    }.launchIn(this)
-
-    if (isService) {
-        flowBasedModel.shouldPlay.onEach { shouldPlay ->
-            val value: GifWrapperDrawable =
-                (drawableFlow.first() as? GifWrapperDrawable) ?: return@onEach
-            if (shouldPlay) {
-                value.start()
-            } else {
-                value.stop()
-            }
-        }.launchIn(this)
-        flowBasedModel.translationFlow.onEach { translation ->
-            val value = drawableFlow.first() as? GifWrapperDrawable
-            value?.setTranslate(
-                translation.x,
-                translation.y,
-                animated
-            )
-        }.launchIn(this)
-    } else {
-        flowBasedModel.translationEventFlow.onEach { event ->
-            val drawable = drawableFlow.first() as? GifWrapperDrawable ?: return@onEach
-            when (event) {
-                is TranslationEvent.PostTranslate -> {
-                    drawable.postTranslate(
-                        event.translateX,
-                        event.translateY
-                    )
-                }
-                TranslationEvent.Reset -> {
-                    drawable.resetTranslation(animated)
-                }
-            }
-        }.launchIn(this)
-    }
+@OptIn(ExperimentalContracts::class)
+private suspend inline fun Flow<Drawable>.onWrappedGif(block: (GifWrapperDrawable) -> Unit) {
+    contract { callsInPlace(block, kotlin.contracts.InvocationKind.EXACTLY_ONCE) }
+    (firstOrNull() as? GifWrapperDrawable)?.let { block(it) }
 }

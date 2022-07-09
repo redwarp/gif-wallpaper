@@ -1,8 +1,6 @@
 # About this app
 
-## Made with
-
-* [Jetpack Compose](https://developer.android.com/jetpack/compose)
+Made with [Jetpack Compose](https://developer.android.com/jetpack/compose)
 
 ## Help with the translations
 

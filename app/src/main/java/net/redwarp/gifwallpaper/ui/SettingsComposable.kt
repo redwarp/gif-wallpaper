@@ -40,14 +40,19 @@ import net.redwarp.gifwallpaper.AppSettings
 import net.redwarp.gifwallpaper.R
 
 @Composable
-fun Setting(title: String, summary: String, checked: Boolean, onCheckedChanged: (Boolean) -> Unit) {
+fun Setting(
+    title: String,
+    summary: String,
+    checked: () -> Boolean,
+    onCheckedChanged: (Boolean) -> Unit
+) {
     Row {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = title, style = MaterialTheme.typography.h6)
             Text(text = summary, style = MaterialTheme.typography.body1)
         }
         Spacer(modifier = Modifier.size(16.dp))
-        Switch(checked = checked, onCheckedChange = onCheckedChanged)
+        Switch(checked = checked(), onCheckedChange = onCheckedChanged)
     }
 }
 
@@ -58,7 +63,7 @@ fun SettingPreview() {
         Setting(
             title = "Battery Saver",
             summary = "Pause GIF when Battery Saver is enabled",
-            checked = false,
+            checked = { false },
             onCheckedChanged = {}
         )
     }
@@ -66,12 +71,7 @@ fun SettingPreview() {
 
 @Composable
 fun SettingUi(navController: NavController, appSettings: AppSettings) {
-    val isPowerSaving by appSettings.powerSavingSettingFlow.collectAsState(initial = false)
-    val isThermalThrottle by appSettings.thermalThrottleSettingFlow.collectAsState(initial = false)
-
     UpdateStatusBarColors()
-
-    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -82,14 +82,21 @@ fun SettingUi(navController: NavController, appSettings: AppSettings) {
             )
         }
     ) { paddingValues ->
+
         Column(
-            modifier = Modifier.padding(paddingValues).padding(16.dp),
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            val isPowerSaving by appSettings.powerSavingSettingFlow.collectAsState(initial = false)
+            val isThermalThrottle by appSettings.thermalThrottleSettingFlow.collectAsState(initial = false)
+            val scope = rememberCoroutineScope()
+
             Setting(
                 title = stringResource(id = R.string.battery_saver),
                 summary = stringResource(id = R.string.pause_blayback_battery_saver),
-                checked = isPowerSaving,
+                checked = { isPowerSaving },
                 onCheckedChanged = { enabled ->
                     scope.launch {
                         appSettings.setPowerSaving(enabled)
@@ -101,7 +108,7 @@ fun SettingUi(navController: NavController, appSettings: AppSettings) {
                 Setting(
                     title = stringResource(id = R.string.thermal_throttle),
                     summary = stringResource(id = R.string.pause_playback_running_hot),
-                    checked = isThermalThrottle,
+                    checked = { isThermalThrottle },
                     onCheckedChanged = { enabled ->
                         scope.launch {
                             appSettings.setThermalThrottle(enabled)

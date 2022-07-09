@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/redwarp/gif-wallpaper/compare/v1.13.4...v2.0.0) (2022-07-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* Rewrite the app with Jetpack compose (#242)
+
+### Features
+
+* Rewrite the app with Jetpack compose ([#242](https://github.com/redwarp/gif-wallpaper/issues/242)) ([0db943a](https://github.com/redwarp/gif-wallpaper/commit/0db943a044eee7d33a8dd301506aa136b83b9f62))
+
+
+### Bug Fixes
+
+* Compat version of WallpaperColors for Api pre 31 ([47812c9](https://github.com/redwarp/gif-wallpaper/commit/47812c978fac3c39d3d124701d973275c05a9a65))
+* Simplify SurfaceDrawableRender to use main looper ([f9876d5](https://github.com/redwarp/gif-wallpaper/commit/f9876d5fa6053cd4dba0f11887f54c2f7e053f27))
+
 ### [1.13.4](https://github.com/redwarp/gif-wallpaper/compare/v1.13.3...v1.13.4) (2022-06-26)
 
 

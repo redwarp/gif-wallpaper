@@ -7,7 +7,17 @@ on:
       - synchronize
 
 jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Build all
+        run: ./gradlew build
+
   tests:
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -18,6 +28,7 @@ jobs:
         run: ./gradlew --stop
 
   check_conventional_commit:
+    name: Follows conventional commit
     runs-on: ubuntu-latest
     steps:
       - uses: amannn/action-semantic-pull-request@v4

@@ -76,7 +76,7 @@ dependencies {
     implementation(project(':markdown'))
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.core:core-ktx:1.8.0'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3'
     implementation 'androidx.lifecycle:lifecycle-service:2.5.0'
     implementation 'androidx.palette:palette-ktx:1.0.0'

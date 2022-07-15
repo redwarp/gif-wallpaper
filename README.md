@@ -43,13 +43,3 @@ I use the website **POEditor** to handle translations. They are free for open so
 * Run `cargo run --bin update-fastlane`, verify that new metadata files were added in the fastlane folder.
 * Edit the [`app/build.gradle`](app/build.gradle) file and add to the res config the new language code.
 * Run the app in an emulator or device set on the chosen language, verify it shows properly, and take the 5 screenshots needed for fastlane. At some point, I should automate that with Picasso, but we are not there yet.
-
-## Example
-
-#### Actual GIF
-
-[<img src="assets/samples/rocket.gif" alt="a flying rocket" width="480" height="480">](https://github.com/redwarp/gif-wallpaper/blob/main/assets/samples/rocket.gif)
-
-#### Set as Wallpaper
-
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" alt="a flying rocket on your homescreen" height=400>](https://github.com/redwarp/gif-wallpaper/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png)

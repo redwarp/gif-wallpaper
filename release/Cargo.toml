@@ -1,0 +1,9 @@
+[package]
+name = "release"
+version = "0.1.0"
+authors = ["Benoit Vermont <redwarp@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+git2 = "0.14"

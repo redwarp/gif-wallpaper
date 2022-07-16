@@ -1,15 +1,16 @@
+use anyhow::anyhow;
+use anyhow::Result;
+use git2::Repository;
+use git_cliff::args::Opt;
+use git_conventional::Type;
+use regex::Captures;
+use regex::Regex;
 use std::fmt::Display;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::path::PathBuf;
-
-use anyhow::anyhow;
-use anyhow::Result;
-use git2::Repository;
-use git_conventional::Type;
-use regex::Captures;
-use regex::Regex;
+use std::process;
 
 const PROJECT_DIR: &str = env!("CARGO_MANIFEST_DIR");
 const VERSION_NAME_REGEX: &str = r#"(versionName ")([0-9]+\.[0-9]+\.[0-9]+)(")"#;
@@ -90,10 +91,14 @@ fn main() -> Result<()> {
 
     let next_version = next_version(&repository, &last_version)?;
 
+    drop(repository);
+
     if let Some(next_version) = next_version {
         println!("Next version: {next_version}");
 
-        update_version_in_build_gradle(&next_version)?;
+        update_versions_in_build_gradle(&next_version)?;
+
+        changelog(&next_version)?;
     }
 
     Ok(())
@@ -157,7 +162,7 @@ fn next_version(repository: &Repository, last_version: &Version) -> Result<Optio
     })
 }
 
-fn update_version_in_build_gradle(next_version: &Version) -> Result<()> {
+fn update_versions_in_build_gradle(next_version: &Version) -> Result<()> {
     let app_gradle_file = PathBuf::from(PROJECT_DIR)
         .join("..")
         .join("app/build.gradle");
@@ -184,6 +189,37 @@ fn update_version_in_build_gradle(next_version: &Version) -> Result<()> {
 
     let mut output = File::create(app_gradle_file)?;
     output.write_all(content.as_bytes())?;
+
+    Ok(())
+}
+
+fn changelog(next_version: &Version) -> Result<()> {
+    let main_config_file = PathBuf::from(PROJECT_DIR).join("../cliff.toml");
+
+    let args = Opt {
+        verbose: 0,
+        config: main_config_file,
+        workdir: Some(PathBuf::from(PROJECT_DIR).join("..")),
+        repository: Some(PathBuf::from(PROJECT_DIR).join("..")),
+        include_path: None,
+        exclude_path: None,
+        with_commit: None,
+        prepend: None,
+        output: Some(PathBuf::from(PROJECT_DIR).join("../CHANGELOG.md")),
+        tag: Some(format!("{next_version}")),
+        body: None,
+        init: false,
+        latest: false,
+        current: false,
+        unreleased: true,
+        date_order: false,
+        context: false,
+        strip: None,
+        sort: git_cliff::args::Sort::Oldest,
+        range: None,
+    };
+
+    git_cliff::run(args)?;
 
     Ok(())
 }

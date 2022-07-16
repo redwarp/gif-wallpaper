@@ -1,5 +1,5 @@
 [package]
-name = "release"
+name = "release-process"
 version = "0.1.0"
 authors = ["Benoit Vermont <redwarp@gmail.com>"]
 edition = "2021"
@@ -10,4 +10,5 @@ git2 = "0.14"
 semver = "1.0"
 regex = "1.6"
 git-conventional = "0.11"
-# git-cliff = { version = "0.8", default-features = false }
+git-cliff = { version = "0.8", default-features = false }
+git-cliff-core = "0.8"

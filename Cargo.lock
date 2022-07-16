@@ -667,6 +667,7 @@ dependencies = [
  "anyhow",
  "conventional_commits_next_version_lib",
  "git2",
+ "regex",
  "semver",
 ]
 

@@ -38,17 +38,25 @@ impl Version {
         format!("{self}")
     }
 
-    fn as_string(&self) -> String {
-        format!(
-            "{major}.{minor}.{patch}",
-            major = self.major,
-            minor = self.minor,
-            patch = self.patch
-        )
-    }
+    // fn as_string(&self) -> String {
+    //     format!(
+    //         "{major}.{minor}.{patch}",
+    //         major = self.major,
+    //         minor = self.minor,
+    //         patch = self.patch
+    //     )
+    // }
 
     fn as_semver(&self) -> semver::Version {
         semver::Version::new(self.major, self.minor, self.patch)
+    }
+
+    fn from_semver(version: &semver::Version) -> Self {
+        Self {
+            major: version.major,
+            minor: version.minor,
+            patch: version.patch,
+        }
     }
 }
 
@@ -71,9 +79,9 @@ fn main() -> Result<()> {
 
     println!("Latest version: {last_version}");
 
-    let next_version = next_version(&repository, &last_version);
+    let next_version = next_version(&repository, &last_version)?;
 
-    println!("Next version: {next_version:?}");
+    println!("Next version: {next_version}");
 
     Ok(())
 }
@@ -93,7 +101,7 @@ fn latest_version(repository: &Repository) -> Result<Version> {
         .ok_or_else(|| anyhow!("Couldn't get a tag"))
 }
 
-fn next_version(repository: &Repository, last_version: &Version) -> Result<semver::Version> {
+fn next_version(repository: &Repository, last_version: &Version) -> Result<Version> {
     let commits = Commits::from_reference(
         repository,
         last_version.as_tag(),
@@ -106,5 +114,5 @@ fn next_version(repository: &Repository, last_version: &Version) -> Result<semve
         conventional_commits_next_version_lib::CalculationMode::Consecutive,
     );
 
-    Ok(version)
+    Ok(Version::from_semver(&version))
 }

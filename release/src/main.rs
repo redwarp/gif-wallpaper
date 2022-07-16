@@ -5,10 +5,9 @@ use std::io::Write;
 use std::path::PathBuf;
 
 use anyhow::anyhow;
-use anyhow::Ok;
 use anyhow::Result;
-use conventional_commits_next_version_lib::Commits;
 use git2::Repository;
+use git_conventional::Type;
 use regex::Captures;
 use regex::Regex;
 
@@ -45,15 +44,27 @@ impl Version {
         format!("v{self}")
     }
 
-    fn as_semver(&self) -> semver::Version {
-        semver::Version::new(self.major, self.minor, self.patch)
+    fn next_major(&self) -> Self {
+        Self {
+            major: self.major + 1,
+            minor: self.minor,
+            patch: self.patch,
+        }
     }
 
-    fn from_semver(version: &semver::Version) -> Self {
+    fn next_minor(&self) -> Self {
         Self {
-            major: version.major,
-            minor: version.minor,
-            patch: version.patch,
+            major: self.major,
+            minor: self.minor + 1,
+            patch: self.patch,
+        }
+    }
+
+    fn next_patch(&self) -> Self {
+        Self {
+            major: self.major,
+            minor: self.minor,
+            patch: self.patch + 1,
         }
     }
 }
@@ -79,9 +90,11 @@ fn main() -> Result<()> {
 
     let next_version = next_version(&repository, &last_version)?;
 
-    println!("Next version: {next_version}");
+    if let Some(next_version) = next_version {
+        println!("Next version: {next_version}");
 
-    update_version_in_build_gradle(&next_version)?;
+        update_version_in_build_gradle(&next_version)?;
+    }
 
     Ok(())
 }
@@ -101,20 +114,47 @@ fn last_version(repository: &Repository) -> Result<Version> {
         .ok_or_else(|| anyhow!("Couldn't get a tag"))
 }
 
-fn next_version(repository: &Repository, last_version: &Version) -> Result<Version> {
-    let commits = Commits::from_reference(
-        repository,
-        last_version.as_tag(),
-        vec![],
-        conventional_commits_next_version_lib::GitHistoryMode::FirstParent,
-    )?;
+fn next_version(repository: &Repository, last_version: &Version) -> Result<Option<Version>> {
+    let last_tag = repository
+        .resolve_reference_from_short_name(&last_version.as_tag())?
+        .peel_to_commit()?;
 
-    let version = commits.get_next_version(
-        last_version.as_semver(),
-        conventional_commits_next_version_lib::CalculationMode::Consecutive,
-    );
+    let mut commits = repository.revwalk()?;
+    commits.simplify_first_parent()?;
+    commits.push_head()?;
+    commits.hide(last_tag.id())?;
 
-    Ok(Version::from_semver(&version))
+    let mut major_bump = false;
+    let mut minor_bump = false;
+    let mut patch_bump = false;
+
+    for oid in commits {
+        let oid = oid?;
+        let commit = repository.find_commit(oid)?;
+
+        let message = String::from_utf8_lossy(commit.message_bytes());
+        let parsed = git_conventional::Commit::parse(&message);
+
+        if let Ok(parsed) = parsed {
+            if parsed.breaking() {
+                major_bump = true
+            } else if parsed.type_() == Type::FEAT {
+                minor_bump = true
+            } else if parsed.type_() == Type::FIX {
+                patch_bump = true
+            }
+        }
+    }
+
+    Ok(if major_bump {
+        Some(last_version.next_major())
+    } else if minor_bump {
+        Some(last_version.next_minor())
+    } else if patch_bump {
+        Some(last_version.next_patch())
+    } else {
+        None
+    })
 }
 
 fn update_version_in_build_gradle(next_version: &Version) -> Result<()> {

@@ -1,0 +1,51 @@
+# configuration file for git-cliff (0.1.0)
+[changelog]
+# changelog header
+header = """"""
+# template for the changelog body
+# https://tera.netlify.app/docs/#introduction
+body = """\
+{% for group, commits in commits | group_by(attribute="group") %}\
+    {% for commit in commits %}\
+        - {% if commit.breaking %}⚠ [**breaking**] {% endif %}{{ commit.message | upper_first }}
+    {% endfor %}\
+{% endfor %}\
+"""
+# remove the leading and trailing whitespace from the template
+trim = true
+# changelog footer
+footer = """"""
+
+[git]
+# parse the commits based on https://www.conventionalcommits.org
+conventional_commits = true
+# filter out the commits that are not conventional
+filter_unconventional = true
+# regex for preprocessing the commit messages
+commit_preprocessors = [
+    { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](https://github.com/redwarp/gif-wallpaper/issues/${2}))" },
+]
+# regex for parsing and grouping commits
+commit_parsers = [
+    { message = "^feat", group = "Features" },
+    { message = "^fix", group = "Bug Fixes" },
+    { message = "^doc", group = "Documentation", skip = true },
+    { message = "^perf", group = "Performance", skip = true },
+    { message = "^refactor", group = "Refactor", skip = true },
+    { message = "^style", group = "Styling", skip = true },
+    { message = "^test", group = "Testing", skip = true },
+    { message = "^chore", group = "Miscellaneous Tasks", skip = true },
+    { body = ".*security", group = "Security", skip = true },
+]
+# filter out the commits that are not matched by commit parsers
+filter_commits = false
+# glob pattern for matching git tags
+tag_pattern = "v[0-9]*"
+# regex for skipping tags
+skip_tags = "v0.1.0-beta.1"
+# regex for ignoring tags
+ignore_tags = ""
+# sort the tags chronologically
+date_order = false
+# sort the commits inside sections by oldest/newest order
+sort_commits = "oldest"

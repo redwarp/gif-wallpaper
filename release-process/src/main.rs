@@ -95,11 +95,31 @@ fn main() -> Result<()> {
 
     if let Some(next_version) = next_version(&repo)? {
         println!("Next version: {next_version:?}");
+        let next_version_code = next_version_code()?;
 
-        update_versions_in_build_gradle(&next_version)?;
+        update_versions_in_build_gradle(&next_version, next_version_code)?;
 
-        let changelog_file = File::create(PathBuf::from(PROJECT_DIR).join("../CHANGELOG2.md"))?;
-        changelog2(&repo, &next_version, false, &changelog_file)?;
+        let changelog_file = File::create(PathBuf::from(PROJECT_DIR).join("../CHANGELOG.md"))?;
+
+        let main_config = Config::parse(&PathBuf::from(PROJECT_DIR).join("main-cliff.toml"))?;
+        changelog(&repo, &next_version, false, &main_config, &changelog_file)?;
+
+        let fastlane_changelog_folder = PathBuf::from(PROJECT_DIR)
+            .join("..")
+            .join("fastlane/metadata/android/en-US/changelogs");
+        std::fs::create_dir_all(&fastlane_changelog_folder)?;
+        let fastlane_changelog_file =
+            fastlane_changelog_folder.join(format!("{next_version_code}.txt"));
+
+        let fastlane_config =
+            Config::parse(&PathBuf::from(PROJECT_DIR).join("fastlane-cliff.toml"))?;
+        changelog(
+            &repo,
+            &next_version,
+            true,
+            &fastlane_config,
+            File::create(&fastlane_changelog_file)?,
+        )?;
     }
 
     Ok(())
@@ -156,7 +176,24 @@ fn next_version(repo: &Repo) -> Result<Option<Version>> {
     }
 }
 
-fn update_versions_in_build_gradle(next_version: &Version) -> Result<()> {
+fn next_version_code() -> Result<u64> {
+    let app_gradle_file = PathBuf::from(PROJECT_DIR)
+        .join("..")
+        .join("app/build.gradle");
+
+    let version_code_regex = Regex::new(VERSION_CODE_REGEX)?;
+    let content = std::fs::read_to_string(app_gradle_file)?;
+
+    let next_version_code: u64 = (version_code_regex
+        .captures(&content)
+        .ok_or_else(|| anyhow!("Couldn't find version code"))?[2]
+        .parse::<u64>()?)
+        + 1;
+
+    Ok(next_version_code)
+}
+
+fn update_versions_in_build_gradle(next_version: &Version, next_version_code: u64) -> Result<()> {
     let app_gradle_file = PathBuf::from(PROJECT_DIR)
         .join("..")
         .join("app/build.gradle");
@@ -171,12 +208,6 @@ fn update_versions_in_build_gradle(next_version: &Version) -> Result<()> {
         format!("{}{}{}", &caps[1], next_version, &caps[3])
     });
 
-    let next_version_code: u64 = (version_code_regex
-        .captures(&content)
-        .ok_or_else(|| anyhow!("Couldn't find version code"))?[2]
-        .parse::<u64>()?)
-        + 1;
-
     let content = version_code_regex.replace(&content, |caps: &Captures| {
         format!("{}{}", &caps[1], next_version_code)
     });
@@ -187,7 +218,13 @@ fn update_versions_in_build_gradle(next_version: &Version) -> Result<()> {
     Ok(())
 }
 
-fn changelog2<W>(repo: &Repo, next_version: &Version, only_next: bool, into: W) -> Result<()>
+fn changelog<W>(
+    repo: &Repo,
+    next_version: &Version,
+    only_next: bool,
+    config: &Config,
+    into: W,
+) -> Result<()>
 where
     W: Write,
 {
@@ -229,9 +266,7 @@ where
     });
     releases.reverse();
 
-    let config = Config::parse(&PathBuf::from(PROJECT_DIR).join("cliff.toml"))?;
-
-    let changelog = Changelog::new(releases, &config)?;
+    let changelog = Changelog::new(releases, config)?;
 
     changelog.generate(&mut into)?;
 

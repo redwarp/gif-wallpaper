@@ -38,8 +38,20 @@ I use the website **POEditor** to handle translations. They are free for open so
 
 ### Steps when adding a new language
 
-* Edit the [`config.json`](fetch-translations) file in the `fetch-translations` folder to add the new language, and map the POEditor values with Android's value folder, and fastlane supported language list.
+* Edit the [`config.json`](fetch-translations/config.json) file in the `fetch-translations` folder to add the new language, and map the POEditor values with Android's value folder, and fastlane supported language list.
 * Run `cargo run --bin fetch-translations`, verify that a new strings.xml files was created in the Android project.
 * Run `cargo run --bin update-fastlane`, verify that new metadata files were added in the fastlane folder.
 * Edit the [`app/build.gradle`](app/build.gradle) file and add to the res config the new language code.
 * Run the app in an emulator or device set on the chosen language, verify it shows properly, and take the 5 screenshots needed for fastlane. At some point, I should automate that with Picasso, but we are not there yet.
+
+## Release
+
+Writing that here to remember all the steps.
+
+### Step for creating a new release
+
+* Make sure you are on the `main` branch, and that the git repo is clean
+* Run `cargo run --bin release-process`. It will calculate the next version based on conventional commits, generate changelogs, create and tag a new commit with the version.
+* Verify the new commit looks good, changelogs as well.
+* Run `git push --follow-tags`
+* On github, check the [tags](https://github.com/redwarp/gif-wallpaper/tags) page, find your new tag there, and create a release from the tag.

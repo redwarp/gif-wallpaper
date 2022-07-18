@@ -120,6 +120,8 @@ fn main() -> Result<()> {
             &fastlane_config,
             File::create(&fastlane_changelog_file)?,
         )?;
+
+        create_commit(&repo, &next_version, next_version_code)?;
     }
 
     Ok(())
@@ -214,6 +216,37 @@ fn update_versions_in_build_gradle(next_version: &Version, next_version_code: u6
 
     let mut output = File::create(app_gradle_file)?;
     output.write_all(content.as_bytes())?;
+
+    Ok(())
+}
+
+fn create_commit(repo: &Repo, next_version: &Version, next_version_code: u64) -> Result<()> {
+    // Read https://zsiciarz.github.io/24daysofrust/book/vol2/day16.html
+    // and https://paritytech.github.io/substrate/master/git2/struct.Repository.html#method.signature
+
+    let repository = &repo.repository;
+
+    let mut index = repository.index()?;
+    index.add_path(&PathBuf::from("CHANGELOG.MD"))?;
+    index.add_path(&PathBuf::from("app/build.gradle"))?;
+    index.add_path(&PathBuf::from(format!(
+        "fastlane/metadata/android/en-US/changelogs/{next_version_code}.txt"
+    )))?;
+    index.write()?;
+
+    let message = format!("chore(release): {next_version}");
+    let signature = repository.signature()?;
+    let oid = index.write_tree()?;
+    let parent_commit = repository.head()?.peel_to_commit()?;
+    let tree = repository.find_tree(oid)?;
+    repository.commit(
+        Some("HEAD"),
+        &signature,
+        &signature,
+        &message,
+        &tree,
+        &[&parent_commit],
+    )?;
 
     Ok(())
 }

@@ -1,8 +1,0 @@
-{
-    "bumpFiles": [
-        {
-            "filename": "app/build.gradle",
-            "updater":".standard-version/updaters/app-gradle.js"
-        }
-    ]
-}

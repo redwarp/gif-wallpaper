@@ -1,4 +1,5 @@
 use anyhow::anyhow;
+use anyhow::Context;
 use anyhow::Result;
 use git2::Oid;
 use git2::Repository;
@@ -13,7 +14,9 @@ use std::fmt::Display;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
+use std::path::Path;
 use std::path::PathBuf;
+use std::process::Command;
 
 const PROJECT_DIR: &str = env!("CARGO_MANIFEST_DIR");
 const VERSION_NAME_REGEX: &str = r#"(versionName ")([0-9]+\.[0-9]+\.[0-9]+)(")"#;
@@ -235,18 +238,12 @@ fn create_commit(repo: &Repo, next_version: &Version, next_version_code: u64) ->
     index.write()?;
 
     let message = format!("chore(release): {next_version}");
-    let signature = repository.signature()?;
-    let oid = index.write_tree()?;
-    let parent_commit = repository.head()?.peel_to_commit()?;
-    let tree = repository.find_tree(oid)?;
-    repository.commit(
-        Some("HEAD"),
-        &signature,
-        &signature,
-        &message,
-        &tree,
-        &[&parent_commit],
-    )?;
+    // Here, we cheat a bit and use command line to do the actual commit:
+    // We want to allow for signing the commit, and it's not trivial in pure rust.
+    git(&["commit", "-m", &message])?;
+
+    let tag_message = format!("Version {next_version}");
+    git(&["tag", "-a", &next_version.as_tag(), "-m", &tag_message])?;
 
     Ok(())
 }
@@ -417,4 +414,41 @@ fn windows_mut_each<T>(v: &mut [T], n: usize, mut f: impl FnMut(&mut [T])) {
         start += 1;
         end += 1;
     }
+}
+
+// From https://github.com/MarcoIeni/release-plz/blob/main/crates/git_cmd/src/lib.rs
+fn git(args: &[&str]) -> Result<String> {
+    let work_dir = PathBuf::from(PROJECT_DIR).join("..");
+
+    let args: Vec<&str> = args.iter().map(|s| s.trim()).collect();
+    let output = Command::new("git")
+        .arg("-C")
+        .arg(&work_dir)
+        .args(&args)
+        .output()
+        .with_context(|| {
+            format!("error while running git in directory `{work_dir:?}` with args `{args:?}`")
+        })?;
+    let stdout = string_from_bytes(output.stdout)?;
+    if output.status.success() {
+        Ok(stdout)
+    } else {
+        let mut error = "error while running git:\n".to_string();
+        if !stdout.is_empty() {
+            error.push_str("- stdout: ");
+            error.push_str(&stdout);
+        }
+        let stderr = string_from_bytes(output.stderr)?;
+        if !stderr.is_empty() {
+            error.push_str("- stderr: ");
+            error.push_str(&stderr);
+        }
+        Err(anyhow!(error))
+    }
+}
+
+fn string_from_bytes(bytes: Vec<u8>) -> Result<String> {
+    let stdout = String::from_utf8(bytes).context("cannot extract stderr")?;
+    let stdout = stdout.trim();
+    Ok(stdout.to_string())
 }

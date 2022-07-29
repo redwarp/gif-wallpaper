@@ -19,6 +19,7 @@ import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -28,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.redwarp.markdown.MDDocument
-import com.google.accompanist.insets.statusBarsPadding
 import org.commonmark.node.Document
 import org.commonmark.parser.Parser
 import java.io.InputStream

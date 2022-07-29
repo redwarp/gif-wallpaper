@@ -20,7 +20,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.rememberNavController
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.accompanist.insets.ProvideWindowInsets
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.ui.AppTheme
 import net.redwarp.gifwallpaper.ui.LauncherUi
@@ -93,7 +92,5 @@ class ScreenshotTest {
 @Composable
 @Suppress("TestFunctionName")
 fun TestTheme(content: @Composable () -> Unit) {
-    ProvideWindowInsets {
-        AppTheme(darkTheme = true, content = content)
-    }
+    AppTheme(darkTheme = true, content = content)
 }

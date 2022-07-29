@@ -31,8 +31,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.DropdownMenu
@@ -61,12 +62,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.IntrinsicMeasurable
+import androidx.compose.ui.layout.IntrinsicMeasureScope
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasurePolicy
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -75,10 +82,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.statusBarsPadding
 import kotlinx.coroutines.launch
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.renderer.rememberGifDrawablePainter
@@ -142,6 +148,7 @@ fun ActionBar(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SetupUi(
     setupModel: SetupModel,
@@ -200,7 +207,7 @@ fun SetupUi(
                     }
                     .pointerInput(Unit) {
                         detectDragGestures { change, dragAmount ->
-                            change.consumeAllChanges()
+                            change.consume()
                             scope.launch {
                                 setupModel.postTranslate(dragAmount.x, dragAmount.y)
                             }
@@ -303,6 +310,61 @@ fun VerticalButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable () -> Unit
 ) {
+    val measurePolicy = object : MeasurePolicy {
+        override fun MeasureScope.measure(
+            measurables: List<Measurable>,
+            constraints: Constraints
+        ): MeasureResult {
+            val placeables = measurables.map { measurable ->
+                measurable.measure(constraints)
+            }
+            val height = max(placeables.sumOf(Placeable::height), constraints.minHeight)
+            val width = max(placeables.maxOf(Placeable::width), constraints.minWidth)
+
+            return layout(width, height) {
+                var yPosition = 0
+
+                placeables.forEach { placeable ->
+                    placeable.placeRelative(x = (width - placeable.width) / 2, y = yPosition)
+
+                    yPosition += placeable.height
+                }
+            }
+        }
+
+        override fun IntrinsicMeasureScope.minIntrinsicHeight(
+            measurables: List<IntrinsicMeasurable>,
+            width: Int
+        ): Int {
+            return measurables.sumOf {
+                it.minIntrinsicHeight(width)
+            }
+        }
+
+        override fun IntrinsicMeasureScope.maxIntrinsicHeight(
+            measurables: List<IntrinsicMeasurable>,
+            width: Int
+        ): Int {
+            return measurables.sumOf {
+                it.maxIntrinsicHeight(width)
+            }
+        }
+
+        override fun IntrinsicMeasureScope.minIntrinsicWidth(
+            measurables: List<IntrinsicMeasurable>,
+            height: Int
+        ): Int {
+            return measurables.maxOf { it.minIntrinsicWidth(height) }
+        }
+
+        override fun IntrinsicMeasureScope.maxIntrinsicWidth(
+            measurables: List<IntrinsicMeasurable>,
+            height: Int
+        ): Int {
+            return measurables.maxOf { it.maxIntrinsicWidth(height) }
+        }
+    }
+
     val contentAlpha = if (enabled) LocalContentAlpha.current else ContentAlpha.disabled
     val colors = MaterialTheme.colors.onSurface
     CompositionLocalProvider(
@@ -320,24 +382,9 @@ fun VerticalButton(
                         interactionSource = interactionSource,
                         indication = rememberRipple(bounded = true)
                     )
-                    .padding(PaddingValues(8.dp))
-            ) { measurables, constraints ->
-                val placeables = measurables.map { measurable ->
-                    measurable.measure(constraints)
-                }
-                val height = max(placeables.sumOf(Placeable::height), constraints.minHeight)
-                val width = max(placeables.maxOf(Placeable::width), constraints.minWidth)
-
-                layout(width, height) {
-                    var yPosition = 0
-
-                    placeables.forEach { placeable ->
-                        placeable.placeRelative(x = (width - placeable.width) / 2, y = yPosition)
-
-                        yPosition += placeable.height
-                    }
-                }
-            }
+                    .padding(PaddingValues(8.dp)),
+                measurePolicy = measurePolicy
+            )
         }
     }
 }
@@ -362,7 +409,6 @@ fun ActionButton(
         Text(
             text = text,
             textAlign = TextAlign.Center,
-            modifier = Modifier.wrapContentHeight(Alignment.CenterVertically)
         )
     }
 }
@@ -389,12 +435,17 @@ fun ActionRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
             content = content,
         ) { measurables, constraints ->
             val childWidth = constraints.maxWidth / measurables.size
-            val childHeight = measurables.maxOf { it.minIntrinsicHeight(childWidth) }
-            val childConstraint = constraints.copy(
-                maxWidth = childWidth,
+            val childHeight = measurables.maxOf {
+                it.minIntrinsicHeight(childWidth)
+            }
+
+            val childConstraint = Constraints(
                 minWidth = childWidth,
-                minHeight = childHeight,
+                maxWidth = childWidth,
+                minHeight = 0,
+                maxHeight = childHeight
             )
+
             val placeables = measurables.map { measurable ->
                 measurable.measure(childConstraint)
             }
@@ -407,7 +458,7 @@ fun ActionRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
                 placeables.forEach { placeable ->
                     placeable.placeRelative(x = xPosition, y = 0)
 
-                    xPosition += placeable.width
+                    xPosition += childWidth
                 }
             }
         }
@@ -418,7 +469,7 @@ fun ActionRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 @Composable
 fun ActionBarPreview() {
     AppTheme {
-        ActionRow(modifier = Modifier) {
+        ActionRow {
             ActionButton(
                 icon = R.drawable.ic_collections,
                 text = stringResource(id = R.string.open_gif)

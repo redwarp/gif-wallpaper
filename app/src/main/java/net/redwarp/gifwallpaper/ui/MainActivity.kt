@@ -35,7 +35,6 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.insets.ProvideWindowInsets
 import net.redwarp.gifwallpaper.GifApplication
 import net.redwarp.gifwallpaper.GifWallpaperService
 import net.redwarp.gifwallpaper.R
@@ -52,61 +51,58 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            ProvideWindowInsets {
-                AppTheme {
-                    val context = LocalContext.current
-                    val isWallpaperSet by wallpaperActive.collectAsState()
+            AppTheme {
+                val context = LocalContext.current
+                val isWallpaperSet by wallpaperActive.collectAsState()
+                val isPreview = remember {
+                    isPreviewMode()
+                }
 
-                    val isPreview = remember {
-                        isPreviewMode()
+                if (isWallpaperSet || isPreview) {
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "setup") {
+                        composable("setup") {
+                            val scope = rememberCoroutineScope()
+                            val setupModel = remember {
+                                val drawableProvider =
+                                    DrawableMapper.previewMapper(
+                                        context = context,
+                                        flowBasedModel = GifApplication.app.model,
+                                        scope = scope,
+                                    )
+
+                                SetupModelImpl(GifApplication.app.model, drawableProvider)
+                            }
+
+                            SetupUi(
+                                setupModel = setupModel,
+                                navController = navController
+                            )
+                        }
+                        composable("privacy") {
+                            MarkdownUi(
+                                fileName = "privacy.md",
+                                title = stringResource(id = R.string.privacy),
+                                navController = navController
+                            )
+                        }
+                        composable("about") {
+                            MarkdownUi(
+                                fileName = "about.md",
+                                title = stringResource(id = R.string.about),
+                                navController = navController
+                            )
+                        }
+                        composable("settings") {
+                            SettingUi(
+                                appSettings = GifApplication.app.appSettings,
+                                navController = navController
+                            )
+                        }
                     }
-
-                    if (isWallpaperSet || isPreview) {
-                        val navController = rememberNavController()
-                        NavHost(navController = navController, startDestination = "setup") {
-                            composable("setup") {
-                                val scope = rememberCoroutineScope()
-                                val setupModel = remember {
-                                    val drawableProvider =
-                                        DrawableMapper.previewMapper(
-                                            context = context,
-                                            flowBasedModel = GifApplication.app.model,
-                                            scope = scope,
-                                        )
-
-                                    SetupModelImpl(GifApplication.app.model, drawableProvider)
-                                }
-
-                                SetupUi(
-                                    setupModel = setupModel,
-                                    navController = navController
-                                )
-                            }
-                            composable("privacy") {
-                                MarkdownUi(
-                                    fileName = "privacy.md",
-                                    title = stringResource(id = R.string.privacy),
-                                    navController = navController
-                                )
-                            }
-                            composable("about") {
-                                MarkdownUi(
-                                    fileName = "about.md",
-                                    title = stringResource(id = R.string.about),
-                                    navController = navController
-                                )
-                            }
-                            composable("settings") {
-                                SettingUi(
-                                    appSettings = GifApplication.app.appSettings,
-                                    navController = navController
-                                )
-                            }
-                        }
-                    } else {
-                        LauncherUi {
-                            activateWallpaper(context)
-                        }
+                } else {
+                    LauncherUi {
+                        activateWallpaper(context)
                     }
                 }
             }

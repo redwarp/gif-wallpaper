@@ -51,7 +51,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     api 'org.commonmark:commonmark:0.19.0'
-    implementation 'io.coil-kt:coil-compose:2.1.0'
+    implementation 'io.coil-kt:coil-compose:2.2.0'
 
     // Compose Material Design
     implementation "androidx.compose.material:material:$compose_version"

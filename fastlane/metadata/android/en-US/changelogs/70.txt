@@ -1,0 +1,1 @@
+- Fix active wallpaper detection for Android 13

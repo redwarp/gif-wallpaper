@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2] - 2022-08-23
+
+### Bug Fixes
+
+- Fix active wallpaper detection for Android 13
+
+### Miscellaneous Tasks
+
+- Add monochrome icon
+- Update rust deps
+- Create manual release flow
+
 ## [2.0.1] - 2022-07-26
 
 ### Bug Fixes

@@ -25,6 +25,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,6 +41,7 @@ import net.redwarp.gifwallpaper.GifWallpaperService
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.renderer.DrawableMapper
 import net.redwarp.gifwallpaper.ui.setup.SetupModelImpl
+import net.redwarp.gifwallpaper.wallpaperActive
 
 const val EXTRA_PREVIEW_MODE = "android.service.wallpaper.PREVIEW_MODE"
 
@@ -53,9 +55,8 @@ class MainActivity : ComponentActivity() {
             ProvideWindowInsets {
                 AppTheme {
                     val context = LocalContext.current
-                    val isWallpaperSet by checkOnResume {
-                        isWallpaperSet(context)
-                    }
+                    val isWallpaperSet by wallpaperActive.collectAsState()
+
                     val isPreview = remember {
                         isPreviewMode()
                     }
@@ -110,13 +111,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun isWallpaperSet(context: Context): Boolean {
-        val wallpaperManager = WallpaperManager.getInstance(context)
-        return wallpaperManager.wallpaperInfo?.let {
-            it.packageName == context.packageName
-        } ?: false
     }
 }
 

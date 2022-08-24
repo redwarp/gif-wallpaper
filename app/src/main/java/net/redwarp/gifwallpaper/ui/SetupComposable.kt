@@ -420,18 +420,6 @@ fun ActionButton(
     }
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun ActionButtonPreviewNight() {
-    AppTheme {
-        ActionButton(
-            icon = R.drawable.ic_collections,
-            text = stringResource(id = R.string.open_gif)
-        ) {
-        }
-    }
-}
-
 @Composable
 fun ActionRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Surface(
@@ -472,37 +460,7 @@ fun ActionRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     }
 }
 
-@Preview
-@Composable
-fun ActionBarPreview() {
-    AppTheme {
-        ActionRow {
-            ActionButton(
-                icon = R.drawable.ic_collections,
-                text = stringResource(id = R.string.open_gif)
-            ) {
-            }
-
-            ActionButton(
-                icon = R.drawable.ic_transform,
-                text = stringResource(id = R.string.change_scale)
-            ) {
-            }
-
-            ActionButton(
-                icon = R.drawable.ic_rotate_90_degrees_cw,
-                text = stringResource(id = R.string.rotate)
-            ) {
-            }
-
-            ActionButton(
-                icon = R.drawable.ic_color_lens,
-                text = stringResource(id = R.string.change_color)
-            ) {
-            }
-        }
-    }
-}
+data class OverflowAction(val text: String, val onClick: () -> Unit)
 
 @Composable
 fun OverflowMenu(
@@ -540,4 +498,46 @@ fun OverflowMenu(
     }
 }
 
-data class OverflowAction(val text: String, val onClick: () -> Unit)
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun ActionButtonPreviewNight() {
+    AppTheme {
+        ActionButton(
+            icon = R.drawable.ic_collections,
+            text = stringResource(id = R.string.open_gif)
+        ) {
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ActionBarPreview() {
+    AppTheme {
+        ActionRow {
+            ActionButton(
+                icon = R.drawable.ic_collections,
+                text = stringResource(id = R.string.open_gif)
+            ) {
+            }
+
+            ActionButton(
+                icon = R.drawable.ic_transform,
+                text = stringResource(id = R.string.change_scale)
+            ) {
+            }
+
+            ActionButton(
+                icon = R.drawable.ic_rotate_90_degrees_cw,
+                text = stringResource(id = R.string.rotate)
+            ) {
+            }
+
+            ActionButton(
+                icon = R.drawable.ic_color_lens,
+                text = stringResource(id = R.string.change_color)
+            ) {
+            }
+        }
+    }
+}

@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemGesturesPadding
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.DropdownMenu
@@ -197,7 +198,16 @@ fun SetupUi(
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
                 modifier = Modifier
+                    .fillMaxSize(),
+                painter = rememberGifDrawablePainter(drawable = drawable),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds
+            )
+
+            Box(
+                modifier = Modifier
                     .fillMaxSize()
+                    .systemGesturesPadding()
                     .pointerInput(Unit) {
                         detectTapGestures(onDoubleTap = {
                             scope.launch {
@@ -212,10 +222,7 @@ fun SetupUi(
                                 setupModel.postTranslate(dragAmount.x, dragAmount.y)
                             }
                         }
-                    },
-                painter = rememberGifDrawablePainter(drawable = drawable),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds
+                    }
             )
 
             ActionMenu(

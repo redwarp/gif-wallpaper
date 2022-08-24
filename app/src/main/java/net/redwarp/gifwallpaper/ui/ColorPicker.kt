@@ -15,6 +15,7 @@
  */
 package net.redwarp.gifwallpaper.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import net.redwarp.gifwallpaper.R
+import kotlin.math.abs
 
 private val choiceSize = 48.dp
 private val choicePadding = 4.dp
@@ -77,9 +79,10 @@ fun ColorChoice(color: Color, onClick: () -> Unit) {
         .clip(CircleShape)
         .background(color)
         .clickable(onClick = onClick)
-    if (color == MaterialTheme.colors.surface) {
+    val luminanceDiff = abs(color.luminance() - MaterialTheme.colors.surface.luminance())
+    if (luminanceDiff < 0.05) {
         modifier = modifier
-            .border(width = 1.dp, color = MaterialTheme.colors.onSurface, shape = CircleShape)
+            .border(width = 1.dp, color = MaterialTheme.colors.onSurface.copy(alpha = 0.25f), shape = CircleShape)
     }
     Box(
         modifier = modifier
@@ -197,7 +200,8 @@ fun ColorPicker(
     }
 }
 
-@Preview
+@Preview(name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ColorPickerPreview() {
     AppTheme {

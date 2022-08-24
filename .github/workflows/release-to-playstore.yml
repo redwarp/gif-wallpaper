@@ -22,7 +22,7 @@ jobs:
           keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
           keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
       - name: Archive signed artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: signed-android-app
           path: app/build/outputs/bundle/release/app-release.aab

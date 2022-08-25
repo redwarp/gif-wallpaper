@@ -27,6 +27,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -85,20 +86,22 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
 
             val modelFlow = GifApplication.app.model
 
-            lifecycleScope.launchWhenStarted {
-                launch {
-                    val drawableOwner =
-                        DrawableMapper.serviceMapper(this@GifWallpaperService, modelFlow, this)
-
-                    drawableOwner.drawables.collectLatest { drawable ->
-                        surfaceDrawableRenderer?.drawable = drawable
-                    }
-                }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            lifecycleScope.launch {
+                lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     launch {
-                        modelFlow.updateFlow.collectLatest {
-                            updateWallpaperColors()
+                        val drawableOwner =
+                            DrawableMapper.serviceMapper(this@GifWallpaperService, modelFlow, this)
+
+                        drawableOwner.drawables.collectLatest { drawable ->
+                            surfaceDrawableRenderer?.drawable = drawable
+                        }
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                        launch {
+                            modelFlow.updateFlow.collectLatest {
+                                updateWallpaperColors()
+                            }
                         }
                     }
                 }

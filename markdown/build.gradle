@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id "com.diffplug.spotless"
+    id "se.ascp.gradle.gradle-versions-filter" version "0.1.16"
 }
 
 android {

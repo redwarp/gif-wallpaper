@@ -16,6 +16,8 @@
 package net.redwarp.gifwallpaper
 
 import android.app.Application
+import android.os.StrictMode
+import android.os.StrictMode.VmPolicy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -36,6 +38,18 @@ class GifApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        if (BuildConfig.DEBUG) {
+            StrictMode.setVmPolicy(
+                VmPolicy.Builder()
+                    .detectLeakedClosableObjects()
+                    .penaltyLog()
+                    .build()
+            )
+            StrictMode.allowThreadDiskReads()
+
+            StrictMode.enableDefaults()
+        }
 
         val appSettings = DataStoreAppSettings(this, ioScope)
         _appSettings = appSettings

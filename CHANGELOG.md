@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.3] - 2022-09-02
+
+### Bug Fixes
+
+- Update compose to 1.2 and fix insets
+- Gestures ignore system padding
+- Add a border to colors in color picker
+- Use repeatOnLifecycle in service
+- Disk read violation
+
+### Miscellaneous Tasks
+
+- Remove useless manual release
+- Move preview at the end of class
+- Update gradle to 7.5.1
+- Update kotlin and dependencies
+- Replace deprecated -Xopt-in with -opt-in
+- Compile and target with sdk 33
+- Update fastlane
+- Update screenshots
+- Set project to use java home for gradle
+- Add dependencyUpdates plugin to the markdown module
+- Update rust dependencies
+- Setup StrictMode in debug mode
+
+### Refactor
+
+- Remove useless code
+- Delete more useless code
+- Remove useless deps and tests
+
 ## [2.0.2] - 2022-08-23
 
 ### Bug Fixes

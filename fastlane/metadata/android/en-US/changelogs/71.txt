@@ -1,0 +1,5 @@
+- Update compose to 1.2 and fix insets
+- Gestures ignore system padding
+- Add a border to colors in color picker
+- Use repeatOnLifecycle in service
+- Disk read violation

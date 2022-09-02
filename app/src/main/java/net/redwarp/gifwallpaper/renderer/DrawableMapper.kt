@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable
 import app.redwarp.gif.android.GifDrawable
 import app.redwarp.gif.decoder.descriptors.params.LoopCount
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.redwarp.gifwallpaper.R
 import net.redwarp.gifwallpaper.data.FlowBasedModel
 import net.redwarp.gifwallpaper.data.TranslationEvent
@@ -123,7 +125,9 @@ class DrawableMapper private constructor(
                         TextDrawable(context, context.getString(R.string.loading))
                     WallpaperStatus.NotSet -> TextDrawable(context, unsetText)
                     is WallpaperStatus.Wallpaper -> {
-                        val gif = GifDrawable(status.gifDescriptor)
+                        val gif = withContext(Dispatchers.IO) {
+                            GifDrawable(status.gifDescriptor)
+                        }
                         gif.loopCount = LoopCount.Infinite
                         val shouldPlay = !isService || flowBasedModel.shouldPlay.first()
                         val scaleType = flowBasedModel.scaleTypeFlow.first()

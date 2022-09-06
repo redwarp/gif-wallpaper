@@ -21,6 +21,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -61,6 +62,7 @@ fun LauncherUi(onClick: () -> Unit) {
                     painter = painterResource(id = R.drawable.phone_large),
                     contentDescription = null
                 )
+                Spacer(modifier = Modifier.size(8.dp))
                 Text(
                     text = stringResource(id = R.string.activate),
                     style = MaterialTheme.typography.button

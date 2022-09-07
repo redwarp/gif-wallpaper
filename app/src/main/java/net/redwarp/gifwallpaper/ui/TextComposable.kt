@@ -29,19 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.redwarp.markdown.MDDocument
-import org.commonmark.node.Document
-import org.commonmark.parser.Parser
 import java.io.InputStream
-
-@Composable
-fun MarkdownText(text: String, modifier: Modifier = Modifier) {
-    val document = remember {
-        val parser = Parser.builder().build()
-        parser.parse(text) as Document
-    }
-
-    MDDocument(document = document, modifier = modifier)
-}
 
 @Composable
 fun MarkdownUi(title: String, fileName: String, navController: NavController) {
@@ -79,8 +67,8 @@ fun MarkdownPage(
             )
         }
     ) { paddingValues ->
-        MarkdownText(
-            text = markdownText,
+        MDDocument(
+            markdown = markdownText,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)

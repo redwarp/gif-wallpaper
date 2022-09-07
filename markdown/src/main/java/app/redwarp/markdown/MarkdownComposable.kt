@@ -106,6 +106,16 @@ fun MDDocument(document: Document, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun MDDocument(markdown: String, modifier: Modifier = Modifier, stripFrontMatter: Boolean = false) {
+    val document = remember {
+        val parser = Parser.builder().build()
+        parser.parse(markdown) as Document
+    }
+
+    MDDocument(document = document, modifier = modifier)
+}
+
+@Composable
 fun MDHeading(heading: Heading, modifier: Modifier = Modifier) {
     val style = when (heading.level) {
         1 -> MaterialTheme.typography.h1
@@ -531,12 +541,9 @@ fun MarkdownPreview() {
             - Hard to say
     """.trimIndent()
 
-    val parser = Parser.builder().build()
-    val document = parser.parse(markdownText) as Document
-
     MaterialTheme(colors = if (isSystemInDarkTheme()) darkColors() else lightColors()) {
         Surface {
-            MDDocument(document = document)
+            MDDocument(markdown = markdownText)
         }
     }
 }

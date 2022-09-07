@@ -1,4 +1,4 @@
-name: Update Playstore metadata
+name: Deploy website
 on:
   workflow_dispatch:
 

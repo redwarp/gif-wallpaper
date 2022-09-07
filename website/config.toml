@@ -17,4 +17,4 @@ highlight_code = true
 # Put all your custom variables here
 author = "redwarp"
 anpu_date_format = "%e %B %Y"
-anpu_menu_links = [{ url = "$BASE_URL/privacy/", name = "Privacy policy" }]
+anpu_menu_links = [{ url = "$BASE_URL/privacy/", name = "Privacy Policy" }]

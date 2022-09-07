@@ -2,9 +2,11 @@
 template = "section.html"
 +++
 
-# About this app
+# About
 
-Made with [Jetpack Compose](https://developer.android.com/jetpack/compose)
+A live wallpaper to display beautiful animated GIFs as your phone's desktop background.
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" width=130>](https://f-droid.org/packages/net.redwarp.gifwallpaper)[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" width=130>](https://play.google.com/store/apps/details?id=net.redwarp.gifwallpaper)
 
 ## Help with the translations
 

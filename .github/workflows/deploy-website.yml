@@ -25,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Init policy
-        run: echo "+++\ntitle = "Privacy policy"\npath = "privacy"\ntemplate = "page.html"\n+++\n" -e > ./website/content/pages/privacy.md
+        run: echo -e "+++\ntitle = "Privacy policy"\npath = "privacy"\ntemplate = "page.html"\n+++\n" >> ./website/content/pages/privacy.md
         shell: bash
       - name: Copy policy
         run: cat ./docs/privacy.md >> ./website/content/pages/privacy.md

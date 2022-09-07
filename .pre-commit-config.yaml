@@ -12,6 +12,6 @@ repos:
       - id: pretty-format-kotlin
         args: [--autofix]
   - repo: https://github.com/redwarp/optimize-png-hooks
-    rev: v1.2.0
+    rev: v1.2.1
     hooks:
       - id: optimize-png

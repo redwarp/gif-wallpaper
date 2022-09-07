@@ -22,13 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/website'
     steps:
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v3
-      - name: Init policy
-        run: echo -e '+++\ntitle = "Privacy policy"\npath = "privacy"\ntemplate = "page.html"\n+++\n' >> ./website/content/pages/privacy.md
-        shell: bash
       - name: Copy policy
-        run: cat ./docs/privacy.md >> ./website/content/pages/privacy.md
+        run: |
+          echo -e '+++\ntitle = "Privacy policy"\npath = "privacy"\ntemplate = "page.html"\n+++\n' >> ./website/content/pages/privacy.md
+          cat ./docs/privacy.md >> ./website/content/pages/privacy.md
+        shell: bash
       - name: Build
         uses: shalzz/zola-deploy-action@v0.16.1
         env:

@@ -1,0 +1,16 @@
+{% import "macros/page.html" as page_macros %}
+{% extends "index.html" %}
+
+{% block title %}{{ term.name }}{% endblock title%}
+
+{% block content %}
+<h1>Tag: #{{ term.name }}</h1>
+<div class="article-info">
+    <a href="{{ get_url(path="/tags") }}">To all tags</a>
+</div>
+
+{% for page in term.pages %}
+{{ page_macros::page_listing(page=page) }}
+{% endfor %}
+
+{% endblock content %}

@@ -1,8 +1,11 @@
-name: Deploy website
+name: Deploy Website
 on:
   push:
     branches:
-      - 'website'
+      - 'main'
+    paths:
+      - 'website/**'
+      - 'docs/privacy.md'
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -20,9 +23,9 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/website'
+    if: github.ref == 'refs/heads/main'
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
       - name: Copy policy
         run: |

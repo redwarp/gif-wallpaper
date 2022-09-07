@@ -16,7 +16,6 @@
 /app/release
 .externalNativeBuild
 .cxx
-/fetch_translations/target
-/update_fastlane/target
 /target
-fastlane/report.xml
+/fastlane/report.xml
+/website/public

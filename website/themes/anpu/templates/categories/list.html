@@ -1,0 +1,18 @@
+{% import "macros/page.html" as page_macros %}
+{% extends "index.html" %}
+
+{% block title %}Categories{% endblock title%}
+
+{% block content %}
+<h1>Categories</h1>
+
+<ul class="terms">
+    {% for term in terms %}
+    <li>
+        <a href="{{ term.permalink }}">
+        {{ term.name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock content %}

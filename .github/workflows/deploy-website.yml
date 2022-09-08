@@ -27,10 +27,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Copy policy
-        run: |
-          echo -e '+++\ntitle = "Privacy policy"\npath = "privacy"\ntemplate = "page.html"\n+++\n' >> ./website/content/pages/privacy.md
-          cat ./docs/privacy.md >> ./website/content/pages/privacy.md
+      - name: Copy privacy policy
+        run: ./website/scripts/copy_privacy_policy.sh
         shell: bash
       - name: Build
         uses: shalzz/zola-deploy-action@v0.16.1

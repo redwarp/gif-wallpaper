@@ -17,7 +17,6 @@ package net.redwarp.gifwallpaper.ui
 
 object Routes {
     const val ABOUT = "about"
-    const val PRIVACY = "privacy"
     const val SETTINGS = "settings"
     const val SETUP = "setup"
 }

@@ -79,13 +79,6 @@ class MainActivity : ComponentActivity() {
                                 navController = navController
                             )
                         }
-                        composable(Routes.PRIVACY) {
-                            MarkdownUi(
-                                fileName = "privacy.md",
-                                title = stringResource(id = R.string.privacy),
-                                navController = navController
-                            )
-                        }
                         composable(Routes.ABOUT) {
                             MarkdownUi(
                                 fileName = "about.md",

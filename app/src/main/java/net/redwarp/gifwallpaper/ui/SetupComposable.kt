@@ -17,6 +17,7 @@
 
 package net.redwarp.gifwallpaper.ui
 
+import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -91,6 +92,8 @@ import net.redwarp.gifwallpaper.renderer.rememberGifDrawablePainter
 import net.redwarp.gifwallpaper.ui.setup.ColorPalette
 import net.redwarp.gifwallpaper.ui.setup.SetupModel
 import kotlin.math.max
+
+private const val PRIVACY_POLICY_URL = "https://redwarp.github.io/gif-wallpaper/privacy/"
 
 @Composable
 fun ActionBar(
@@ -287,9 +290,13 @@ fun ActionMenu(
         }
     )
 
+    val context = LocalContext.current
     items.add(
         OverflowAction(stringResource(id = R.string.privacy)) {
-            navController.navigate(Routes.PRIVACY)
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(PRIVACY_POLICY_URL)
+            }
+            context.startActivity(intent)
         }
     )
 

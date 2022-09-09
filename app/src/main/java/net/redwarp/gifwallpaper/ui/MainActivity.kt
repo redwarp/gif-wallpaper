@@ -60,8 +60,8 @@ class MainActivity : ComponentActivity() {
 
                 if (isWallpaperSet || isPreview) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "setup") {
-                        composable("setup") {
+                    NavHost(navController = navController, startDestination = Routes.SETUP) {
+                        composable(Routes.SETUP) {
                             val scope = rememberCoroutineScope()
                             val setupModel = remember {
                                 val drawableProvider =
@@ -79,21 +79,21 @@ class MainActivity : ComponentActivity() {
                                 navController = navController
                             )
                         }
-                        composable("privacy") {
+                        composable(Routes.PRIVACY) {
                             MarkdownUi(
                                 fileName = "privacy.md",
                                 title = stringResource(id = R.string.privacy),
                                 navController = navController
                             )
                         }
-                        composable("about") {
+                        composable(Routes.ABOUT) {
                             MarkdownUi(
                                 fileName = "about.md",
                                 title = stringResource(id = R.string.about),
                                 navController = navController
                             )
                         }
-                        composable("settings") {
+                        composable(Routes.SETTINGS) {
                             SettingUi(
                                 appSettings = GifApplication.app.appSettings,
                                 navController = navController

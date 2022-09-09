@@ -277,19 +277,19 @@ fun ActionMenu(
     if (setupModel.hasSettings) {
         items.add(
             OverflowAction(stringResource(id = R.string.settings)) {
-                navController.navigate("settings")
+                navController.navigate(Routes.SETTINGS)
             }
         )
     }
     items.add(
         OverflowAction(stringResource(id = R.string.about)) {
-            navController.navigate("about")
+            navController.navigate(Routes.ABOUT)
         }
     )
 
     items.add(
         OverflowAction(stringResource(id = R.string.privacy)) {
-            navController.navigate("privacy")
+            navController.navigate(Routes.PRIVACY)
         }
     )
 

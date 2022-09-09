@@ -50,7 +50,7 @@ dependencies {
     var compose_version = '1.2.1'
 
     api 'org.commonmark:commonmark:0.19.0'
-    implementation 'io.coil-kt:coil-compose:2.2.0'
+    implementation 'io.coil-kt:coil-compose:2.2.1'
 
     // Compose Material Design
     implementation "androidx.compose.material:material:$compose_version"

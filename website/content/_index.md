@@ -1,4 +1,5 @@
 +++
+title = "GIF Live Wallpaper"
 template = "section.html"
 +++
 

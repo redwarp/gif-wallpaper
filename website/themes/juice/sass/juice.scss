@@ -1,6 +1,7 @@
 @import "_ultility.scss";
 @import "_text.scss";
 @import "_markdown.scss";
+@import url("https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Roboto&display=swap");
 
 @mixin darkMode {
   @media (prefers-color-scheme: dark) {
@@ -10,29 +11,33 @@
 
 :root {
   /* Primary theme color */
-  --primary-color: #fed43f;
+  --primary-color: #d8aa8e;
   /* Primary theme text color */
-  --primary-text-color: #543631;
+  --primary-text-color: #461c08;
   /* Primary theme link color */
-  --primary-link-color: #f9bb2d;
+  --primary-link-color: #007e39;
   /* Secondary color: the background body color */
   --secondary-color: #fcfaf6;
   --secondary-text-color: #303030;
   /* Highlight text color of table of content */
-  --toc-highlight-text-color: #d46e13;
+  --toc-highlight-text-color: #c36200;
+  --toc-primary-color: white;
+  --header-link-hover-color: black;
 
   @include darkMode {
     /* Primary theme color */
-    --primary-color: #111111;
+    --primary-color: #282828;
     /* Primary theme text color */
     --primary-text-color: #d8d8d8;
     /* Primary theme link color */
-    --primary-link-color: #f9bb2d;
+    --primary-link-color: #d8aa8e;
     /* Secondary color: the background body color */
-    --secondary-color: #232323;
-    --secondary-text-color: #303030;
+    --secondary-color: #121212;
+    --secondary-text-color: #d8d8d8;
     /* Highlight text color of table of content */
-    --toc-highlight-text-color: #d46e13;
+    --toc-highlight-text-color: #bcd88e;
+    --toc-primary-color: #282828;
+    --header-link-hover-color: #d8aa8e;
   }
 }
 
@@ -93,7 +98,7 @@ header {
   font-weight: bold;
 
   &:hover {
-    color: #000;
+    color: var(--header-link-hover-color);
     text-decoration: underline;
   }
 }
@@ -153,7 +158,7 @@ main {
 .toc-sticky {
   border-radius: 3px;
   border-top: 5px solid var(--primary-color);
-  background-color: white;
+  background-color: var(--toc-primary-color);
   position: sticky;
   position: -webkit-sticky;
   position: -moz-sticky;
@@ -222,7 +227,6 @@ footer {
     padding: 0;
   }
 
-  .explore-more,
   .toc {
     display: none;
   }

@@ -27,15 +27,7 @@
       href="/favicon/favicon-16x16.png"
     />
     <link rel="manifest" href="/site.webmanifest" />
-    {% endblock favicon %} {% include "_variables.html" %}
-    <link
-      href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600&display=swap"
-      rel="stylesheet"
-    />
+    {% endblock favicon %}
     <link rel="stylesheet" href="/normalize.css" />
     <link rel="stylesheet" href="{{ get_url(path="juice.css") }}"> {% block head
     %} {% endblock head %}
@@ -83,7 +75,7 @@
         class="explore-more text"
         onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})"
       >
-        Explore More ⇩
+        More ⇩
       </div>
       <style>
         .hero section {
@@ -124,7 +116,7 @@
       </div>
       {% endif %} {% endblock toc %}
 
-      <div class="content text">
+      <div class="content text" id="features">
         {% block content %} {{ section.content | safe }} {% endblock content %}
       </div>
 

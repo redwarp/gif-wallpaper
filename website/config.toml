@@ -18,4 +18,7 @@ highlight_code = true
 author = "redwarp"
 juice_logo_name = "GIF Live Wallpaper"
 juice_logo_path = "icon.svg"
+juice_extra_menu = [
+    { title = "Github", link = "https://github.com/redwarp/gif-wallpaper" }
+]
 repository_url = "https://github.com/redwarp/gif-wallpaper"

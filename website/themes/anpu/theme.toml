@@ -12,8 +12,7 @@ demo = "https://anpu-zola-theme.netlify.app"
 # be merged with user data, some kind of prefix or nesting is preferable
 # Use snake_casing to be consistent with the rest of Zola
 [extra]
-anpu_date_format = "%e %B %Y"
-anpu_menu_links = []
+menu_links = []
 
 # The theme author info: you!
 [author]
@@ -23,6 +22,6 @@ homepage = "https://zbrox.com"
 # If this is porting a theme from another static site engine, provide
 # the info of the original author here
 [original]
-author =  "mitrichius"
+author = "mitrichius"
 homepage = "https://github.com/mitrichius/hugo-theme-anubis"
 repo = "https://github.com/mitrichius/hugo-theme-anubis"

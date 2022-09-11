@@ -1,6 +1,6 @@
 +++
 title = "GIF Live Wallpaper"
-template = "section.html"
+sort_by = "weight"
 +++
 
 # About

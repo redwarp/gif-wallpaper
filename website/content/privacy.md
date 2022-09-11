@@ -1,7 +1,7 @@
 +++
 title = "Privacy Policy"
 path = "privacy"
-template = "page.html"
+weight = 1
 +++
 
 # Privacy Policy

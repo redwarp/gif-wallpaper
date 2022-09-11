@@ -1,0 +1,13 @@
+{% macro render_navigation() %}
+    {% set section = get_section(path="_index.md") %}
+    {% for page in section.pages %}
+        {% set link_url = page.permalink  %}
+        <a {% if current_url and current_url == link_url %} class="active" {% endif %} href="{{ page.permalink }}">{{ page.title }}</a>
+    {% endfor %}
+    {% if config.extra.menu_links %}
+        {% for menu in config.extra.menu_links %}
+            {% set link_url = menu.url  %}
+            <a {% if current_url and current_url == link_url %} class="active" {% endif %} href="{{ menu.url }}">{{ menu.title }}</a>
+        {% endfor %}
+    {% endif %}
+{% endmacro render_navigation %}

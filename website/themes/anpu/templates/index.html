@@ -1,52 +1,48 @@
-{% import "macros/page.html" as page_macros %}
+{% import "_macros.html" as macros %}
 <!DOCTYPE html>
 <html lang="{% if lang %}{{ lang }}{% else %}en{% endif %}">
-<head>
-    <meta charset="utf-8">
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer-when-downgrade">
+    <head>
+        <meta charset="utf-8">
+        <meta content="True" name="HandheldFriendly">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <meta content="no-referrer-when-downgrade" name="referrer">
 
-    <title>{% block title %}{{ config.title }}{% endblock title %}</title>
-    <meta name="description" content="{{ config.description }}">
+        <title>
+            {% block title %}
+                {{ config.title }}
+            {% endblock title %}
+        </title>
+        <meta name="description" content="{{ config.description }}">
 
-    <link rel="stylesheet" href="{{ get_url(path="main.css", trailing_slash=false) }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ get_url(path="assets/favicon-32x32.png", trailing_slash=false) }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ get_url(path="assets/favicon-16x16.png", trailing_slash=false) }}">
-    {% if config.generate_feed %}<link rel="alternate" type="application/atom+xml" title="RSS" href="{{ get_url(path=config.feed_filename) | safe }}">{% endif %}
-    {% block extra_head %}
-    {% endblock extra_head %}
-</head>
-<body>
-    <a class="skip-main" href="#main">Skip to content</a>
-    <div class="container">
-        <header> 
-            <h1 class="site-header">
-                <a href="{{ config.base_url }}">{{ config.title }}</a>
-            </h1>
-            <nav>
-                {% block sidebar_nav %}
-                {% for menu_link in config.extra.anpu_menu_links %}
-                {% set link_url = menu_link.url | replace(from="$BASE_URL", to=config.base_url) %}
-                <a {% if current_url and current_url == link_url %}class="active"{% endif %} href="{{ link_url }}">{{menu_link.name}}</a>
-                {% endfor %}
-                {% endblock sidebar_nav %}
-            </nav>
-        </header>
-        <main id="main" tabindex="-1">
-            {% block content %}
-                {% if paginator.pages %}
-                {% for page in paginator.pages %}
-                    {{ page_macros::page_listing(page=page) }}
-                {% endfor %}
-                {{ page_macros::page_pagination(paginator=paginator) }}
-                {% else %}
-                {% for page in section.pages %}
-                    {{ page_macros::page_listing(page=page) }}
-                {% endfor %}
-                {% endif %}
-            {% endblock content %}
-        </main>
-    </div>
-</body>
+        <link rel="stylesheet" href="{{ get_url(path="main.css", trailing_slash=false) }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ get_url(path="assets/favicon-32x32.png", trailing_slash=false) }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ get_url(path="assets/favicon-16x16.png", trailing_slash=false) }}">
+        {% if config.generate_feed %}<link rel="alternate" type="application/atom+xml" title="RSS" href="{{ get_url(path=config.feed_filename) | safe }}">
+        {% endif %}
+        {% block extra_head %}{% endblock extra_head %}
+    </head>
+    <body>
+        <a class="skip-main" href="#main">Skip to content</a>
+        <div class="container">
+            <header>
+                <h1 class="site-header">
+                    <a href="{{ config.base_url }}">{{ config.title }}</a>
+                </h1>
+                <nav>
+                    {% block sidebar_nav %}
+                        {{ macros::render_navigation() }}
+                    {% endblock sidebar_nav %}
+                </nav>
+            </header>
+            <main id="main" tabindex="-1">
+                {% block content %}
+                    <article class="post">
+                        <div class="content">
+                            {{ section.content | safe }}
+                        </div>
+                    </article>
+                {% endblock content %}
+            </main>
+        </div>
+    </body>
 </html>

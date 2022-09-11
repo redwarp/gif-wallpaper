@@ -12,7 +12,7 @@ GIF Live Wallpaper app is an Open Source application, provided at no cost and is
 
 This page is used to inform visitors regarding the policies governing the collection, use, and disclosure of personal information if they decide to use the application.
 
-## Information Collection and Use
+# Information Collection and Use
 
 GIF Live Wallpaper **does not** collect, use or disclose any personal information.
 

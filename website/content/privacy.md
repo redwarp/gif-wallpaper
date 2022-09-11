@@ -1,6 +1,5 @@
 +++
 title = "Privacy Policy"
-path = "privacy"
 weight = 1
 +++
 

@@ -24,6 +24,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +32,7 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Colors
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -106,7 +108,7 @@ fun MDDocument(document: Document, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MDDocument(markdown: String, modifier: Modifier = Modifier, stripFrontMatter: Boolean = false) {
+fun MDDocument(markdown: String, modifier: Modifier = Modifier) {
     val document = remember {
         val parser = Parser.builder().build()
         parser.parse(markdown) as Document
@@ -278,12 +280,25 @@ fun MDFencedCodeBlock(fencedCodeBlock: FencedCodeBlock, modifier: Modifier = Mod
 
 @Composable
 fun MDIndentedCodeBlock(indentedCodeBlock: IndentedCodeBlock, modifier: Modifier = Modifier) {
-    // Ignored
+    val padding = if (indentedCodeBlock.parent is Document) BLOCK_PADDING else 0.dp
+    Box(
+        modifier = modifier
+            .padding(bottom = padding)
+            .background(MaterialTheme.colors.background)
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Text(
+            text = indentedCodeBlock.literal.trim('\n'),
+            style = TextStyle(fontFamily = FontFamily.Monospace),
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
-fun MDThematicBreak(thematicBreak: ThematicBreak, modifier: Modifier = Modifier) {
-    // Ignored
+fun MDThematicBreak(modifier: Modifier = Modifier) {
+    Divider(modifier = modifier.padding(PaddingValues(horizontal = 0.dp, vertical = 8.dp)))
 }
 
 @Composable
@@ -291,7 +306,7 @@ fun MDBlockChildren(parent: Node) {
     for (child in parent.children()) {
         when (child) {
             is BlockQuote -> MDBlockQuote(child)
-            is ThematicBreak -> MDThematicBreak(child)
+            is ThematicBreak -> MDThematicBreak()
             is Heading -> MDHeading(child)
             is Paragraph -> MDParagraph(child)
             is FencedCodeBlock -> MDFencedCodeBlock(child)
@@ -527,6 +542,13 @@ fun MarkdownPreview() {
         ```
         This is some code
         ```
+        
+            And this is an indented
+            code block
+        
+        I'm not sure what is going to happen here.
+        
+        ---
         
         A list?
         - Okay!

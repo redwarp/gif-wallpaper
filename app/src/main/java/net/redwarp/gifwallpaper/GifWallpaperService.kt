@@ -35,7 +35,6 @@ import kotlinx.coroutines.withContext
 import net.redwarp.gifwallpaper.renderer.DrawableMapper
 import net.redwarp.gifwallpaper.renderer.SurfaceDrawableRenderer
 import net.redwarp.gifwallpaper.renderer.createMiniature
-import net.redwarp.gifwallpaper.ui.isPreviewMode
 import net.redwarp.gifwallpaper.util.WallpaperColorsCompat
 import net.redwarp.gifwallpaper.util.toCompat
 import net.redwarp.gifwallpaper.util.toReal
@@ -49,10 +48,6 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
 
     override fun onCreate() {
         super.onCreate()
-
-        if (!isPreviewMode()) {
-            lifecycle.addObserver(WallpaperObserver())
-        }
 
         dispatcher.onCreate()
     }
@@ -105,6 +100,10 @@ class GifWallpaperService : WallpaperService(), LifecycleOwner {
                         }
                     }
                 }
+            }
+
+            if (!isPreview) {
+                lifecycle.addObserver(WallpaperObserver())
             }
         }
 

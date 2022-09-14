@@ -123,7 +123,7 @@ fun activateWallpaper(context: Context) {
     }
 }
 
-fun Context.isPreviewMode(): Boolean {
+private fun Context.isPreviewMode(): Boolean {
     return if (this is Activity) {
         intent.getBooleanExtra(EXTRA_PREVIEW_MODE, false)
     } else {

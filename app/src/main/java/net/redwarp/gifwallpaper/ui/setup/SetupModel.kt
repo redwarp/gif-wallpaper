@@ -34,6 +34,7 @@ import net.redwarp.gifwallpaper.util.isDark
 interface SetupModel {
     val displayDarkIcons: Flow<Boolean>
     val colorFlow: Flow<ColorPalette>
+    val backgroundColorFlow: Flow<Color>
     val hasColorFlow: Flow<Boolean>
     val drawables: Flow<Drawable>
     val isWallpaperSet: Flow<Boolean>
@@ -64,6 +65,9 @@ class SetupModelImpl(
                 NotSet -> ColorPalette(Color.Black, emptyList())
             }
         }
+
+    override val backgroundColorFlow: Flow<Color>
+        get() = flowBasedModel.backgroundColorFlow.map(Int::rgbToColor)
 
     override val hasColorFlow: Flow<Boolean> get() = flowBasedModel.colorInfoFlow.map { it is ColorScheme }
 

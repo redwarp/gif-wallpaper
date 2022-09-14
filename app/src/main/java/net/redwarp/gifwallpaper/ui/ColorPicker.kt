@@ -34,6 +34,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -72,7 +76,7 @@ fun NoColorChoice(onClick: () -> Unit) {
 }
 
 @Composable
-fun ColorChoice(color: Color, onClick: () -> Unit) {
+fun ColorChoice(color: Color, checked: Boolean, onClick: () -> Unit) {
     var modifier = Modifier
         .size(choiceSize)
         .padding(choicePadding)
@@ -80,13 +84,29 @@ fun ColorChoice(color: Color, onClick: () -> Unit) {
         .background(color)
         .clickable(onClick = onClick)
     val luminanceDiff = abs(color.luminance() - MaterialTheme.colors.surface.luminance())
-    if (luminanceDiff < 0.05) {
+    if (luminanceDiff < 0.2) {
         modifier = modifier
-            .border(width = 1.dp, color = MaterialTheme.colors.onSurface.copy(alpha = 0.25f), shape = CircleShape)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.25f),
+                shape = CircleShape
+            )
     }
     Box(
-        modifier = modifier
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
     ) {
+        if (checked) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_check),
+                contentDescription = null,
+                tint = if (luminanceDiff < 0.2) {
+                    MaterialTheme.colors.onSurface
+                } else {
+                    MaterialTheme.colors.surface
+                }
+            )
+        }
     }
 }
 
@@ -166,9 +186,10 @@ fun EvenFlow(modifier: Modifier = Modifier, spacing: Dp = 0.dp, content: @Compos
 
 @Composable
 fun ColorPicker(
-    modifier: Modifier = Modifier,
+    selected: Color?,
     defaultColor: Color,
     colors: List<Color>,
+    modifier: Modifier = Modifier,
     onColorPicked: (Color) -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
@@ -191,8 +212,12 @@ fun ColorPicker(
             NoColorChoice {
                 onColorPicked(defaultColor)
             }
-            for (color in colors.distinct().sortedBy { it.luminance() }) {
-                ColorChoice(color = color) {
+            for (
+                color in colors.distinct()
+                    .filter { it != defaultColor }
+                    .sortedBy { it.luminance() }
+            ) {
+                ColorChoice(color = color, checked = color == selected) {
                     onColorPicked(color)
                 }
             }
@@ -204,9 +229,13 @@ fun ColorPicker(
 @Preview(name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ColorPickerPreview() {
+    var selected: Color? by remember {
+        mutableStateOf(0x4578f3.rgbToColor())
+    }
     AppTheme {
         ColorPicker(
             defaultColor = Color.White,
+            selected = selected,
             colors = listOf(
                 0xffffff,
                 0xff0000,
@@ -215,9 +244,11 @@ fun ColorPickerPreview() {
                 0x000000,
                 0x1587af,
                 0x4578f3
-            ).map(Int::rgbToColor)
-        ) {
-        }
+            ).map(Int::rgbToColor),
+            onColorPicked = {
+                selected = it
+            }
+        )
     }
 }
 

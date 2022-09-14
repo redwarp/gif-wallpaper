@@ -45,6 +45,8 @@ class FakeSetupModel(private val context: Context) : SetupModel {
                 )
             )
         )
+    override val backgroundColorFlow: Flow<Color>
+        get() = flowOf(0xffffff.rgbToColor())
     override val hasColorFlow: Flow<Boolean>
         get() = flowOf(true)
     override val drawables: Flow<Drawable>

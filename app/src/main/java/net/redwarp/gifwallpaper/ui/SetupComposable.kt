@@ -174,6 +174,7 @@ fun SetupUi(
             emptyList()
         )
     )
+    val selectedColor by setupModel.backgroundColorFlow.collectAsState(initial = null)
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -181,6 +182,7 @@ fun SetupUi(
             ColorPicker(
                 modifier = Modifier.navigationBarsPadding(),
                 defaultColor = colorInfo.defaultColor,
+                selected = selectedColor,
                 colors = colorInfo.colors,
                 onColorPicked = { color ->
                     scope.launch {

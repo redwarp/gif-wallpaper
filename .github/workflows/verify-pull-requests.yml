@@ -7,28 +7,9 @@ on:
       - synchronize
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-      - name: Build all
-        run: ./gradlew build
-
-  tests:
-    name: Tests
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-      - name: Run all the tests
-        run: ./gradlew test
+  build-and-test:
+    name: Build and test
+    uses: ./.github/workflows/build-and-test.yml
 
   check_conventional_commit:
     name: Follows conventional commit

@@ -1,0 +1,10 @@
+name: Verify main branch
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build-and-test:
+    name: Build and test
+    uses: ./.github/workflows/build-and-test.yml

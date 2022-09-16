@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: Build all
         run: ./gradlew build
 
@@ -23,10 +25,10 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: Run all the tests
         run: ./gradlew test
-      - name: Stop Gradle
-        run: ./gradlew --stop
 
   check_conventional_commit:
     name: Follows conventional commit

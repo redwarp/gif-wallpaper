@@ -81,7 +81,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-service:2.5.1'
     implementation 'androidx.palette:palette-ktx:1.0.0'
     implementation "com.atlassian.commonmark:commonmark:0.17.0"
-    implementation "app.redwarp.gif:decoder:1.4.0"
+    implementation "app.redwarp.gif:decoder:1.4.4"
     implementation "app.redwarp.gif:android-drawable:1.4.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 

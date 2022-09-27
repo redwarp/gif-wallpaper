@@ -34,7 +34,7 @@ class FakeSetupModel(private val context: Context) : SetupModel {
     override val colorFlow: Flow<ColorPalette>
         get() = flowOf(
             ColorPalette(
-                Color.Black,
+                Color.Green,
                 listOf(
                     0xf07880.rgbToColor(),
                     0xe82838.rgbToColor(),
@@ -42,6 +42,7 @@ class FakeSetupModel(private val context: Context) : SetupModel {
                     0xe8e8e8.rgbToColor(),
                     0x000000.rgbToColor(),
                     0x000000.rgbToColor(),
+                    0xffffff.rgbToColor()
                 )
             )
         )

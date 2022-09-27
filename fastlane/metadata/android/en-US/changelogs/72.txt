@@ -1,0 +1,6 @@
+- Cleaner splash screen
+- Privacy policy now opens the website
+- Implement missing markdown elements
+- Color picker displays selected color
+- WallpaperObserver was incorrectly set and would run in preview mode
+- Check icon was in the wrong folder

@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.4] - 2022-09-27
+
+### Bug Fixes
+
+- Cleaner splash screen
+- Privacy policy now opens the website
+- Implement missing markdown elements
+- Color picker displays selected color
+- WallpaperObserver was incorrectly set and would run in preview mode
+- Check icon was in the wrong folder
+
+### Miscellaneous Tasks
+
+- Update the ic_color_lens_off icon
+- Update phone launch graphic
+- Update pre-commits
+- Setup website to host privacy policy ([#264](https://github.com/redwarp/gif-wallpaper/issues/264))
+- Set title to homepage
+- Grammar and spell checking in about page
+- Move privacy policy to website dir
+- Bump coil-compose from 2.2.0 to 2.2.1 ([#265](https://github.com/redwarp/gif-wallpaper/issues/265))
+- Bump dependencies
+- Bump spotless-plugin-gradle from 6.10.0 to 6.11.0 ([#268](https://github.com/redwarp/gif-wallpaper/issues/268))
+- Bump gradle from 7.2.2 to 7.3.0 ([#269](https://github.com/redwarp/gif-wallpaper/issues/269))
+- Bump decoder from 1.4.0 to 1.4.4 ([#270](https://github.com/redwarp/gif-wallpaper/issues/270))
+- Bump android-drawable from 1.4.0 to 1.4.4 ([#271](https://github.com/redwarp/gif-wallpaper/issues/271))
+- Update privacy policy ([#272](https://github.com/redwarp/gif-wallpaper/issues/272))
+
+### Refactor
+
+- Simplify markdown composable creation
+- Extract string literal to const
+
 ## [2.0.3] - 2022-09-02
 
 ### Bug Fixes
@@ -53,12 +86,10 @@ All notable changes to this project will be documented in this file.
 
 ### Miscellaneous Tasks
 
-- Update action to check that it build
 - Fix README pointing to non existing image
 - Bump kotlinx-coroutines-core from 1.6.3 to 1.6.4 ([#246](https://github.com/redwarp/gif-wallpaper/issues/246))
 - Update dependabot.yml
 - Bump kotlinx-coroutines-android from 1.6.3 to 1.6.4 ([#245](https://github.com/redwarp/gif-wallpaper/issues/245))
-- Create rust release-process to replace standard-version
 - Update pre-commit hooks
 - Bump rust deps to address security issue
 - Update gradle to 7.5
@@ -77,9 +108,7 @@ All notable changes to this project will be documented in this file.
 
 ### Miscellaneous Tasks
 
-- Update fastlane action
 - Add linux to gemfile lock for fastlane on github
-- Update github actions deps
 - Update coroutine deps
 
 ## [1.13.4] - 2022-06-26
@@ -140,8 +169,6 @@ All notable changes to this project will be documented in this file.
 
 - Bump com.diffplug.spotless from 6.3.0 to 6.4.0 ([#204](https://github.com/redwarp/gif-wallpaper/issues/204))
 - Bump gradle from 7.1.1 to 7.1.2 ([#202](https://github.com/redwarp/gif-wallpaper/issues/202))
-- Replace hardcoded code with config file
-- Cleanup old code
 - Update fastlane
 - Zh-Hans -> zh-CN
 - Localized feature graphic for zh
@@ -595,8 +622,6 @@ All notable changes to this project will be documented in this file.
 
 ### Miscellaneous Tasks
 
-- Bump robolectric from 4.3.1 to 4.4 ([#35](https://github.com/redwarp/gif-wallpaper/issues/35))
-- Bump com.diffplug.spotless from 5.2.0 to 5.3.0 ([#34](https://github.com/redwarp/gif-wallpaper/issues/34))
 - Bump material from 1.2.0 to 1.2.1 ([#36](https://github.com/redwarp/gif-wallpaper/issues/36))
 - Bump com.github.ben-manes.versions from 0.29.0 to 0.30.0 ([#37](https://github.com/redwarp/gif-wallpaper/issues/37))
 - Bump com.github.ben-manes.versions from 0.30.0 to 0.31.0 ([#39](https://github.com/redwarp/gif-wallpaper/issues/39))

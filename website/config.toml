@@ -17,5 +17,5 @@ highlight_code = true
 # Put all your custom variables here
 author = "redwarp"
 menu_links = [
-    { url = "https://github.com/redwarp/gif-wallpaper", title = "GitHub" }
+    { url = "https://github.com/redwarp/gif-wallpaper", title = "Source Code" }
 ]

@@ -3,61 +3,39 @@ title = "Privacy Policy"
 weight = 1
 +++
 
+**Last updated**
+September 08 2022
+
 # Privacy Policy
 
-Benoit Vermont built the GIF Live Wallpaper app as an Open Source. This SERVICE is provided by Benoit Vermont at no cost and is intended for use as is.
+GIF Live Wallpaper app is an Open Source application, provided at no cost and is intended for use as is.
 
-This page is used to inform visitors regarding my policies with the collection, use, and disclosure of Personal Information if anyone decided to use my Service.
+This page is used to inform visitors regarding the policies governing the collection, use, and disclosure of personal information if they decide to use the application.
 
-If you choose to use my Service, then you agree to the collection and use of information in relation to this policy. The Personal Information that I collect is used for providing and improving the Service. I will not use or share your information with anyone except as described in this Privacy Policy.
+# Information Collection and Use
 
-The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which is accessible at GIF Live Wallpaper unless otherwise defined in this Privacy Policy.
+GIF Live Wallpaper **does not** collect, use or disclose any personal information.
 
-## Information Collection and Use
+To allow users to select a GIF to display as their background, GIF Live Wallpaper uses the built-in file picker.
 
-For a better experience, while using our Service, I may require you to provide us with certain personally identifiable information, including but not limited to nothing. The information that I request will be retained on your device and is not collected by me in any way.
+We do not gather information about your files, and we gather no statistics or usage information of any kind.
 
-# Log Data
-
-I want to inform you that whenever you use my Service, in a case of an error in the app I collect data and information (through third party products) on your phone called Log Data. This Log Data may include information such as your device Internet Protocol (“IP”) address, device name, operating system version, the configuration of the app when utilizing my Service, the time and date of your use of the Service, and other statistics.
-
-# Cookies
-
-Cookies are files with a small amount of data that are commonly used as anonymous unique identifiers. These are sent to your browser from the websites that you visit and are stored on your device's internal memory.
-
-This Service does not use these “cookies” explicitly. However, the app may use third party code and libraries that use “cookies” to collect information and improve their services. You have the option to either accept or refuse these cookies and know when a cookie is being sent to your device. If you choose to refuse our cookies, you may not be able to use some portions of this Service.
-
-# Service Providers
-
-I may employ third-party companies and individuals due to the following reasons:
-
-* To facilitate our Service; 
-* To provide the Service on our behalf; 
-* To perform Service-related services; or
-* To assist us in analyzing how our Service is used.
-
-I want to inform users of this Service that these third parties have access to your Personal Information. The reason is to perform the tasks assigned to them on our behalf. However, they are obligated not to disclose or use the information for any other purpose.
-
-# Security
-
-I value your trust in providing us your Personal Information, thus we are striving to use commercially acceptable means of protecting it. But remember that no method of transmission over the internet, or method of electronic storage is 100% secure and reliable, and I cannot guarantee its absolute security.
+**Your data is your data.**
 
 # Links to Other Sites
 
-This Service may contain links to other sites. If you click on a third-party link, you will be directed to that site. Note that these external sites are not operated by me. Therefore, I strongly advise you to review the Privacy Policy of these websites. I have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services.
+This app contains links to other websites in the About page.
 
-# Children’s Privacy
+If you click on a third-party link, you will be directed to that website. Note that these external sites are not operated by us.
 
-We do not knowingly collect any Personal Information from children. We encourage all children to never submit any Personal Information through the Mobile Application and Services. We encourage parents and legal guardians to monitor their children's Internet usage and to help enforce this Policy by instructing their children never to provide Personal Information through the Mobile Application and Services without their permission. If you have reason to believe that a child has provided Personal Information to us through the Mobile Application and Services, please contact us. You must also be at least 16 years of age to consent to the processing of your Personal Information in your country (in some countries we may allow your parent or guardian to do so on your behalf).
+Therefore, we **strongly** advise you to review the privacy policies of these websites.
+
+We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites.
 
 # Changes to This Privacy Policy
 
-I may update our Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes. I will notify you of any changes by posting the new Privacy Policy on this page.
-
-This policy is effective as of 2021-05-19
+This Privacy Policy may be updated from time to time for any reason. We will notify you of any changes to our Privacy Policy by making the new Privacy Policy available here. You are advised to consult this Privacy Policy regularly for any changes, as continued use is deemed approval of all changes. You can check the history of this policy by checking the history of this file on GitHub.
 
 # Contact Us
 
-If you have any questions or suggestions about my Privacy Policy, do not hesitate to contact me at redwarp@gmail.com.
-
-This privacy policy page was created at [privacypolicytemplate.net](https://privacypolicytemplate.net) and modified/generated by [App Privacy Policy Generator](https://app-privacy-policy-generator.nisrulz.com/)
+If you have any questions regarding privacy while using the application, or have questions about our practices, please contact us via email at redwarp@gmail.com.

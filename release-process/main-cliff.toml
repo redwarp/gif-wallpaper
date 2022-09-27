@@ -44,7 +44,10 @@ commit_parsers = [
     { message = "^refactor", group = "Refactor" },
     { message = "^style", group = "Styling" },
     { message = "^test", group = "Testing" },
+    { message = "^chore\\(app\\):", group = "Miscellaneous Tasks" },
+    { message = "^chore\\(deps\\):", group = "Miscellaneous Tasks" },
     { message = "^chore\\(release\\): [0-9]*", skip = true },
+    { message = "^chore\\([a-z]+\\):", skip = true },
     { message = "^chore", group = "Miscellaneous Tasks" },
     { body = ".*security", group = "Security" },
 ]

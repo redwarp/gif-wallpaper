@@ -33,5 +33,10 @@
         "code": "zh-Hans",
         "values_folder": "values-zh",
         "store_listing_file": "zh-CN.json"
+    },
+    {
+        "code": "eu",
+        "values_folder": "values-eu",
+        "store_listing_file": "eu-ES.json"
     }
 ]

@@ -18,6 +18,7 @@ package net.redwarp.gifwallpaper.ui
 import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.Scaffold
@@ -45,31 +46,28 @@ fun MarkdownUi(title: String, fileName: String, navController: NavController) {
         title = title,
         markdownText = text,
         navController = navController,
-        topBarModifier = Modifier.statusBarsPadding()
+
     )
 }
 
 @Composable
 fun MarkdownPage(
     modifier: Modifier = Modifier,
-    topBarModifier: Modifier = Modifier,
     title: String,
     markdownText: String,
     navController: NavController
 ) {
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            BasicTopBar(
-                title = title,
-                navController = navController,
-                modifier = topBarModifier
-            )
-        }
-    ) { paddingValues ->
+    Scaffold(modifier = modifier, topBar = {
+        BasicTopBar(
+            title = title,
+            navController = navController,
+            modifier = Modifier.statusBarsPadding()
+        )
+    }) { paddingValues ->
         MDDocument(
             markdown = markdownText,
             modifier = Modifier
+                .navigationBarsPadding()
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp)

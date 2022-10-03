@@ -34,7 +34,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.systemGesturesPadding
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.ContentAlpha
@@ -115,8 +115,7 @@ fun ActionBar(
 
     ActionRow(modifier = modifier) {
         ActionButton(
-            icon = R.drawable.ic_collections,
-            text = stringResource(id = R.string.open_gif)
+            icon = R.drawable.ic_collections, text = stringResource(id = R.string.open_gif)
         ) {
             pickGif.launch("image/gif")
         }
@@ -170,38 +169,33 @@ fun SetupUi(
 
     val colorInfo by setupModel.colorFlow.collectAsState(
         initial = ColorPalette(
-            Color.Black,
-            emptyList()
+            Color.Black, emptyList()
         )
     )
     val selectedColor by setupModel.backgroundColorFlow.collectAsState(initial = null)
 
-    ModalBottomSheetLayout(
-        sheetState = sheetState,
-        sheetContent = {
-            ColorPicker(
-                modifier = Modifier.navigationBarsPadding(),
-                defaultColor = colorInfo.defaultColor,
-                selected = selectedColor,
-                colors = colorInfo.colors,
-                onColorPicked = { color ->
-                    scope.launch {
-                        setupModel.setBackgroundColor(color)
-                        sheetState.hide()
-                    }
-                },
-                onCloseClick = {
-                    scope.launch {
-                        sheetState.hide()
-                    }
+    ModalBottomSheetLayout(sheetState = sheetState, sheetContent = {
+        ColorPicker(
+            modifier = Modifier.navigationBarsPadding(),
+            defaultColor = colorInfo.defaultColor,
+            selected = selectedColor,
+            colors = colorInfo.colors,
+            onColorPicked = { color ->
+                scope.launch {
+                    setupModel.setBackgroundColor(color)
+                    sheetState.hide()
                 }
-            )
-        }
-    ) {
+            },
+            onCloseClick = {
+                scope.launch {
+                    sheetState.hide()
+                }
+            }
+        )
+    }) {
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 painter = rememberGifDrawablePainter(drawable = drawable),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds
@@ -210,55 +204,57 @@ fun SetupUi(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .systemGesturesPadding()
-                    .pointerInput(Unit) {
-                        detectTapGestures(onDoubleTap = {
-                            scope.launch {
-                                setupModel.resetTranslate()
-                            }
-                        })
-                    }
-                    .pointerInput(Unit) {
-                        detectDragGestures { change, dragAmount ->
-                            change.consume()
-                            scope.launch {
-                                setupModel.postTranslate(dragAmount.x, dragAmount.y)
+                    .systemBarsPadding()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .systemGesturesPadding()
+                        .pointerInput(Unit) {
+                            detectTapGestures(onDoubleTap = {
+                                scope.launch {
+                                    setupModel.resetTranslate()
+                                }
+                            })
+                        }
+                        .pointerInput(Unit) {
+                            detectDragGestures { change, dragAmount ->
+                                change.consume()
+                                scope.launch {
+                                    setupModel.postTranslate(dragAmount.x, dragAmount.y)
+                                }
                             }
                         }
-                    }
-            )
+                )
 
-            ActionMenu(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .statusBarsPadding(),
-                setupModel = setupModel,
-                navController = navController,
-                tint = if (darkIcons) {
-                    if (MaterialTheme.colors.isLight) {
-                        MaterialTheme.colors.onSurface
+                ActionMenu(
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    setupModel = setupModel,
+                    navController = navController,
+                    tint = if (darkIcons) {
+                        if (MaterialTheme.colors.isLight) {
+                            MaterialTheme.colors.onSurface
+                        } else {
+                            MaterialTheme.colors.surface
+                        }
                     } else {
-                        MaterialTheme.colors.surface
+                        if (MaterialTheme.colors.isLight) {
+                            MaterialTheme.colors.surface
+                        } else {
+                            MaterialTheme.colors.onSurface
+                        }
                     }
-                } else {
-                    if (MaterialTheme.colors.isLight) {
-                        MaterialTheme.colors.surface
-                    } else {
-                        MaterialTheme.colors.onSurface
+                )
+                ActionBar(
+                    setupModel = setupModel,
+                    modifier = Modifier.align(Alignment.BottomStart),
+                    onChangeColorClick = {
+                        scope.launch {
+                            sheetState.show()
+                        }
                     }
-                }
-            )
-            ActionBar(
-                setupModel = setupModel,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .navigationBarsPadding(),
-                onChangeColorClick = {
-                    scope.launch {
-                        sheetState.show()
-                    }
-                }
-            )
+                )
+            }
         }
     }
 }
@@ -382,8 +378,7 @@ fun VerticalButton(
     val contentAlpha = if (enabled) LocalContentAlpha.current else ContentAlpha.disabled
     val colors = MaterialTheme.colors.onSurface
     CompositionLocalProvider(
-        LocalContentAlpha provides contentAlpha,
-        LocalContentColor provides colors
+        LocalContentAlpha provides contentAlpha, LocalContentColor provides colors
     ) {
         ProvideTextStyle(value = MaterialTheme.typography.button) {
             Layout(
@@ -412,9 +407,7 @@ fun ActionButton(
     onClick: () -> Unit
 ) {
     VerticalButton(
-        onClick = onClick,
-        modifier = modifier,
-        enabled = enabled
+        onClick = onClick, modifier = modifier, enabled = enabled
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -442,10 +435,7 @@ fun ActionRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
             }
 
             val childConstraint = Constraints(
-                minWidth = childWidth,
-                maxWidth = childWidth,
-                minHeight = 0,
-                maxHeight = childHeight
+                minWidth = childWidth, maxWidth = childWidth, minHeight = 0, maxHeight = childHeight
             )
 
             val placeables = measurables.map { measurable ->
@@ -480,19 +470,13 @@ fun OverflowMenu(
     }
     Box(modifier = modifier) {
         IconButton(
-            onClick = { showMenu = !showMenu },
-            modifier = Modifier.testTag("overflow")
+            onClick = { showMenu = !showMenu }, modifier = Modifier.testTag("overflow")
         ) {
             Icon(
-                imageVector = Icons.Outlined.MoreVert,
-                contentDescription = "More",
-                tint = tint
+                imageVector = Icons.Outlined.MoreVert, contentDescription = "More", tint = tint
             )
         }
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-        ) {
+        DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
             for (item in items) {
                 DropdownMenuItem(onClick = {
                     showMenu = false
@@ -510,10 +494,8 @@ fun OverflowMenu(
 fun ActionButtonPreviewNight() {
     AppTheme {
         ActionButton(
-            icon = R.drawable.ic_collections,
-            text = stringResource(id = R.string.open_gif)
-        ) {
-        }
+            icon = R.drawable.ic_collections, text = stringResource(id = R.string.open_gif)
+        ) {}
     }
 }
 
@@ -523,28 +505,21 @@ fun ActionBarPreview() {
     AppTheme {
         ActionRow {
             ActionButton(
-                icon = R.drawable.ic_collections,
-                text = stringResource(id = R.string.open_gif)
-            ) {
-            }
+                icon = R.drawable.ic_collections, text = stringResource(id = R.string.open_gif)
+            ) {}
 
             ActionButton(
-                icon = R.drawable.ic_transform,
-                text = stringResource(id = R.string.change_scale)
-            ) {
-            }
+                icon = R.drawable.ic_transform, text = stringResource(id = R.string.change_scale)
+            ) {}
 
             ActionButton(
                 icon = R.drawable.ic_rotate_90_degrees_cw,
                 text = stringResource(id = R.string.rotate)
-            ) {
-            }
+            ) {}
 
             ActionButton(
-                icon = R.drawable.ic_color_lens,
-                text = stringResource(id = R.string.change_color)
-            ) {
-            }
+                icon = R.drawable.ic_color_lens, text = stringResource(id = R.string.change_color)
+            ) {}
         }
     }
 }

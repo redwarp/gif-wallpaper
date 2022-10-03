@@ -61,7 +61,7 @@ class FakeSetupModel(private val context: Context) : SetupModel {
                             R.drawable.rocket
                         )
                     ),
-                    backgroundColor = 0xffffff
+                    backgroundColor = 0xffffffff.toInt()
                 )
             )
         }

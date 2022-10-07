@@ -1,0 +1,25 @@
+GIF bat deskargatu duzu eta zure mugikorreko horma-paper bezala erabili nahiko zenuke?
+
+GIF horma-paper dinamikoa da behar duzuna! Ziur aski GIF bat horma-paper dinamiko bezala erabiltzeko modurik errazena.
+
+Hau guztia pausu gutxi eta erraz batzuetan egiten da:
+
+1 - Aplikazioa ireki.
+2 - Aktibatu.
+3 - "GIFa ireki" klikatu.
+4 - Hautatu nahi duzun fitxategia.
+
+Dena ondo badago, hori da guztia! Zure horma-paper berriaz goza ezazu!
+
+Aplikazioaren ezaugarri nabarmenak:
+- Ez du root baimenik behar, fitxategi neurri txikia du (<3MB)
+- Automatikoki gelditzen da horma-papera ikusgai ez dagoenean edo gailua blokeatuta dagoenean, horrela bateriarik kontsumitu gabe.
+- Noski, iragarkirik gabe, eta ez du zure daturik partekatzen edo zure informaziorik biltzen!
+
+Iturburua hemen eskuragarri: https://github.com/redwarp/gif-wallpaper
+
+Zure hizkuntzan erabili nahi? Jarri nirekin harremanetan itzulpenarekin lagundu nahi baduzu!
+
+Ohiko galderak
+G: GIF ezberdinak ezarri ahal ditut hasierako pantailan eta blokeo pantailan?
+E: Barkatu, zoritxarrez ezin da: hau da horma-paper dinamikoen mugetako bat, bietan aplikatu ahal da soilik. Mugikor batzuetan, ezin da ezta blokeo pantailan ezarri!

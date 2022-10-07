@@ -345,9 +345,8 @@ impl Repo {
             Some(tag) => revwalker.push(tag.commit_id),
             None => revwalker.push_head(),
         }?;
-        match to {
-            Some(tag) => revwalker.hide(tag.commit_id)?,
-            None => {}
+        if let Some(tag) = to {
+            revwalker.hide(tag.commit_id)?
         }
 
         Ok(revwalker)

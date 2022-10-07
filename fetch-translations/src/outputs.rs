@@ -18,7 +18,7 @@ pub struct Strings<'a> {
     pub terms: Vec<Term>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum StringType {
     App,
     Store,
@@ -64,7 +64,7 @@ impl<'a> Strings<'a> {
         let map: HashMap<_, _> = self
             .terms
             .iter()
-            .filter(|term| term.string_types.contains(&StringType::Store))
+            .filter(|term| term.string_types.contains(&StringType::Store) && !term.value.is_empty())
             .map(|term| (term.key.clone(), term.value.clone()))
             .collect();
 

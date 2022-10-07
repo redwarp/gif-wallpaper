@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="about">"Honi buruz"</string>
+  <string name="activate">"Aktibatu"</string>
+  <string name="app_name">"GIF horma-paper dinamikoa"</string>
+  <string name="back">"Atzera"</string>
+  <string name="battery_saver">"Bateria aurrezlea"</string>
+  <string name="change_color">"Kolorea aldatu"</string>
+  <string name="change_scale">"Eskala aldatu"</string>
+  <string name="clear_gif">"GIFa kendu"</string>
+  <string name="click_the_open_gif_button">"Klikatu \"GIFa ireki\" botoia"</string>
+  <string name="close">"Itxi"</string>
+  <string name="error_wallpaper_chooser">"Ezin izan da horma-paper hautatzailea abiarazi. Hala ere GIF horma-paper
+dinamikoa aktibatu dezakezu zure hasierako pantailaren horma-paper
+hautatzailean 'Horma-paper dinamikoak' hautatuz."</string>
+  <string name="loading">"Kargatzen…"</string>
+  <string name="open_app">"Ireki ezazu GIF horma-paper dinamikoa aplikazioa eta ezarri zure GIF gogokoena hasteko."</string>
+  <string name="open_gif">"GIFa ireki"</string>
+  <string name="pause_blayback_battery_saver">"Pausatu GIFa bateria aurrezlea piztuta dagoenean."</string>
+  <string name="pause_playback_running_hot">"GIFa pausatu mugikorra bero dagoenean."</string>
+  <string name="pick_a_color">"Kolore bat hautatu"</string>
+  <string name="privacy">"Pribatutasuna"</string>
+  <string name="rotate">"Biratu"</string>
+  <string name="settings">"Ezarpenak"</string>
+  <string name="thermal_throttle">"Arintze termala"</string>
+</resources>

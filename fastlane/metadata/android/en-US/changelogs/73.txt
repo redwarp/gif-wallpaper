@@ -1,0 +1,2 @@
+- Landscape insets not properly set
+- Add Basque language ([#278](https://github.com/redwarp/gif-wallpaper/issues/278))

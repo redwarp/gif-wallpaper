@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2022-10-07
+
+### Bug Fixes
+
+- Landscape insets not properly set
+
+### Features
+
+- Add Basque language ([#278](https://github.com/redwarp/gif-wallpaper/issues/278))
+
+### Miscellaneous Tasks
+
+- Bump coil-compose from 2.2.1 to 2.2.2 ([#275](https://github.com/redwarp/gif-wallpaper/issues/275))
+- Bump robolectric from 4.8.2 to 4.9 ([#276](https://github.com/redwarp/gif-wallpaper/issues/276))
+- Bump kotlin from 1.7.10 to 1.7.20
+
 ## [2.0.4] - 2022-09-27
 
 ### Bug Fixes

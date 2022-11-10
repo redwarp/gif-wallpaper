@@ -17,6 +17,7 @@
         <link rel="stylesheet" href="{{ get_url(path="main.css", trailing_slash=false) }}">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ get_url(path="assets/favicon-32x32.png", trailing_slash=false) }}">
         <link rel="icon" type="image/png" sizes="16x16" href="{{ get_url(path="assets/favicon-16x16.png", trailing_slash=false) }}">
+        <link rel="me" href="https://mastodon.social/@redwarp">
         {% if config.generate_feed %}<link rel="alternate" type="application/atom+xml" title="RSS" href="{{ get_url(path=config.feed_filename) | safe }}">
         {% endif %}
         {% block extra_head %}{% endblock extra_head %}

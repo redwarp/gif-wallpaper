@@ -77,9 +77,9 @@ class GifWrapperDrawable(
         get() = state.shouldPlay
         set(value) {
             state.shouldPlay = value
-            if (isRunning && !shouldPlay) {
+            if (isRunning && !value) {
                 stop()
-            } else if (!isRunning && shouldPlay) {
+            } else if (!isRunning && value) {
                 start()
             }
         }

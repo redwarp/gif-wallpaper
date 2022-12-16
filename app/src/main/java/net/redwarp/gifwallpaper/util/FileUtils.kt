@@ -26,6 +26,9 @@ import java.util.UUID
 
 object FileUtils {
 
+    /**
+     * Copy a file from a Uri to a file in the application's directory.
+     **/
     suspend fun copyFileLocally(context: Context, uri: Uri): File? = withContext(Dispatchers.IO) {
         val localDir = context.filesDir
         val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())

@@ -31,7 +31,7 @@ jobs:
         run: ./website/scripts/copy_changelog.sh
         shell: bash
       - name: Build
-        uses: shalzz/zola-deploy-action@v0.16.1
+        uses: shalzz/zola-deploy-action@v0.16.1-1
         env:
           BUILD_DIR: website
           BUILD_ONLY: true

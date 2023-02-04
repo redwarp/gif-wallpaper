@@ -1,0 +1,2 @@
+- Prevent setter in GifWrapperDrawable to call getter
+- Add turkish language

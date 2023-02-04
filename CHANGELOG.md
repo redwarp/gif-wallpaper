@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2023-02-04
+
+### Bug Fixes
+
+- Prevent setter in GifWrapperDrawable to call getter
+
+### Features
+
+- Add turkish language
+
+### Miscellaneous Tasks
+
+- Bump gradle from 7.3.0 to 7.3.1 ([#280](https://github.com/redwarp/gif-wallpaper/issues/280))
+- Bump commonmark from 0.19.0 to 0.20.0 ([#283](https://github.com/redwarp/gif-wallpaper/issues/283))
+- Bump accompanist-systemuicontroller from 0.25.1 to 0.27.0 ([#286](https://github.com/redwarp/gif-wallpaper/issues/286))
+- Bump commonmark from 0.20.0 to 0.21.0 ([#288](https://github.com/redwarp/gif-wallpaper/issues/288))
+- Bump spotless-plugin-gradle from 6.11.0 to 6.12.0 ([#290](https://github.com/redwarp/gif-wallpaper/issues/290))
+- Update jetpack compose to 1.3.x
+- Update jetpack compose in markdown lib
+- Update test libs
+- Bump accompanist-systemuicontroller from 0.27.0 to 0.28.0 ([#291](https://github.com/redwarp/gif-wallpaper/issues/291))
+- Write a few comments using copilot.
+- Bump robolectric from 4.9 to 4.9.1 ([#293](https://github.com/redwarp/gif-wallpaper/issues/293))
+- Update pre-commit hooks
+- Update kotlin to 1.8.0
+- Ignore useless idea files
+- Update dependencies and gradle
+
 ## [2.1.0] - 2022-10-07
 
 ### Bug Fixes

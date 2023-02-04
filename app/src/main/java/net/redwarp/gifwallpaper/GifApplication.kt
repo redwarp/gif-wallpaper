@@ -44,7 +44,7 @@ class GifApplication : Application() {
                 VmPolicy.Builder()
                     .detectLeakedClosableObjects()
                     .penaltyLog()
-                    .build()
+                    .build(),
             )
             StrictMode.allowThreadDiskReads()
 

@@ -66,11 +66,12 @@ class WallpaperSettings(private val context: Context, ioScope: CoroutineScope) {
                         KEY_WALLPAPER_TRANSLATE_X,
                         KEY_WALLPAPER_TRANSLATE_Y,
                         KEY_WALLPAPER_SCALE_TYPE,
-                        KEY_WALLPAPER_URI
-                    )
-                )
+                        KEY_WALLPAPER_URI,
+                    ),
+                ),
             )
-        }, scope = ioScope
+        },
+        scope = ioScope,
     )
 
     val rotationFlow: Flow<Rotation>

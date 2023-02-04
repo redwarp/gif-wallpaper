@@ -101,7 +101,7 @@ fun MDDocument(document: Document, modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .then(modifier)
+            .then(modifier),
     ) {
         MDBlockChildren(document)
     }
@@ -211,7 +211,7 @@ fun MDOrderedList(orderedList: OrderedList, modifier: Modifier = Modifier) {
 fun MDListItems(
     listBlock: ListBlock,
     modifier: Modifier = Modifier,
-    item: @Composable (node: Node) -> Unit
+    item: @Composable (node: Node) -> Unit,
 ) {
     val bottom = if (listBlock.parent is Document) BLOCK_PADDING else 0.dp
     val start = if (listBlock.parent is Document) 0.dp else 8.dp
@@ -243,15 +243,15 @@ fun MDBlockQuote(blockQuote: BlockQuote, modifier: Modifier = Modifier) {
                     color = color,
                     strokeWidth = 4.dp.toPx(),
                     start = Offset(0f, 0f),
-                    end = Offset(0f, size.height)
+                    end = Offset(0f, size.height),
                 )
             }
-            .padding(8.dp)
+            .padding(8.dp),
     ) {
         val text = buildAnnotatedString {
             pushStyle(
                 MaterialTheme.typography.body1.toSpanStyle()
-                    .plus(SpanStyle(fontStyle = FontStyle.Italic))
+                    .plus(SpanStyle(fontStyle = FontStyle.Italic)),
             )
             appendMarkdownChildren(blockQuote, MaterialTheme.colors)
             pop()
@@ -268,12 +268,12 @@ fun MDFencedCodeBlock(fencedCodeBlock: FencedCodeBlock, modifier: Modifier = Mod
             .padding(bottom = padding)
             .background(MaterialTheme.colors.background)
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
     ) {
         Text(
             text = fencedCodeBlock.literal.trim('\n'),
             style = TextStyle(fontFamily = FontFamily.Monospace),
-            modifier = modifier
+            modifier = modifier,
         )
     }
 }
@@ -286,12 +286,12 @@ fun MDIndentedCodeBlock(indentedCodeBlock: IndentedCodeBlock, modifier: Modifier
             .padding(bottom = padding)
             .background(MaterialTheme.colors.background)
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
     ) {
         Text(
             text = indentedCodeBlock.literal.trim('\n'),
             style = TextStyle(fontFamily = FontFamily.Monospace),
-            modifier = modifier
+            modifier = modifier,
         )
     }
 }
@@ -320,7 +320,7 @@ fun MDBlockChildren(parent: Node) {
 
 fun Builder.appendMarkdownChildren(
     parent: Node,
-    colors: Colors
+    colors: Colors,
 ) {
     for (child in parent.children()) {
         when (child) {
@@ -388,12 +388,12 @@ fun MarkdownText(text: AnnotatedString, style: TextStyle, modifier: Modifier = M
         style = style,
         inlineContent = mapOf(
             TAG_IMAGE_URL to InlineTextContent(
-                Placeholder(style.fontSize, style.fontSize, PlaceholderVerticalAlign.Bottom)
+                Placeholder(style.fontSize, style.fontSize, PlaceholderVerticalAlign.Bottom),
             ) {
                 AsyncImage(model = it, contentDescription = null, alignment = Alignment.Center)
-            }
+            },
         ),
-        onTextLayout = { layoutResult.value = it }
+        onTextLayout = { layoutResult.value = it },
     )
 }
 
@@ -403,7 +403,7 @@ private sealed class MDListPlaceable {
 }
 
 private enum class LayoutId {
-    Delimiter
+    Delimiter,
 }
 
 @Composable
@@ -444,8 +444,8 @@ fun MDList(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
                     placeables.add(
                         MDListPlaceable.WithSeparator(
                             separatorPlaceable,
-                            blockPlaceable
-                        )
+                            blockPlaceable,
+                        ),
                     )
 
                     index += 2
@@ -478,7 +478,7 @@ fun MDList(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
                     }
                 }
             }
-        }
+        },
     )
 }
 
@@ -487,7 +487,7 @@ fun MDListRow(separator: String, content: @Composable BoxScope.() -> Unit) {
     Text(
         text = separator,
         modifier = Modifier.layoutId(LayoutId.Delimiter),
-        style = MaterialTheme.typography.body1
+        style = MaterialTheme.typography.body1,
     )
     Box {
         content()

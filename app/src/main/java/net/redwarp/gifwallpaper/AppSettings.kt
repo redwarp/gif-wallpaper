@@ -39,7 +39,7 @@ class DataStoreAppSettings(private val context: Context, ioScope: CoroutineScope
     private val thermalThrottleKey = booleanPreferencesKey("thermal_throttle")
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
         "app_settings",
-        scope = ioScope
+        scope = ioScope,
     )
 
     override val powerSavingSettingFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->

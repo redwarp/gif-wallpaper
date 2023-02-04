@@ -29,7 +29,7 @@ data class WallpaperColorsCompat(
     val primaryColor: Color,
     val secondaryColor: Color?,
     val tertiaryColor: Color?,
-    val colorHints: Int? = null
+    val colorHints: Int? = null,
 )
 
 @RequiresApi(Build.VERSION_CODES.O_MR1)

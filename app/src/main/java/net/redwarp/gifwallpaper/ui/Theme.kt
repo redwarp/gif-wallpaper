@@ -35,55 +35,55 @@ private val darkColors = darkColors(
     primary = Orange,
     primaryVariant = DarkOrange,
     secondary = LightGreen,
-    secondaryVariant = Green
+    secondaryVariant = Green,
 )
 private val lightColors = lightColors(
     primary = Orange,
     primaryVariant = DarkOrange,
     secondary = LightGreen,
-    secondaryVariant = Green
+    secondaryVariant = Green,
 )
 val typography = Typography(
     h1 = TextStyle(
         fontWeight = FontWeight.Light,
         fontSize = 44.sp,
-        letterSpacing = 0.sp
+        letterSpacing = 0.sp,
     ),
     h2 = TextStyle(
         fontWeight = FontWeight.Light,
         fontSize = 40.sp,
-        letterSpacing = 0.sp
+        letterSpacing = 0.sp,
     ),
     h3 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 32.sp,
-        letterSpacing = 0.sp
+        letterSpacing = 0.sp,
     ),
     h4 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 28.sp,
-        letterSpacing = 0.25.sp
+        letterSpacing = 0.25.sp,
     ),
     h5 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
-        letterSpacing = 0.sp
+        letterSpacing = 0.sp,
     ),
     h6 = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
-        letterSpacing = 0.15.sp
+        letterSpacing = 0.15.sp,
     ),
 )
 
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     MaterialTheme(
         colors = if (darkTheme) darkColors else lightColors,
         typography = typography,
-        content = content
+        content = content,
     )
 }

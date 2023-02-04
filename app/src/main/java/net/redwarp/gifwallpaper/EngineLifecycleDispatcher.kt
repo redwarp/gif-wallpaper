@@ -28,6 +28,7 @@ import androidx.lifecycle.LifecycleRegistry
 class EngineLifecycleDispatcher(provider: LifecycleOwner) {
     @SuppressLint("VisibleForTests")
     private val registry: LifecycleRegistry = LifecycleRegistry.createUnsafe(provider)
+
     @Suppress("DEPRECATION")
     private val handler: Handler = Handler()
     private var lastDispatchRunnable: DispatchRunnable? = null
@@ -60,7 +61,7 @@ class EngineLifecycleDispatcher(provider: LifecycleOwner) {
 
     internal class DispatchRunnable(
         private val registry: LifecycleRegistry,
-        private val event: Lifecycle.Event
+        private val event: Lifecycle.Event,
     ) : Runnable {
         private var wasExecuted = false
         override fun run() {

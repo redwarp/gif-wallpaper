@@ -40,7 +40,7 @@ class GifWrapperDrawable(
     scaleType: ScaleType = ScaleType.FIT_CENTER,
     rotation: Rotation = Rotation.NORTH,
     translation: Pair<Float, Float> = 0f to 0f,
-    shouldPlay: Boolean = false
+    shouldPlay: Boolean = false,
 ) : Drawable(), Animatable {
     private val state =
         GifWrapperState(drawable, backgroundColor, scaleType, rotation, translation, shouldPlay)
@@ -205,7 +205,7 @@ class GifWrapperDrawable(
         rotation: Rotation,
         canvasRect: RectF,
         gifRect: RectF,
-        translation: Pair<Float, Float>
+        translation: Pair<Float, Float>,
     ) {
         when (scaleType) {
             ScaleType.FIT_CENTER ->
@@ -251,7 +251,7 @@ class GifWrapperDrawable(
             rotation = state.rotation,
             canvasRect = bounds.toRectF(),
             gifRect = state.drawable.bounds.toRectF(),
-            translation = state.translation
+            translation = state.translation,
         )
         invalidateSelf()
     }
@@ -264,7 +264,7 @@ class GifWrapperDrawable(
                 rotation = state.rotation,
                 canvasRect = bounds.toRectF(),
                 gifRect = state.drawable.bounds.toRectF(),
-                translation = 0f to 0f
+                translation = 0f to 0f,
             )
         }
         val sourceMatrix = Matrix(matrix)
@@ -273,7 +273,7 @@ class GifWrapperDrawable(
         matrixAnimator = ValueAnimator.ofObject(
             MatrixEvaluator(matrix),
             sourceMatrix,
-            targetMatrix
+            targetMatrix,
         ).apply {
             addUpdateListener { invalidateSelf() }
             interpolator = animationInterpolator
@@ -303,7 +303,7 @@ class GifWrapperDrawable(
                 scaleType,
                 rotation,
                 translation,
-                shouldPlay
+                shouldPlay,
             ).also {
                 it.setBackgroundColor(backgroundColor)
             }

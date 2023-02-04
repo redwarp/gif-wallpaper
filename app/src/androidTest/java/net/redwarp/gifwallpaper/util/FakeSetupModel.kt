@@ -42,9 +42,9 @@ class FakeSetupModel(private val context: Context) : SetupModel {
                     0xe8e8e8.rgbToColor(),
                     0x000000.rgbToColor(),
                     0x000000.rgbToColor(),
-                    0xffffff.rgbToColor()
-                )
-            )
+                    0xffffff.rgbToColor(),
+                ),
+            ),
         )
     override val backgroundColorFlow: Flow<Color>
         get() = flowOf(0xffffff.rgbToColor())
@@ -58,11 +58,11 @@ class FakeSetupModel(private val context: Context) : SetupModel {
                     requireNotNull(
                         ContextCompat.getDrawable(
                             context,
-                            R.drawable.rocket
-                        )
+                            R.drawable.rocket,
+                        ),
                     ),
-                    backgroundColor = 0xffffffff.toInt()
-                )
+                    backgroundColor = 0xffffffff.toInt(),
+                ),
             )
         }
     override val isWallpaperSet: Flow<Boolean>

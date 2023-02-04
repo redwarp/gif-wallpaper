@@ -59,11 +59,11 @@ class FlowBasedModel(
 ) {
     private val _wallpaperStatusFlow = MutableSharedFlow<WallpaperStatus>(
         replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     private val _translationEventFlow = MutableSharedFlow<TranslationEvent>(
         replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     private val _updateFlow =
         MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
@@ -83,7 +83,7 @@ class FlowBasedModel(
         appSettings.powerSavingSettingFlow,
         powerSaveFlow(context),
         appSettings.thermalThrottleSettingFlow,
-        thermalThrottleFlow(context)
+        thermalThrottleFlow(context),
     ) { powerSavingSetting, powerSave, thermalThrottleSetting, thermalThrottle ->
         val powerSavingOn = powerSavingSetting && powerSave
         val thermalThrottlingOn = thermalThrottleSetting && thermalThrottle
@@ -199,7 +199,7 @@ class FlowBasedModel(
         val sample = Bitmap.createBitmap(
             drawable.intrinsicWidth / 2,
             drawable.intrinsicHeight / 2,
-            Bitmap.Config.ARGB_8888
+            Bitmap.Config.ARGB_8888,
         )
         val canvas = Canvas(sample)
         canvas.scale(0.5f, 0.5f)

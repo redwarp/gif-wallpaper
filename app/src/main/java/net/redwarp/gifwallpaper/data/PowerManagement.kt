@@ -37,7 +37,7 @@ fun powerSaveFlow(context: Context) =
             val receiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
                     trySendBlocking(
-                        context.getSystemService<PowerManager>()?.isPowerSaveMode ?: false
+                        context.getSystemService<PowerManager>()?.isPowerSaveMode ?: false,
                     ).onFailure { throwable ->
                         cancel(CancellationException(throwable?.message, throwable))
                     }
@@ -45,7 +45,7 @@ fun powerSaveFlow(context: Context) =
             }
             context.registerReceiver(
                 receiver,
-                IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
+                IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED),
             )
 
             awaitClose {

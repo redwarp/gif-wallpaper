@@ -99,7 +99,7 @@ private const val PRIVACY_POLICY_URL = "https://redwarp.github.io/gif-wallpaper/
 fun ActionBar(
     setupModel: SetupModel,
     modifier: Modifier = Modifier,
-    onChangeColorClick: () -> Unit
+    onChangeColorClick: () -> Unit,
 ) {
     val hasColor by setupModel.hasColorFlow.collectAsState(initial = false)
 
@@ -115,7 +115,8 @@ fun ActionBar(
 
     ActionRow(modifier = modifier) {
         ActionButton(
-            icon = R.drawable.ic_collections, text = stringResource(id = R.string.open_gif)
+            icon = R.drawable.ic_collections,
+            text = stringResource(id = R.string.open_gif),
         ) {
             pickGif.launch("image/gif")
         }
@@ -123,7 +124,7 @@ fun ActionBar(
         ActionButton(
             icon = R.drawable.ic_transform,
             text = stringResource(id = R.string.change_scale),
-            enabled = isWallpaperSet
+            enabled = isWallpaperSet,
 
         ) {
             scope.launch {
@@ -134,7 +135,7 @@ fun ActionBar(
         ActionButton(
             icon = R.drawable.ic_rotate_90_degrees_cw,
             text = stringResource(id = R.string.rotate),
-            enabled = isWallpaperSet
+            enabled = isWallpaperSet,
         ) {
             scope.launch {
                 setupModel.setNextRotation()
@@ -145,7 +146,7 @@ fun ActionBar(
             icon = R.drawable.ic_color_lens,
             text = stringResource(id = R.string.change_color),
             enabled = hasColor,
-            onClick = onChangeColorClick
+            onClick = onChangeColorClick,
         )
     }
 }
@@ -153,7 +154,7 @@ fun ActionBar(
 @Composable
 fun SetupUi(
     setupModel: SetupModel,
-    navController: NavController
+    navController: NavController,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -164,13 +165,14 @@ fun SetupUi(
     val drawable by setupModel.drawables.collectAsState(null)
 
     val sheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden
+        initialValue = ModalBottomSheetValue.Hidden,
     )
 
     val colorInfo by setupModel.colorFlow.collectAsState(
         initial = ColorPalette(
-            Color.Black, emptyList()
-        )
+            Color.Black,
+            emptyList(),
+        ),
     )
     val selectedColor by setupModel.backgroundColorFlow.collectAsState(initial = null)
 
@@ -190,7 +192,7 @@ fun SetupUi(
                 scope.launch {
                     sheetState.hide()
                 }
-            }
+            },
         )
     }) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -198,13 +200,13 @@ fun SetupUi(
                 modifier = Modifier.fillMaxSize(),
                 painter = rememberGifDrawablePainter(drawable = drawable),
                 contentDescription = null,
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.FillBounds,
             )
 
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .systemBarsPadding()
+                    .systemBarsPadding(),
             ) {
                 Box(
                     modifier = Modifier
@@ -224,7 +226,7 @@ fun SetupUi(
                                     setupModel.postTranslate(dragAmount.x, dragAmount.y)
                                 }
                             }
-                        }
+                        },
                 )
 
                 ActionMenu(
@@ -243,7 +245,7 @@ fun SetupUi(
                         } else {
                             MaterialTheme.colors.onSurface
                         }
-                    }
+                    },
                 )
                 ActionBar(
                     setupModel = setupModel,
@@ -252,7 +254,7 @@ fun SetupUi(
                         scope.launch {
                             sheetState.show()
                         }
-                    }
+                    },
                 )
             }
         }
@@ -264,7 +266,7 @@ fun ActionMenu(
     setupModel: SetupModel,
     navController: NavController,
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
 ) {
     val scope = rememberCoroutineScope()
     val items = mutableListOf<OverflowAction>()
@@ -273,19 +275,19 @@ fun ActionMenu(
             scope.launch {
                 setupModel.clearGif()
             }
-        }
+        },
     )
     if (setupModel.hasSettings) {
         items.add(
             OverflowAction(stringResource(id = R.string.settings)) {
                 navController.navigate(Routes.SETTINGS)
-            }
+            },
         )
     }
     items.add(
         OverflowAction(stringResource(id = R.string.about)) {
             navController.navigate(Routes.ABOUT)
-        }
+        },
     )
 
     val context = LocalContext.current
@@ -295,7 +297,7 @@ fun ActionMenu(
                 data = Uri.parse(PRIVACY_POLICY_URL)
             }
             context.startActivity(intent)
-        }
+        },
     )
 
     OverflowMenu(modifier = modifier, items = items, tint = tint)
@@ -307,7 +309,7 @@ fun rememberGifPicker(onUri: (Uri) -> Unit): ManagedActivityResultLauncher<Strin
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
             uri?.let(onUri)
-        }
+        },
     )
     return result
 }
@@ -318,12 +320,12 @@ fun VerticalButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val measurePolicy = object : MeasurePolicy {
         override fun MeasureScope.measure(
             measurables: List<Measurable>,
-            constraints: Constraints
+            constraints: Constraints,
         ): MeasureResult {
             val placeables = measurables.map { measurable ->
                 measurable.measure(constraints)
@@ -344,7 +346,7 @@ fun VerticalButton(
 
         override fun IntrinsicMeasureScope.minIntrinsicHeight(
             measurables: List<IntrinsicMeasurable>,
-            width: Int
+            width: Int,
         ): Int {
             return measurables.sumOf {
                 it.minIntrinsicHeight(width)
@@ -353,7 +355,7 @@ fun VerticalButton(
 
         override fun IntrinsicMeasureScope.maxIntrinsicHeight(
             measurables: List<IntrinsicMeasurable>,
-            width: Int
+            width: Int,
         ): Int {
             return measurables.sumOf {
                 it.maxIntrinsicHeight(width)
@@ -362,14 +364,14 @@ fun VerticalButton(
 
         override fun IntrinsicMeasureScope.minIntrinsicWidth(
             measurables: List<IntrinsicMeasurable>,
-            height: Int
+            height: Int,
         ): Int {
             return measurables.maxOf { it.minIntrinsicWidth(height) }
         }
 
         override fun IntrinsicMeasureScope.maxIntrinsicWidth(
             measurables: List<IntrinsicMeasurable>,
-            height: Int
+            height: Int,
         ): Int {
             return measurables.maxOf { it.maxIntrinsicWidth(height) }
         }
@@ -378,7 +380,8 @@ fun VerticalButton(
     val contentAlpha = if (enabled) LocalContentAlpha.current else ContentAlpha.disabled
     val colors = MaterialTheme.colors.onSurface
     CompositionLocalProvider(
-        LocalContentAlpha provides contentAlpha, LocalContentColor provides colors
+        LocalContentAlpha provides contentAlpha,
+        LocalContentColor provides colors,
     ) {
         ProvideTextStyle(value = MaterialTheme.typography.button) {
             Layout(
@@ -389,10 +392,10 @@ fun VerticalButton(
                         enabled = enabled,
                         role = Role.Button,
                         interactionSource = interactionSource,
-                        indication = rememberRipple(bounded = true)
+                        indication = rememberRipple(bounded = true),
                     )
                     .padding(PaddingValues(8.dp)),
-                measurePolicy = measurePolicy
+                measurePolicy = measurePolicy,
             )
         }
     }
@@ -404,10 +407,12 @@ fun ActionButton(
     text: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     VerticalButton(
-        onClick = onClick, modifier = modifier, enabled = enabled
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -424,7 +429,7 @@ fun ActionButton(
 fun ActionRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Surface(
         modifier = modifier.background(MaterialTheme.colors.surface),
-        elevation = AppBarDefaults.BottomAppBarElevation
+        elevation = AppBarDefaults.BottomAppBarElevation,
     ) {
         Layout(
             content = content,
@@ -435,7 +440,10 @@ fun ActionRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
             }
 
             val childConstraint = Constraints(
-                minWidth = childWidth, maxWidth = childWidth, minHeight = 0, maxHeight = childHeight
+                minWidth = childWidth,
+                maxWidth = childWidth,
+                minHeight = 0,
+                maxHeight = childHeight,
             )
 
             val placeables = measurables.map { measurable ->
@@ -463,17 +471,20 @@ data class OverflowAction(val text: String, val onClick: () -> Unit)
 fun OverflowMenu(
     modifier: Modifier = Modifier,
     items: List<OverflowAction>,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
 ) {
     var showMenu by remember {
         mutableStateOf(false)
     }
     Box(modifier = modifier) {
         IconButton(
-            onClick = { showMenu = !showMenu }, modifier = Modifier.testTag("overflow")
+            onClick = { showMenu = !showMenu },
+            modifier = Modifier.testTag("overflow"),
         ) {
             Icon(
-                imageVector = Icons.Outlined.MoreVert, contentDescription = "More", tint = tint
+                imageVector = Icons.Outlined.MoreVert,
+                contentDescription = "More",
+                tint = tint,
             )
         }
         DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
@@ -494,7 +505,8 @@ fun OverflowMenu(
 fun ActionButtonPreviewNight() {
     AppTheme {
         ActionButton(
-            icon = R.drawable.ic_collections, text = stringResource(id = R.string.open_gif)
+            icon = R.drawable.ic_collections,
+            text = stringResource(id = R.string.open_gif),
         ) {}
     }
 }
@@ -505,20 +517,23 @@ fun ActionBarPreview() {
     AppTheme {
         ActionRow {
             ActionButton(
-                icon = R.drawable.ic_collections, text = stringResource(id = R.string.open_gif)
+                icon = R.drawable.ic_collections,
+                text = stringResource(id = R.string.open_gif),
             ) {}
 
             ActionButton(
-                icon = R.drawable.ic_transform, text = stringResource(id = R.string.change_scale)
+                icon = R.drawable.ic_transform,
+                text = stringResource(id = R.string.change_scale),
             ) {}
 
             ActionButton(
                 icon = R.drawable.ic_rotate_90_degrees_cw,
-                text = stringResource(id = R.string.rotate)
+                text = stringResource(id = R.string.rotate),
             ) {}
 
             ActionButton(
-                icon = R.drawable.ic_color_lens, text = stringResource(id = R.string.change_color)
+                icon = R.drawable.ic_color_lens,
+                text = stringResource(id = R.string.change_color),
             ) {}
         }
     }

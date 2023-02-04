@@ -53,7 +53,8 @@ class ScreenshotTest {
         composeRule.setContent {
             TestTheme {
                 SetupUi(
-                    setupModel = FakeSetupModel(context), navController = rememberNavController()
+                    setupModel = FakeSetupModel(context),
+                    navController = rememberNavController(),
                 )
             }
         }
@@ -68,7 +69,8 @@ class ScreenshotTest {
         composeRule.setContent {
             TestTheme {
                 SetupUi(
-                    setupModel = FakeSetupModel(context), navController = rememberNavController()
+                    setupModel = FakeSetupModel(context),
+                    navController = rememberNavController(),
                 )
             }
         }

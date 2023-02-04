@@ -55,17 +55,17 @@ fun LauncherUi(onClick: () -> Unit) {
             onClick = onClick,
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
-            modifier = Modifier.size(220.dp)
+            modifier = Modifier.size(220.dp),
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Image(
                     painter = painterResource(id = R.drawable.phone_large),
-                    contentDescription = null
+                    contentDescription = null,
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(
                     text = stringResource(id = R.string.activate),
-                    style = MaterialTheme.typography.button
+                    style = MaterialTheme.typography.button,
                 )
             }
         }

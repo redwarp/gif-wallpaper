@@ -66,7 +66,7 @@ class MarkdownComposableTest {
 
         composeTestRule.onNode(
             hasText("Break after this!", true)
-                .and(hasText("Did it work?", true))
+                .and(hasText("Did it work?", true)),
         ).assertExists()
     }
 
@@ -125,7 +125,7 @@ class MarkdownComposableTest {
 
         composeTestRule.onNode(
             hasText("Break after this!", true)
-                .and(hasText("Did it work?", true))
+                .and(hasText("Did it work?", true)),
         ).assertExists()
     }
 

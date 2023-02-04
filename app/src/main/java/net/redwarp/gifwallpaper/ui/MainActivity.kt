@@ -76,20 +76,20 @@ class MainActivity : ComponentActivity() {
 
                             SetupUi(
                                 setupModel = setupModel,
-                                navController = navController
+                                navController = navController,
                             )
                         }
                         composable(Routes.ABOUT) {
                             MarkdownUi(
                                 fileName = "about.md",
                                 title = stringResource(id = R.string.about),
-                                navController = navController
+                                navController = navController,
                             )
                         }
                         composable(Routes.SETTINGS) {
                             SettingUi(
                                 appSettings = GifApplication.app.appSettings,
-                                navController = navController
+                                navController = navController,
                             )
                         }
                     }
@@ -108,14 +108,14 @@ fun activateWallpaper(context: Context) {
         context.startActivity(
             Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).putExtra(
                 WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-                ComponentName(context, GifWallpaperService::class.java)
-            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                ComponentName(context, GifWallpaperService::class.java),
+            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
         )
     } catch (_: ActivityNotFoundException) {
         try {
             context.startActivity(
                 Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             )
         } catch (_: ActivityNotFoundException) {
             Toast.makeText(context, R.string.error_wallpaper_chooser, Toast.LENGTH_LONG).show()

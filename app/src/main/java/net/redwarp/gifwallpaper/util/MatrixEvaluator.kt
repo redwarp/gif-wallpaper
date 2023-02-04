@@ -33,7 +33,7 @@ class MatrixEvaluator(reuseMatrix: Matrix) : TypeEvaluator<Matrix> {
         endValue.getValues(endData)
 
         workMatrix.setValues(
-            floatArrayEvaluator.evaluate(fraction, startData, endData)
+            floatArrayEvaluator.evaluate(fraction, startData, endData),
         )
 
         return workMatrix

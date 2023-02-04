@@ -41,7 +41,7 @@ import net.redwarp.gifwallpaper.R
 fun BasicTopBar(modifier: Modifier = Modifier, title: String, navController: NavController) {
     Surface(
         color = MaterialTheme.colors.primarySurface,
-        elevation = AppBarDefaults.TopAppBarElevation
+        elevation = AppBarDefaults.TopAppBarElevation,
     ) {
         TopAppBar(
             modifier = modifier,
@@ -55,7 +55,7 @@ fun BasicTopBar(modifier: Modifier = Modifier, title: String, navController: Nav
             },
             elevation = 0.dp,
             backgroundColor = Color.Transparent,
-            contentColor = contentColorFor(MaterialTheme.colors.primarySurface)
+            contentColor = contentColorFor(MaterialTheme.colors.primarySurface),
         )
     }
 }
@@ -63,14 +63,14 @@ fun BasicTopBar(modifier: Modifier = Modifier, title: String, navController: Nav
 @Composable
 fun UpdateStatusBarColors(
     color: Color = Color.Transparent,
-    darkIcons: Boolean = color.luminance() > 0.5f
+    darkIcons: Boolean = color.luminance() > 0.5f,
 ) {
     val systemUiController = rememberSystemUiController()
 
     SideEffect {
         systemUiController.setStatusBarColor(
             color = color,
-            darkIcons = darkIcons
+            darkIcons = darkIcons,
         )
     }
 }

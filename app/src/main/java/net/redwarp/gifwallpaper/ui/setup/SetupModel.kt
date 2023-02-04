@@ -51,7 +51,7 @@ interface SetupModel {
 
 class SetupModelImpl(
     private val flowBasedModel: FlowBasedModel,
-    private val drawableProvider: DrawableProvider
+    private val drawableProvider: DrawableProvider,
 ) : SetupModel {
     override val displayDarkIcons: Flow<Boolean>
         get() = flowBasedModel.backgroundColorFlow.map { !it.isDark() }
@@ -114,5 +114,5 @@ private fun ColorScheme.toColorPalette(): ColorPalette =
         this.defaultColor.rgbToColor(),
         palette.targets.map { target ->
             palette.getColorForTarget(target, android.graphics.Color.BLACK).rgbToColor()
-        }.distinct()
+        }.distinct(),
     )

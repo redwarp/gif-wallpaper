@@ -68,7 +68,7 @@ class TextDrawable(context: Context, private val text: String) : Drawable() {
         canvas.save()
         canvas.translate(
             canvasRect.centerX(),
-            canvasRect.centerY() - staticLayout.height.toFloat() / 2f
+            canvasRect.centerY() - staticLayout.height.toFloat() / 2f,
         )
 
         staticLayout.draw(canvas)

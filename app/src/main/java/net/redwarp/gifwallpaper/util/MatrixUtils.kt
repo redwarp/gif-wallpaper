@@ -22,7 +22,7 @@ fun Matrix.setCenterRectInRect(source: RectF, destination: RectF) {
     reset()
     postTranslate(
         (destination.width() - source.width()) * 0.5f,
-        (destination.height() - source.height()) * 0.5f
+        (destination.height() - source.height()) * 0.5f,
     )
 }
 

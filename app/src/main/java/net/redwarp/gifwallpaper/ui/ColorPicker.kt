@@ -70,7 +70,7 @@ fun NoColorChoice(onClick: () -> Unit) {
         Icon(
             painter = painterResource(id = R.drawable.ic_color_lens_off),
             contentDescription = null,
-            tint = MaterialTheme.colors.surface
+            tint = MaterialTheme.colors.surface,
         )
     }
 }
@@ -89,7 +89,7 @@ fun ColorChoice(color: Color, checked: Boolean, onClick: () -> Unit) {
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.25f),
-                shape = CircleShape
+                shape = CircleShape,
             )
     }
     Box(
@@ -104,7 +104,7 @@ fun ColorChoice(color: Color, checked: Boolean, onClick: () -> Unit) {
                     MaterialTheme.colors.onSurface
                 } else {
                     MaterialTheme.colors.surface
-                }
+                },
             )
         }
     }
@@ -180,7 +180,7 @@ fun EvenFlow(modifier: Modifier = Modifier, spacing: Dp = 0.dp, content: @Compos
                     yOffset += evenSpacing + line.maxOf(Placeable::height)
                 }
             }
-        }
+        },
     )
 }
 
@@ -196,7 +196,7 @@ fun ColorPicker(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.surface)
+            .background(MaterialTheme.colors.surface),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onCloseClick) {
@@ -204,7 +204,7 @@ fun ColorPicker(
             }
             Text(
                 text = stringResource(id = R.string.pick_a_color),
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.h6,
             )
         }
         Divider()
@@ -213,9 +213,9 @@ fun ColorPicker(
                 onColorPicked(defaultColor)
             }
             for (
-                color in colors.distinct()
-                    .filter { it != defaultColor }
-                    .sortedBy { it.luminance() }
+            color in colors.distinct()
+                .filter { it != defaultColor }
+                .sortedBy { it.luminance() }
             ) {
                 ColorChoice(color = color, checked = color == selected) {
                     onColorPicked(color)
@@ -243,11 +243,11 @@ fun ColorPickerPreview() {
                 0x0000ff,
                 0x000000,
                 0x1587af,
-                0x4578f3
+                0x4578f3,
             ).map(Int::rgbToColor),
             onColorPicked = {
                 selected = it
-            }
+            },
         )
     }
 }

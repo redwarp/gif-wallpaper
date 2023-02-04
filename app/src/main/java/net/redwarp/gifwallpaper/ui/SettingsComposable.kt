@@ -44,7 +44,7 @@ fun Setting(
     title: String,
     summary: String,
     checked: () -> Boolean,
-    onCheckedChanged: (Boolean) -> Unit
+    onCheckedChanged: (Boolean) -> Unit,
 ) {
     Row {
         Column(modifier = Modifier.weight(1f)) {
@@ -64,7 +64,7 @@ fun SettingPreview() {
             title = "Battery Saver",
             summary = "Pause GIF when Battery Saver is enabled",
             checked = { false },
-            onCheckedChanged = {}
+            onCheckedChanged = {},
         )
     }
 }
@@ -78,16 +78,16 @@ fun SettingUi(navController: NavController, appSettings: AppSettings) {
             BasicTopBar(
                 modifier = Modifier.statusBarsPadding(),
                 title = stringResource(id = R.string.settings),
-                navController = navController
+                navController = navController,
             )
-        }
+        },
     ) { paddingValues ->
 
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             val isPowerSaving by appSettings.powerSavingSettingFlow.collectAsState(initial = false)
             val isThermalThrottle by appSettings.thermalThrottleSettingFlow.collectAsState(initial = false)
@@ -101,7 +101,7 @@ fun SettingUi(navController: NavController, appSettings: AppSettings) {
                     scope.launch {
                         appSettings.setPowerSaving(enabled)
                     }
-                }
+                },
             )
 
             if (appSettings.isThermalThrottleSupported) {
@@ -113,7 +113,7 @@ fun SettingUi(navController: NavController, appSettings: AppSettings) {
                         scope.launch {
                             appSettings.setThermalThrottle(enabled)
                         }
-                    }
+                    },
                 )
             }
         }

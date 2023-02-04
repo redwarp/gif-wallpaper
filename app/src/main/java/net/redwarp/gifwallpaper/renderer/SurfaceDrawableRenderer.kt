@@ -30,7 +30,7 @@ import android.view.SurfaceHolder
 class SurfaceDrawableRenderer(
     private val holder: SurfaceHolder,
     private val handler: Handler,
-    drawable: Drawable? = null
+    drawable: Drawable? = null,
 ) : SurfaceHolder.Callback2, Drawable.Callback {
     private var width: Int = 0
     private var height: Int = 0
@@ -65,6 +65,7 @@ class SurfaceDrawableRenderer(
                 }
             }
         }
+
         @Synchronized get
 
     @Synchronized

@@ -51,7 +51,7 @@ private val MAIN_HANDLER by lazy(LazyThreadSafetyMode.NONE) {
  * Fork from accompanist.
  */
 class GifDrawablePainter(
-    val drawable: Drawable
+    val drawable: Drawable,
 ) : Painter(), RememberObserver {
     private var invalidateTick by mutableStateOf(0)
     private var previousSize: Size = Size(0f, 0f)
@@ -110,7 +110,7 @@ class GifDrawablePainter(
                 when (layoutDirection) {
                     LayoutDirection.Ltr -> View.LAYOUT_DIRECTION_LTR
                     LayoutDirection.Rtl -> View.LAYOUT_DIRECTION_RTL
-                }
+                },
             )
         }
         return false

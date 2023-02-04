@@ -49,7 +49,7 @@ class DrawableMapper private constructor(
 ) : DrawableProvider {
     private val _drawableFlow: MutableSharedFlow<Drawable> = MutableSharedFlow(
         replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
 
     override val drawables: Flow<Drawable> get() = _drawableFlow
@@ -98,7 +98,7 @@ class DrawableMapper private constructor(
                             is TranslationEvent.PostTranslate -> {
                                 drawable.postTranslate(
                                     event.translateX,
-                                    event.translateY
+                                    event.translateY,
                                 )
                             }
                             TranslationEvent.Reset -> {
@@ -116,7 +116,7 @@ class DrawableMapper private constructor(
         flowBasedModel: FlowBasedModel,
         context: Context,
         unsetText: String,
-        isService: Boolean
+        isService: Boolean,
     ) {
         scope.launch {
             flowBasedModel.wallpaperStatusFlow.map { status ->
@@ -140,7 +140,7 @@ class DrawableMapper private constructor(
                             scaleType,
                             rotation,
                             translation.x to translation.y,
-                            shouldPlay
+                            shouldPlay,
                         )
                         wrapper
                     }

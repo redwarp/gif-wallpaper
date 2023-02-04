@@ -7,11 +7,11 @@ repos:
         args: ["spotlessApply", -w, -o]
         types: [kotlin]
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.4.0
+    rev: v2.6.0
     hooks:
       - id: pretty-format-kotlin
         args: [--autofix]
   - repo: https://github.com/shssoichiro/oxipng
-    rev: v6.0.1
+    rev: v8.0.0
     hooks:
       - id: oxipng

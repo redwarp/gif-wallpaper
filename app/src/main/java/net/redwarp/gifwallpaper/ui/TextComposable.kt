@@ -55,13 +55,13 @@ fun MarkdownPage(
     modifier: Modifier = Modifier,
     title: String,
     markdownText: String,
-    navController: NavController
+    navController: NavController,
 ) {
     Scaffold(modifier = modifier, topBar = {
         BasicTopBar(
             title = title,
             navController = navController,
-            modifier = Modifier.statusBarsPadding()
+            modifier = Modifier.statusBarsPadding(),
         )
     }) { paddingValues ->
         MDDocument(
@@ -70,7 +70,7 @@ fun MarkdownPage(
                 .navigationBarsPadding()
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
+                .padding(16.dp),
         )
     }
 }
@@ -94,7 +94,7 @@ fun MarkdownUiPreview() {
 
             Head there if you have feature requests or so.
             """.trimIndent(),
-            navController = navController
+            navController = navController,
         )
     }
 }

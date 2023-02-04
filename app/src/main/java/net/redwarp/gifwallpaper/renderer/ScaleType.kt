@@ -16,5 +16,5 @@
 package net.redwarp.gifwallpaper.renderer
 
 enum class ScaleType {
-    FIT_CENTER, FIT_END, FIT_START, FIT_XY, CENTER, CENTER_CROP;
+    FIT_CENTER, FIT_END, FIT_START, FIT_XY, CENTER, CENTER_CROP
 }

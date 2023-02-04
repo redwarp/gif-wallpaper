@@ -6,9 +6,9 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
-git2 = "0.15"
+git2 = "0.16.1"
 semver = "1.0"
 regex = "1.6"
 git-conventional = "0.12"
-git-cliff = { version = "0.9", default-features = false }
-git-cliff-core = "0.9"
+git-cliff = { version = "1.1.2", default-features = false }
+git-cliff-core = "1.1.2"

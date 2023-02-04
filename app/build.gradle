@@ -17,7 +17,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        resConfigs "en", "fr", "ru", "de", "es", "it", "zh", "eu"
+        resConfigs "en", "fr", "ru", "de", "es", "it", "zh", "eu", "tr"
     }
 
     buildFeatures {

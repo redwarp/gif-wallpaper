@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="about">"Hakkında"</string>
+  <string name="activate">"Aktifleştir"</string>
+  <string name="app_name">"GIF Canlı Duvar Kağıdı"</string>
+  <string name="back">"Geri Dön"</string>
+  <string name="battery_saver">"Güç Tasarrufu"</string>
+  <string name="change_color">"Rengi değiştir"</string>
+  <string name="change_scale">"Ölçeği değiştir"</string>
+  <string name="clear_gif">"GIFi temizle"</string>
+  <string name="click_the_open_gif_button">"\"GIF aç\" düğmesine basın."</string>
+  <string name="close">"Kapat"</string>
+  <string name="error_wallpaper_chooser">"Duvar kağıdı seçicisi başlatılamadı. Yine de, GIF Canlı Duvar Kağıdını ana ekran duvar kağıdı seçicinizden \"Canlı Duvar Kağıtları\"nı seçerek aktif edebilirsiniz."</string>
+  <string name="loading">"Yükleniyor..."</string>
+  <string name="open_app">"Başlamak için GIF Canlı Duvar Kağıdı uygulamasını açıp favori GIF'inizi kurun."</string>
+  <string name="open_gif">"GIF aç"</string>
+  <string name="pause_blayback_battery_saver">"Güç Tasarrufu etkinken GIF'i duraklat."</string>
+  <string name="pause_playback_running_hot">"Telefon sıcak çalışıyorken GIF'i duraklat."</string>
+  <string name="pick_a_color">"Bir renk seçin"</string>
+  <string name="privacy">"Gizlilik"</string>
+  <string name="rotate">"Döndür"</string>
+  <string name="settings">"Ayarlar"</string>
+  <string name="thermal_throttle">"Termal Sınırlama"</string>
+</resources>

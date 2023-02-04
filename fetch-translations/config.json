@@ -38,5 +38,10 @@
         "code": "eu",
         "values_folder": "values-eu",
         "store_listing_file": "eu-ES.json"
+    },
+    {
+        "code": "tr",
+        "values_folder": "values-tr",
+        "store_listing_file": "tr-TR.json"
     }
 ]

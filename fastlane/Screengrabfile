@@ -1,4 +1,4 @@
-locales ['en-US', 'de-DE', 'fr-FR', 'es-ES', 'it-IT', 'ru-RU', 'zh-CN', 'eu-ES']
+locales ['en-US', 'de-DE', 'fr-FR', 'es-ES', 'it-IT', 'ru-RU', 'zh-CN', 'eu-ES', 'tr-TR']
 clear_previous_screenshots true
 tests_apk_path 'app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk'
 app_apk_path 'app/build/outputs/apk/debug/app-debug.apk'

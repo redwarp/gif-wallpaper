@@ -1,0 +1,27 @@
+Bir GIF indirdiniz ve telefonunuzun canlı duvar kağıdı olarak mı kullanmak istiyorsunuz?
+
+GIF Canlı Duvar Kağıdı tam ihtiyacınız olan şey!
+Muhtemelen bir GIF dosyasını canlı duvar kağıdı olarak kullanmak için en kolay yoldur.
+
+Tüm bunlar birkaç basit adımda yapılabilir:
+1. Adım - Uygulamayı Açın.
+2. Adım - Aktifleştirin.
+3. Adım - "GIF Aç"a basın.
+4. Adım - İstediğiniz dosyayı seçin.
+
+Olduysa, tamamdır! Yeni duvar kağıdınızın keyfini çıkarın!
+
+Uygulamayı öne çıkaran şeyler:
+- Root haklarına gerek yok, küçük dosya boyutu (<3MB)
+- Duvar kağıdı görünür olmadığında veya cihaz kitlendiğinde otomatik olarak durur, böylece güç harcamaz.
+- Tabii ki de reklam yok! Verinizi paylaşmayız veya bilgi toplamayız.
+
+Kaynak
+https://github.com/redwarp/gif-wallpaper adresinde bulunabilir.
+
+Kendi dilinizde çevirmeye ilgileniyor musunuz?
+Çeviriye yardımcı olmak için benimle iletişime geçebilirsiniz.
+
+SSS:
+S: Ana ekran ve kilit ekran için ayrı GIF seçebilir miyim?
+C: Üzgünüz, mümkün değil: Bu canlı duvar kağıtların kısıtlamalarından birisidir, yalnızca ikisine uygulayabilirsiniz. Bazı telefonlarda kilit ekranlarında çalışmazlar bile!

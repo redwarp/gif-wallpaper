@@ -36,7 +36,7 @@ async fn main() -> Result<()> {
 
     let content = fetch_languages(&client).await?;
 
-    println!("Printing fetched content: {:?}", content);
+    println!("Printing fetched content: {content:?}");
 
     for language in &content {
         match configuration.language_by_code(&language.code) {

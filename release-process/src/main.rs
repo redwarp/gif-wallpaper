@@ -120,7 +120,7 @@ fn main() -> Result<()> {
             &next_version,
             true,
             &fastlane_config,
-            File::create(&fastlane_changelog_file)?,
+            File::create(fastlane_changelog_file)?,
         )?;
 
         create_commit(&repo, &next_version, next_version_code)?;

@@ -23,4 +23,6 @@
   <string name="rotate">"Rotate"</string>
   <string name="settings">"Settings"</string>
   <string name="thermal_throttle">"Thermal Mitigation"</string>
+  <string name="loop_gif">"Loop playback"</string>
+  <string name="inifinitely_loop_gif">"Repeat GIF infinitely"</string>
 </resources>

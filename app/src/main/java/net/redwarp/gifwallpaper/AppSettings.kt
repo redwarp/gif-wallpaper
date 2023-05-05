@@ -29,14 +29,17 @@ import kotlinx.coroutines.flow.map
 interface AppSettings {
     val powerSavingSettingFlow: Flow<Boolean>
     val thermalThrottleSettingFlow: Flow<Boolean>
+    val infiniteLoopSettingFlow: Flow<Boolean>
     val isThermalThrottleSupported: Boolean
     suspend fun setPowerSaving(enabled: Boolean)
     suspend fun setThermalThrottle(enabled: Boolean)
+    suspend fun setInfiniteLoop(enabled: Boolean)
 }
 
 class DataStoreAppSettings(private val context: Context, ioScope: CoroutineScope) : AppSettings {
     private val powerSavingKey = booleanPreferencesKey("power_saving")
     private val thermalThrottleKey = booleanPreferencesKey("thermal_throttle")
+    private val infiniteLoopKey = booleanPreferencesKey("infinite_loop")
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
         "app_settings",
         scope = ioScope,
@@ -52,6 +55,9 @@ class DataStoreAppSettings(private val context: Context, ioScope: CoroutineScope
         }
     override val isThermalThrottleSupported: Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+    override val infiniteLoopSettingFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[infiniteLoopKey] ?: context.resources.getBoolean(R.bool.infinite_loop_enabled)
+    }
 
     override suspend fun setPowerSaving(enabled: Boolean) {
         context.dataStore.edit { preferences ->
@@ -62,6 +68,12 @@ class DataStoreAppSettings(private val context: Context, ioScope: CoroutineScope
     override suspend fun setThermalThrottle(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[thermalThrottleKey] = enabled
+        }
+    }
+
+    override suspend fun setInfiniteLoop(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[infiniteLoopKey] = enabled
         }
     }
 }

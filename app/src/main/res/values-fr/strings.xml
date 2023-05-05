@@ -23,4 +23,6 @@
   <string name="rotate">"Rotation"</string>
   <string name="settings">"Paramètres"</string>
   <string name="thermal_throttle">"Atténuation thermique"</string>
+  <string name="loop_gif">"Lecture en boucle"</string>
+  <string name="inifinitely_loop_gif">"Répéter le GIF à l'infini"</string>
 </resources>

@@ -90,6 +90,7 @@ class FlowBasedModel(
 
         !(powerSavingOn || thermalThrottlingOn)
     }
+    val infiniteLoopFlow: Flow<Boolean> = appSettings.infiniteLoopSettingFlow
 
     @OptIn(FlowPreview::class)
     val updateFlow: Flow<Unit>

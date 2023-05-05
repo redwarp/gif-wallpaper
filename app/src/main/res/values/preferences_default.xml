@@ -2,4 +2,5 @@
 <resources>
     <bool name="power_saving_enabled">false</bool>
     <bool name="thermal_throttle_enabled">false</bool>
+    <bool name="infinite_loop_enabled">true</bool>
 </resources>

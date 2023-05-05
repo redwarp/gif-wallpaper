@@ -24,9 +24,13 @@ class FakeAppSettings : AppSettings {
         get() = flowOf(true)
     override val thermalThrottleSettingFlow: Flow<Boolean>
         get() = flowOf(false)
+    override val infiniteLoopSettingFlow: Flow<Boolean>
+        get() = flowOf(false)
     override val isThermalThrottleSupported: Boolean = true
 
     override suspend fun setPowerSaving(enabled: Boolean) = Unit
 
     override suspend fun setThermalThrottle(enabled: Boolean) = Unit
+
+    override suspend fun setInfiniteLoop(enabled: Boolean) = Unit
 }

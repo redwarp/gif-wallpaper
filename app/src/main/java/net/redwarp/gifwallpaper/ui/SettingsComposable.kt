@@ -91,6 +91,7 @@ fun SettingUi(navController: NavController, appSettings: AppSettings) {
         ) {
             val isPowerSaving by appSettings.powerSavingSettingFlow.collectAsState(initial = false)
             val isThermalThrottle by appSettings.thermalThrottleSettingFlow.collectAsState(initial = false)
+            val isInfiniteLoop by appSettings.infiniteLoopSettingFlow.collectAsState(initial = true)
             val scope = rememberCoroutineScope()
 
             Setting(
@@ -116,6 +117,17 @@ fun SettingUi(navController: NavController, appSettings: AppSettings) {
                     },
                 )
             }
+
+            Setting(
+                title = stringResource(id = R.string.loop_gif),
+                summary = stringResource(id = R.string.inifinitely_loop_gif),
+                checked = { isInfiniteLoop },
+                onCheckedChanged = { enabled ->
+                    scope.launch {
+                        appSettings.setInfiniteLoop(enabled)
+                    }
+                },
+            )
         }
     }
 }

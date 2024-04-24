@@ -4,7 +4,7 @@ use anyhow::Result;
 use git2::Oid;
 use git2::Repository;
 use git2::Revwalk;
-use git_cliff::changelog::Changelog;
+use git_cliff_core::changelog::Changelog;
 use git_cliff_core::commit::Commit;
 use git_cliff_core::config::Config;
 use git_conventional::Type;

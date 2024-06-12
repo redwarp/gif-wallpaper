@@ -128,7 +128,11 @@ class DrawableMapper private constructor(
                         val gif = withContext(Dispatchers.IO) {
                             GifDrawable(status.gifDescriptor)
                         }
-                        gif.loopCount = LoopCount.Infinite
+                        if (flowBasedModel.infiniteLoopFlow.first()) {
+                            gif.loopCount = LoopCount.Infinite
+                        } else {
+                            gif.loopCount = LoopCount.Fixed(1)
+                        }
                         val shouldPlay = !isService || flowBasedModel.shouldPlay.first()
                         val scaleType = flowBasedModel.scaleTypeFlow.first()
                         val rotation = flowBasedModel.rotationFlow.first()
